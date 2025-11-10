@@ -4,23 +4,34 @@ from pathlib import Path
 
 class DJFunctions:
     def __init__(self, paths=None):
-        self.server = Server().boot()
-        self.server.start()
+        try:        
+            # self.server = Server().boot()
+            self.server = Server(
+                sr=44100,
+                nchnls=2,
+                buffersize=512,
+                duplex=0,
+                winhost="wasapi",  # or "wasapi" if your test used that
+            ).boot()
+            self.server.start()
 
-        self.tracks = {}
-        if paths:
-            for path in paths:
-                title = path.stem
-                player = SfPlayer(str(path), speed=1.0, loop=True, mul=0.5)
-                fader = Fader(fadein=0.01, fadeout=0.01, mul=1.0).play()
-                player.mul = fader
-                self.tracks[title] = {
-                    'path': path,
-                    'player': player,
-                    'fader': fader,
-                    'speed': 1.0,
-                }
-        self.current_title = None
+            self.tracks = {}
+            if paths:
+                for path in paths:
+                    title = path.stem
+                    player = SfPlayer(str(path), speed=1.0, loop=True, mul=0.5)
+                    fader = Fader(fadein=0.01, fadeout=0.01, mul=1.0).play()
+                    player.mul = fader
+                    self.tracks[title] = {
+                        'path': path,
+                        'player': player,
+                        'fader': fader,
+                        'speed': 1.0,
+                    }
+            self.current_title = None
+        except Exception as e:
+            print("Error initializing DJFunctions:", e)
+            sys.exit(1)
 
     def play(self, title):
         if title not in self.tracks:
@@ -77,7 +88,8 @@ class DJFunctions:
         root.mainloop()
 
 if __name__ == "__main__":
-    track_path = Path("Music/Clarity.wav")
+    
+    track_path = Path("wav_files/wakemeup-avicii.wav")
     title = track_path.stem
     dj = DJFunctions([track_path])
     dj.play(title)
