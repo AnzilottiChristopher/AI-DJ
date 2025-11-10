@@ -1,3 +1,5 @@
+# Python Version 3.15.5
+
 pyo>=1.0.4
 numpy>=1.23.0
 scipy>=1.10.0

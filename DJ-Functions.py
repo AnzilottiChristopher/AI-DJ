@@ -1,6 +1,9 @@
-import re, os, tkinter as tk
+import re
+import os
+import tkinter as tk
 from pyo import Server, SfPlayer, Fader
 from pathlib import Path
+
 
 class DJFunctions:
     def __init__(self, paths=None):
@@ -28,21 +31,21 @@ class DJFunctions:
             return
         self.current_title = title
         self.tracks[title]['player'].out()
-    
+
     def stop(self):
         if self.current_title:
             self.tracks[self.current_title]['player'].stop()
             self.current_title = None
-    
+
     def change_tempo(self, rate):
         if self.current_title:
             self.tracks[self.current_title]['player'].speed = rate
-    
+
     def change_pitch(self, semitones):
         if self.current_title:
             factor = 2 ** (semitones / 12)
             self.tracks[self.current_title]['player'].speed = factor
-    
+
     def set_volume(self, vol):
         if self.current_title:
             self.tracks[self.current_title]['fader'].mul = vol
@@ -75,6 +78,7 @@ class DJFunctions:
         vol_slider.pack()
 
         root.mainloop()
+
 
 if __name__ == "__main__":
     track_path = Path("Music/Clarity.wav")
