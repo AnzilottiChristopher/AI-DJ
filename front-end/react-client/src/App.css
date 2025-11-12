@@ -1,0 +1,153 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Page background */
+.chat-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f3f4f6;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  flex-direction: column;
+}
+
+/* Slider container */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.slider-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Chat container */
+.chat-window {
+  width: 750px;
+  height: 400px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 150px;
+}
+
+/* Header */
+.chat-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+}
+
+/* Messages area */
+.messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  flex-direction: column-reverse;
+}
+
+/* Each row */
+.message-row {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+/* User messages on the right */
+.message-row.user {
+  justify-content: flex-end;
+}
+
+/* Bot messages on the left */
+.message-row.bot {
+  justify-content: flex-start;
+}
+
+/* Bubble styling */
+.bubble {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+/* Different colors for user/bot */
+.message-row.user .bubble {
+  background: #2563eb;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message-row.bot .bubble {
+  background: #e5e7eb;
+  color: #111827;
+  border-bottom-left-radius: 4px;
+}
+
+/* Input area */
+.input-row {
+  display: flex;
+  border-top: 1px solid #e5e7eb;
+}
+
+.input-row input {
+  flex: 1;
+  border: none;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.input-row input:focus {
+  outline: none;
+}
+
+.input-row button {
+  border: none;
+  padding: 0 16px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #2563eb;
+  color: white;
+}
