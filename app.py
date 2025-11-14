@@ -1,46 +1,45 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from llm.new_llm import LlamaLLM
-from concurrent.futures import ThreadPoolExecutor
-from DJ_Functions import DJFunctions
-from pathlib import Path
+from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
+import soundfile as sf
+import numpy as np
+import asyncio
+import uvicorn 
 
-app = Flask(__name__)
-CORS(app)  # ONLY needed if React runs on a different port (e.g., 3000)
+app = FastAPI()
 
+# depending on which port the front end is running on, just adjust this part
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-
-@app.post("/api/chat")
-def chat():
-    data = request.get_json()
-    user_message = data.get("message", "")
-    # Super simple "bot" response
-    # bot_reply = f"You said: {user_message}"
-    future = executor.submit(generate_llm_response, user_message)
-    # future.add_done_callback(lambda f: return jsonify({"reply":f.result()}))
-    return jsonify({"reply": future.result()})
-
-def generate_llm_response(user_text: str) -> str:
-    print(f"Received user message: {user_text}")
+# this will likely be changed in the future
+@app.websocket("/api/ws/audio")
+async def audio_stream(websocket: WebSocket):
+    await websocket.accept()
+    
     try:
-        return llm.process_response(user_text)
+        while True:
+            data = await websocket.receive_json()
+            prompt = data['data']
+            
+            print(f"received prompt: {prompt}")
+            
+            await websocket.send_json({"status": "received", "prompt": prompt})
+        
     except Exception as e:
-        # keep UI alive even if model errors
-        return f"[ERROR] {type(e).__name__}: {e}"
-    
-@app.post("/api/play")
-def play():
-    track_path = Path("wav_files/wakemeup-avicii.wav")
-    title = track_path.stem
-    dj = DJFunctions([track_path])
-    dj.play(title)
+        print(f"error: {e}")
+    finally:
+        try:
+            await websocket.close()
+        except:
+            pass
 
+
+# pay attention to what ports you are running on
+# as you may need to change this on your own
 if __name__ == "__main__":
-    llm = LlamaLLM()
-    # track_path = Path("wav_files/wakemeup-avicii.wav")
-    # title = track_path.stem
-    # dj = DJFunctions([track_path])
-    # dj.play(title)
-    executor = ThreadPoolExecutor(max_workers=2)
-    app.run(debug=True)
-    
+    uvicorn.run(app, host="0.0.0.0", port=8000)
