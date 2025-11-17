@@ -7,38 +7,37 @@ import json, re
 
 class LlamaLLM:
     def __init__(self):
-        self.llm = ChatOllama(model="phi3:mini", temperature=0)
+        self.llm = ChatOllama(model="llama3.2:3b", temperature=0.3, repeat_penalty=1.1)
         self._queue = []
         self.prompt = ChatPromptTemplate.from_template(
-            """You are an intent classifier for a DJ app.
-        Return STRICT JSON with fields:
-        - intent: one of ["hello","start_dj","stop_dj","help","queue_song","none"]
-        - reason: short string
-        - song: object with fields
-        - title: string | null
-        - artist: string | null
+            """You are a JSON-only response bot for a DJ app. Classify the user's intent and extract song info if applicable.
 
-        User input: "{user_input}"
+        User says: "{user_input}"
+
+        Return ONLY this JSON format:
+        {{"intent":"INTENT_TYPE", "reason":"brief explanation", "song":{{"title":"SONG_NAME_OR_NULL", "artist":"ARTIST_NAME_OR_NULL"}}}}
+
+        Intent types:
+        - "queue_song": User wants to play/queue/add a SPECIFIC song (e.g., "play waiting for love", "add levels by avicii")
+        - "start_dj": User wants to start DJ/music with NO specific song (e.g., "start the dj", "play some music")
+        - "stop_dj": User wants to stop the music (e.g., "stop", "end the music")
+        - "hello": User is greeting (e.g., "hi", "hello")
+        - "help": User asks for help (e.g., "what can you do", "help")
+        - "none": Anything else
 
         Rules:
-        - If the user asks to start/queue/launch dj/music/mixing, intent="start_dj".
-        - If they ask to stop/end/quit dj/music, intent="stop_dj".
-        - If they greet (hello/hi/hey), intent="hello".
-        - If they ask for help or commands, intent="help".
-        - If they ask to queue/play/add a specific song, intent="queue_song" and fill song.title and (if supplied) song.artist.
-        - Otherwise, intent="none".
-        Return ONLY JSON, no code fences, no prose.
+        - If user mentions a SPECIFIC song name, intent is "queue_song"
+        - Use EXACT song name from user's input (capitalize properly)
+        - Correct spelling errors intelligently
+        - Extract artist if provided, otherwise null
+        - For queue_song, always fill song.title; for other intents, set both to null
 
         Examples:
-        Input: "queue up levels by avicii"
-        Output: {{ "intent":"queue_song", "reason":"User asked to queue a specific track", "song": {{ "title": "Levels", "artist": "Avicii" }} }}
+        "play stargazing by kygo" → {{"intent":"queue_song", "reason":"specific song request", "song":{{"title":"Stargazing", "artist":"Kygo"}}}}
+        "start the music" → {{"intent":"start_dj", "reason":"generic start request", "song":{{"title":null, "artist":null}}}}
+        "stop" → {{"intent":"stop_dj", "reason":"stop request", "song":{{"title":null, "artist":null}}}}
 
-        Input: "add 'blinding lights' to the queue"
-        Output: {{ "intent":"queue_song", "reason":"User asked to queue a specific track", "song": {{ "title": "Blinding Lights", "artist": null }} }}
-
-        Input: "start the dj"
-        Output: {{ "intent":"start_dj", "reason":"Start request", "song": {{ "title": null, "artist": null }} }}
-        """
+        Return ONLY the JSON, nothing else."""
         )
         self.chain = self.prompt | self.llm | StrOutputParser()
 
@@ -85,26 +84,93 @@ class LlamaLLM:
             print(f"  {i}. {title}" + (f" — {artist}" if artist else ""))
 
     # ---------- helpers ----------
+    # def extract_json(self, s: str) -> dict:
+    #     if not s or not s.strip():
+    #         return {"intent": "none", "reason": "Empty model output.", "song": {"title": None, "artist": None}}
+    #     try:
+    #         return json.loads(s)
+    #     except json.JSONDecodeError:
+    #         pass
+    #     m = re.search(r"\{.*\}", s, re.S)
+    #     if m:
+    #         try:
+    #             return json.loads(m.group(0))
+    #         except json.JSONDecodeError:
+    #             pass
+    #     return {"intent": "none", "reason": "Could not parse JSON.", "song": {"title": None, "artist": None}}
+
+    # ---------- helpers ----------
     def extract_json(self, s: str) -> dict:
         if not s or not s.strip():
             return {"intent": "none", "reason": "Empty model output.", "song": {"title": None, "artist": None}}
+        
+        # Print raw output for debugging
+        # print(f"[DEBUG] Raw LLM output: {s[:200]}...")  # First 200 chars
+        
+        # Try direct parse first
         try:
             return json.loads(s)
         except json.JSONDecodeError:
             pass
-        m = re.search(r"\{.*\}", s, re.S)
+        
+        # Remove markdown code fences
+        s_clean = s.strip()
+        if s_clean.startswith("```"):
+            # Remove ```json or ``` at start
+            s_clean = re.sub(r'^```(?:json)?\s*\n?', '', s_clean)
+            # Remove ``` at end
+            s_clean = re.sub(r'\n?```\s*$', '', s_clean)
+        
+        # Try parsing cleaned version
+        try:
+            return json.loads(s_clean.strip())
+        except json.JSONDecodeError:
+            pass
+        
+        # Search for JSON object anywhere in string
+        m = re.search(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', s, re.S)
         if m:
             try:
                 return json.loads(m.group(0))
             except json.JSONDecodeError:
                 pass
+    
+        print(f"[ERROR] Could not parse JSON from: {s}")
         return {"intent": "none", "reason": "Could not parse JSON.", "song": {"title": None, "artist": None}}
-
     # ---------- API ----------
-    def classify(self, text: str) -> dict:
-        raw = self.chain.invoke({"user_input": text})  # str from StrOutputParser
-        data = self.extract_json(raw)
+    # def classify(self, text: str) -> dict:
+    #     print("Classifying prompt!")
+    #     raw = self.chain.invoke({"user_input": text})  # str from StrOutputParser
+    #     data = self.extract_json(raw)
 
+    #     # normalize / defaults
+    #     intent = data.get("intent", "none")
+    #     if intent not in self.COMMANDS:
+    #         intent = "none"
+    #     song = data.get("song") or {}
+    #     title = song.get("title")
+    #     artist = song.get("artist")
+
+    #     return {
+    #         "intent": intent,
+    #         "reason": data.get("reason", ""),
+    #         "song": {"title": title, "artist": artist},
+    #     }
+    def classify(self, text: str) -> dict:
+        # print("="*50)
+        # print(f"[DEBUG] CLASSIFY CALLED")
+        # print(f"[DEBUG] Input text: '{text}'")
+        # print("="*50)
+        
+        # Invoke the chain
+        raw = self.chain.invoke({"user_input": text})
+        
+        # print(f"[DEBUG] Raw LLM output (full): '{raw}'")
+        # print("="*50)
+        
+        data = self.extract_json(raw)
+        print(f"[DEBUG] Parsed JSON: {data}")
+        
         # normalize / defaults
         intent = data.get("intent", "none")
         if intent not in self.COMMANDS:
@@ -113,11 +179,16 @@ class LlamaLLM:
         title = song.get("title")
         artist = song.get("artist")
 
-        return {
+        result = {
             "intent": intent,
             "reason": data.get("reason", ""),
             "song": {"title": title, "artist": artist},
         }
+        
+        # print(f"[DEBUG] Final result: {result}")
+        # print("="*50)
+        
+        return result
 
     def dispatch(self, intent: str, *, song: Optional[dict] = None):
         if intent == "queue_song":

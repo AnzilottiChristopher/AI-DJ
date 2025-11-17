@@ -1,0 +1,31 @@
+{
+    "songs": [
+            { 
+            "song_name": "waiting-for-love_avicii.wav",
+            "features": {
+                "bpm": 128.06227111816406,
+                "key": "F#",
+                "scale": "minor",
+                "key_strength": 0.8878006935119629
+            } 
+              },
+            {
+               "song_name": "wake-me-up_avicii.wav",
+                "features": {
+                    "bpm": 123.60303497314453,
+                    "key": "D",
+                    "scale": "major",
+                    "key_strength": 0.9240454435348511
+                } 
+            },
+            {
+                "song_name": "stargazing_kygo.wav",
+                "features": {
+                    "bpm": 98.84703826904297,
+                    "key": "F",
+                    "scale": "major",
+                    "key_strength": 0.9270086884498596
+                }
+            }
+    ]
+}
