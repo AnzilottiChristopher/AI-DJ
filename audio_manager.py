@@ -16,7 +16,7 @@ class AudioManager:
         self.chunk_size = 4096  # samples per chunk
         
     def add_to_queue(self, title, artist) -> bool:
-        """Add song to queue, return True if found"""
+
         track_data = self.music_library.search(title, artist)
         if track_data:
             self.queue.append({
@@ -79,6 +79,7 @@ class AudioManager:
                 
                 # Send as binary data
                 await websocket.send_bytes(audio_bytes)
+                print('sent some bytes')
                 
                 # Small delay to simulate real-time playback
                 # (chunk_size / sample_rate / channels)
