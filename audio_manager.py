@@ -1,4 +1,3 @@
-# audio_manager.py
 import asyncio
 import soundfile as sf
 import numpy as np
@@ -16,7 +15,7 @@ class AudioManager:
         self.chunk_size = 4096  # samples per chunk
         
     def add_to_queue(self, title, artist) -> bool:
-
+        """Add song to queue, return True if found"""
         track_data = self.music_library.search(title, artist)
         if track_data:
             self.queue.append({
@@ -36,7 +35,7 @@ class AudioManager:
             return self.queue.pop(0)
         return None
     
-    async def stream_audio(self, websocket, track_data: dict):
+    async def stream_audio(self, websocket, track_data: dict, title: str = None, artist: str = None):
         """Stream audio data to websocket in chunks"""
         try:
             # Load audio file
@@ -53,12 +52,13 @@ class AudioManager:
             # Convert to int16 for efficient transmission
             audio_int16 = (audio * 32767).astype(np.int16)
             
-            # Send metadata first
+            # Send metadata first - now includes artist
             duration = len(audio) / sr
             await websocket.send_json({
                 "type": "track_start",
                 "track": {
-                    "title": track_data.get('title', 'Unknown'),
+                    "title": title or track_data.get('title', 'Unknown'),
+                    "artist": artist or track_data.get('artist', 'Unknown Artist'),
                     "bpm": track_data['features']['bpm'],
                     "key": track_data['features']['key'],
                     "duration": duration,
@@ -79,7 +79,6 @@ class AudioManager:
                 
                 # Send as binary data
                 await websocket.send_bytes(audio_bytes)
-                print('sent some bytes')
                 
                 # Small delay to simulate real-time playback
                 # (chunk_size / sample_rate / channels)
@@ -108,7 +107,13 @@ class AudioManager:
                 self.current_track = self.get_next_track()
                 
             if self.current_track:
-                await self.stream_audio(websocket, self.current_track['track_data'])
+                # Pass title and artist to stream_audio
+                await self.stream_audio(
+                    websocket, 
+                    self.current_track['track_data'],
+                    title=self.current_track.get('title'),
+                    artist=self.current_track.get('artist')
+                )
                 self.current_track = None
             else:
                 break
