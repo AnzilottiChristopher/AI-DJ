@@ -1,3 +1,4 @@
 Music/
 venv/
 music_data/audio/*
+*.pyc
