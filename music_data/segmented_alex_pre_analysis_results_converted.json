@@ -1,0 +1,776 @@
+{
+  "songs": [
+    {
+      "song_name": "hey-brother_avicii.wav",
+      "features": {
+        "bpm": 124.98138427734375,
+        "key": "G",
+        "scale": "minor",
+        "key_strength": 0.9047814011573792,
+        "loudness": 0.9323709607124329,
+        "danceability": 1.0621936321258545,
+        "spectral_centroid": 1705.3541259765625,
+        "spectral_rolloff": 2143.96533203125,
+        "dissonance": 0.46407291293144226,
+        "onset_rate": 4.076735973358154
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 3.0
+        },
+        {
+          "name": "verse",
+          "start": 3.0,
+          "end": 64.0
+        },
+        {
+          "name": "chorus",
+          "start": 64.0,
+          "end": 91.0
+        },
+        {
+          "name": "build-up",
+          "start": 91.0,
+          "end": 106.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 106.0,
+          "end": 139.0
+        },
+        {
+          "name": "cool-down",
+          "start": 139.0,
+          "end": 142.0
+        },
+        {
+          "name": "verse1",
+          "start": 142.0,
+          "end": 171.0
+        },
+        {
+          "name": "chorus1",
+          "start": 171.0,
+          "end": 198.0
+        },
+        {
+          "name": "build-up1",
+          "start": 198.0,
+          "end": 214.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 214.0,
+          "end": 245.0
+        },
+        {
+          "name": "outro",
+          "start": 245.0,
+          "end": 255.0
+        }
+      ]
+    },
+    {
+      "song_name": "glad-you-came_the-wanted.wav",
+      "features": {
+        "bpm": 126.93588256835938,
+        "key": "G",
+        "scale": "minor",
+        "key_strength": 0.9067476391792297,
+        "loudness": 0.8905057311058044,
+        "danceability": 1.2769032716751099,
+        "spectral_centroid": 1364.295654296875,
+        "spectral_rolloff": 1712.0855712890625,
+        "dissonance": 0.45144665241241455,
+        "onset_rate": 3.4857265949249268
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 33.0
+        },
+        {
+          "name": "verse",
+          "start": 33.0,
+          "end": 65.0
+        },
+        {
+          "name": "chorus",
+          "start": 65.0,
+          "end": 79.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 79.0,
+          "end": 93.0
+        },
+        {
+          "name": "verse1",
+          "start": 93.0,
+          "end": 124.0
+        },
+        {
+          "name": "chorus1",
+          "start": 124.0,
+          "end": 139.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 139.0,
+          "end": 170.0
+        },
+        {
+          "name": "outro",
+          "start": 170.0,
+          "end": 197.0
+        }
+      ]
+    },
+    {
+      "song_name": "waiting-for-love_avicii.wav",
+      "features": {
+        "bpm": 128.06227111816406,
+        "key": "F#",
+        "scale": "minor",
+        "key_strength": 0.8878006935119629,
+        "loudness": 0.8805457353591919,
+        "danceability": 1.1528594493865967,
+        "spectral_centroid": 1377.9072265625,
+        "spectral_rolloff": 1793.985107421875,
+        "dissonance": 0.44429734349250793,
+        "onset_rate": 3.7072012424468994
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 6.0
+        },
+        {
+          "name": "verse",
+          "start": 6.0,
+          "end": 37.0
+        },
+        {
+          "name": "chorus",
+          "start": 37.0,
+          "end": 74.0
+        },
+        {
+          "name": "build-up",
+          "start": 74.0,
+          "end": 104.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 104.0,
+          "end": 119.0
+        },
+        {
+          "name": "verse1",
+          "start": 119.0,
+          "end": 135.0
+        },
+        {
+          "name": "chorus1",
+          "start": 135.0,
+          "end": 166.0
+        },
+        {
+          "name": "build-up1",
+          "start": 166.0,
+          "end": 193.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 193.0,
+          "end": 225.0
+        },
+        {
+          "name": "outro",
+          "start": 225.0,
+          "end": 230.0
+        }
+      ]
+    },
+    {
+      "song_name": "hymn-for-the-weekend_coldplay.wav",
+      "features": {
+        "bpm": 89.91226959228516,
+        "key": "C",
+        "scale": "minor",
+        "key_strength": 0.936860978603363,
+        "loudness": 0.8265402913093567,
+        "danceability": 1.0673654079437256,
+        "spectral_centroid": 1545.5927734375,
+        "spectral_rolloff": 1974.659423828125,
+        "dissonance": 0.4523217976093292,
+        "onset_rate": 3.124148368835449
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 41.0
+        },
+        {
+          "name": "verse",
+          "start": 41.0,
+          "end": 84.0
+        },
+        {
+          "name": "chorus",
+          "start": 84.0,
+          "end": 104.0
+        },
+        {
+          "name": "build-up",
+          "start": 104.0,
+          "end": 106.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 106.0,
+          "end": 128.0
+        },
+        {
+          "name": "cool-down",
+          "start": 128.0,
+          "end": 137.0
+        },
+        {
+          "name": "verse1",
+          "start": 137.0,
+          "end": 159.0
+        },
+        {
+          "name": "chorus1",
+          "start": 159.0,
+          "end": 167.0
+        },
+        {
+          "name": "build-up1",
+          "start": 167.0,
+          "end": 171.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 171.0,
+          "end": 192.0
+        },
+        {
+          "name": "cool-down1",
+          "start": 192.0,
+          "end": 202.0
+        },
+        {
+          "name": "outro",
+          "start": 202.0,
+          "end": 258.0
+        }
+      ]
+    },
+    {
+      "song_name": "feel-so-close_calvin-harris.wav",
+      "features": {
+        "bpm": 128.02386474609375,
+        "key": "G",
+        "scale": "major",
+        "key_strength": 0.9312947392463684,
+        "loudness": 0.91604083776474,
+        "danceability": 1.1853119134902954,
+        "spectral_centroid": 1524.9599609375,
+        "spectral_rolloff": 2115.29736328125,
+        "dissonance": 0.46715977787971497,
+        "onset_rate": 3.7950963973999023
+      },
+      "segments": [
+        {
+          "name": "chorus",
+          "start": 0.0,
+          "end": 31.0
+        },
+        {
+          "name": "build-up",
+          "start": 31.0,
+          "end": 46.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 46.0,
+          "end": 75.0
+        },
+        {
+          "name": "chorus1",
+          "start": 75.0,
+          "end": 99.0
+        },
+        {
+          "name": "build-up1",
+          "start": 99.0,
+          "end": 105.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 105.0,
+          "end": 136.0
+        },
+        {
+          "name": "cool-down",
+          "start": 136.0,
+          "end": 150.0
+        },
+        {
+          "name": "build-up2",
+          "start": 150.0,
+          "end": 165.0
+        },
+        {
+          "name": "beat-drop2",
+          "start": 165.0,
+          "end": 196.0
+        },
+        {
+          "name": "outro",
+          "start": 196.0,
+          "end": 207.0
+        }
+      ]
+    },
+    {
+      "song_name": "how-deep-is-your-love_calvin-harris.wav",
+      "features": {
+        "bpm": 122.09896850585938,
+        "key": "E",
+        "scale": "minor",
+        "key_strength": 0.7739360928535461,
+        "loudness": 0.8637517690658569,
+        "danceability": 1.0637259483337402,
+        "spectral_centroid": 1512.4244384765625,
+        "spectral_rolloff": 1783.091796875,
+        "dissonance": 0.46128371357917786,
+        "onset_rate": 4.946864604949951
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 14.0
+        },
+        {
+          "name": "verse",
+          "start": 16.0,
+          "end": 30.0
+        },
+        {
+          "name": "chorus",
+          "start": 30.0,
+          "end": 48.0
+        },
+        {
+          "name": "build-up",
+          "start": 48.0,
+          "end": 61.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 61.0,
+          "end": 77.0
+        },
+        {
+          "name": "verse1",
+          "start": 77.0,
+          "end": 92.0
+        },
+        {
+          "name": "chorus1",
+          "start": 92.0,
+          "end": 108.0
+        },
+        {
+          "name": "build-up1",
+          "start": 108.0,
+          "end": 124.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 124.0,
+          "end": 142.0
+        },
+        {
+          "name": "cool-down",
+          "start": 142.0,
+          "end": 149.0
+        },
+        {
+          "name": "build-up2",
+          "start": 154.0,
+          "end": 171.0
+        },
+        {
+          "name": "beat-drop2",
+          "start": 171.0,
+          "end": 205.0
+        },
+        {
+          "name": "outro",
+          "start": 205.0,
+          "end": 212.0
+        }
+      ]
+    },
+    {
+      "song_name": "firestone-kygo.wav",
+      "features": {
+        "bpm": 113.77003479003906,
+        "key": "D",
+        "scale": "major",
+        "key_strength": 0.9130188226699829,
+        "loudness": 0.6249677538871765,
+        "danceability": 1.1002739667892456,
+        "spectral_centroid": 930.6256103515625,
+        "spectral_rolloff": 1326.0604248046875,
+        "dissonance": 0.42901521921157837,
+        "onset_rate": 3.8362443447113037
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 32.0
+        },
+        {
+          "name": "verse",
+          "start": 32.0,
+          "end": 66.0
+        },
+        {
+          "name": "chorus",
+          "start": 66.0,
+          "end": 106.0
+        },
+        {
+          "name": "build-up",
+          "start": 106.0,
+          "end": 124.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 124.0,
+          "end": 159.0
+        },
+        {
+          "name": "verse1",
+          "start": 159.0,
+          "end": 179.0
+        },
+        {
+          "name": "chorus1",
+          "start": 179.0,
+          "end": 215.0
+        },
+        {
+          "name": "build-up1",
+          "start": 215.0,
+          "end": 231.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 231.0,
+          "end": 266.0
+        },
+        {
+          "name": "outro",
+          "start": 266.0,
+          "end": 273.0
+        }
+      ]
+    },
+    {
+      "song_name": "heroes-we-could-be_alesso-tove-lo.wav",
+      "features": {
+        "bpm": 126.03785705566406,
+        "key": "F",
+        "scale": "major",
+        "key_strength": 0.8862388730049133,
+        "loudness": 0.8343808650970459,
+        "danceability": 1.0543124675750732,
+        "spectral_centroid": 1683.8751220703125,
+        "spectral_rolloff": 2065.893798828125,
+        "dissonance": 0.45834285020828247,
+        "onset_rate": 3.2281949520111084
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 7.0
+        },
+        {
+          "name": "verse",
+          "start": 7.0,
+          "end": 37.0
+        },
+        {
+          "name": "chorus",
+          "start": 37.0,
+          "end": 51.0
+        },
+        {
+          "name": "build-up",
+          "start": 51.0,
+          "end": 68.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 68.0,
+          "end": 83.0
+        },
+        {
+          "name": "verse1",
+          "start": 83.0,
+          "end": 113.0
+        },
+        {
+          "name": "chorus1",
+          "start": 113.0,
+          "end": 128.0
+        },
+        {
+          "name": "build-up1",
+          "start": 128.0,
+          "end": 144.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 144.0,
+          "end": 176.0
+        },
+        {
+          "name": "build-up2",
+          "start": 176.0,
+          "end": 189.0
+        },
+        {
+          "name": "beat-drop2",
+          "start": 189.0,
+          "end": 206.0
+        },
+        {
+          "name": "outro",
+          "start": 206.0,
+          "end": 210.0
+        }
+      ]
+    },
+    {
+      "song_name": "under-control_alesso-calvin-harris.wav",
+      "features": {
+        "bpm": 125.85151672363281,
+        "key": "Ab",
+        "scale": "major",
+        "key_strength": 0.8797998428344727,
+        "loudness": 0.8801613450050354,
+        "danceability": 0.9980953335762024,
+        "spectral_centroid": 1606.5740966796875,
+        "spectral_rolloff": 2147.908203125,
+        "dissonance": 0.4651446044445038,
+        "onset_rate": 3.188899040222168
+      },
+      "segments": [
+        {
+          "name": "verse",
+          "start": 0.0,
+          "end": 15.0
+        },
+        {
+          "name": "chorus",
+          "start": 15.0,
+          "end": 45.0
+        },
+        {
+          "name": "build-up",
+          "start": 45.0,
+          "end": 61.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 61.0,
+          "end": 77.0
+        },
+        {
+          "name": "cool-down",
+          "start": 77.0,
+          "end": 84.0
+        },
+        {
+          "name": "verse1",
+          "start": 84.0,
+          "end": 100.0
+        },
+        {
+          "name": "chorus1",
+          "start": 100.0,
+          "end": 129.0
+        },
+        {
+          "name": "build-up1",
+          "start": 129.0,
+          "end": 145.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 145.0,
+          "end": 175.0
+        },
+        {
+          "name": "outro",
+          "start": 175.0,
+          "end": 184.0
+        }
+      ]
+    },
+    {
+      "song_name": "heaven_avicii.wav",
+      "features": {
+        "bpm": 122.04342651367188,
+        "key": "A",
+        "scale": "major",
+        "key_strength": 0.9699844121932983,
+        "loudness": 0.79603511095047,
+        "danceability": 1.0355085134506226,
+        "spectral_centroid": 1197.6798095703125,
+        "spectral_rolloff": 1259.92138671875,
+        "dissonance": 0.4519335925579071,
+        "onset_rate": 4.074945449829102
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 19.0
+        },
+        {
+          "name": "verse",
+          "start": 19.0,
+          "end": 49.0
+        },
+        {
+          "name": "chorus",
+          "start": 49.0,
+          "end": 81.0
+        },
+        {
+          "name": "verse1",
+          "start": 81.0,
+          "end": 96.0
+        },
+        {
+          "name": "chorus1",
+          "start": 96.0,
+          "end": 130.0
+        },
+        {
+          "name": "build-up",
+          "start": 130.0,
+          "end": 161.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 161.0,
+          "end": 192.0
+        },
+        {
+          "name": "chorus2",
+          "start": 192.0,
+          "end": 255.0
+        },
+        {
+          "name": "outro",
+          "start": 255.0,
+          "end": 277.0
+        }
+      ]
+    },
+    {
+      "song_name": "five-more-hours_chris-brown.wav",
+      "features": {
+        "bpm": 128.1976318359375,
+        "key": "Bb",
+        "scale": "major",
+        "key_strength": 0.8555238246917725,
+        "loudness": 0.9347239136695862,
+        "danceability": 1.2187360525131226,
+        "spectral_centroid": 1568.3599853515625,
+        "spectral_rolloff": 1875.76806640625,
+        "dissonance": 0.46007633209228516,
+        "onset_rate": 4.000034332275391
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 14.0
+        },
+        {
+          "name": "verse",
+          "start": 14.0,
+          "end": 45.0
+        },
+        {
+          "name": "build-up",
+          "start": 45.0,
+          "end": 75.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 75.0,
+          "end": 89.0
+        },
+        {
+          "name": "verse1",
+          "start": 89.0,
+          "end": 103.0
+        },
+        {
+          "name": "chorus",
+          "start": 103.0,
+          "end": 120.0
+        },
+        {
+          "name": "build-up1",
+          "start": 120.0,
+          "end": 135.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 135.0,
+          "end": 163.0
+        },
+        {
+          "name": "verse2",
+          "start": 163.0,
+          "end": 180.0
+        },
+        {
+          "name": "build-up2",
+          "start": 180.0,
+          "end": 195.0
+        },
+        {
+          "name": "beat-drop2",
+          "start": 195.0,
+          "end": 206.0
+        },
+        {
+          "name": "outro",
+          "start": 206.0,
+          "end": 211.0
+        }
+      ]
+    }
+  ]
+}
