@@ -12,7 +12,7 @@ import uvicorn
 
 app = FastAPI()
 llm = LlamaLLM()
-music_library = MusicLibrary('music_data/audio', 'music_data/metadata.json')
+music_library = MusicLibrary('music_data/audio', 'music_data/segmented_alex_pre_analysis_results.json')
 audio_manager = AudioManager(music_library)
 
 # depending on which port the front end is running on, just adjust this part
