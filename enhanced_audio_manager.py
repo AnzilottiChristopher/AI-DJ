@@ -70,6 +70,9 @@ class EnhancedAudioManager:
         self.pending_transition: Optional[TransitionPlan] = None
         self.transition_audio: Optional[Dict] = None
         
+        # WebSocket reference for sending transition notifications
+        self._websocket = None
+        
         if model_path:
             try:
                 self.mixer = TransitionMixer(model_path, self.sample_rate)
@@ -177,12 +180,25 @@ class EnhancedAudioManager:
                 )
                 
                 print(f"[MIXER] Transition ready: will start at {plan.transition_start_time:.1f}s")
+                
+                # *** SEND NOTIFICATION TO FRONTEND ***
+                if self._websocket:
+                    try:
+                        await self._websocket.send_json({
+                            "type": "transition_planned",
+                            "transition": plan.to_dict()
+                        })
+                        print(f"[MIXER] Sent transition_planned to frontend")
+                    except Exception as e:
+                        print(f"[MIXER] Could not send transition notification: {e}")
             else:
                 print("[MIXER] Could not compute transition, will use simple cut")
                 self.pending_transition = None
                 
         except Exception as e:
             print(f"[MIXER] Error preparing transition: {e}")
+            import traceback
+            traceback.print_exc()
             self.pending_transition = None
     
     def get_next_track(self) -> Optional[TrackInfo]:
@@ -197,6 +213,9 @@ class EnhancedAudioManager:
         
         Handles both normal playback and transitions.
         """
+        # Store websocket reference for transition notifications
+        self._websocket = websocket
+        
         try:
             # Load audio if not already loaded
             if track_info.audio is None:
@@ -360,6 +379,9 @@ class EnhancedAudioManager:
     async def play_queue(self, websocket):
         """Play all songs in queue with transitions."""
         self.state = PlaybackState.PLAYING
+        
+        # Store websocket reference
+        self._websocket = websocket
         
         while self.state != PlaybackState.STOPPED:
             if not self.current_track:
