@@ -254,6 +254,68 @@ class TransitionMixer:
             song_b_start_offset=0.0
         )
     
+    def _soft_clip(self, audio: np.ndarray, threshold: float = 0.95) -> np.ndarray:
+        """
+        Apply soft clipping to prevent harsh digital distortion.
+        
+        Uses tanh-based soft clipping which smoothly compresses peaks
+        that exceed the threshold, sounding much more natural than hard clipping.
+        
+        Args:
+            audio: Audio array (can be mono or stereo)
+            threshold: Level above which soft clipping begins (0.0-1.0)
+            
+        Returns:
+            Soft-clipped audio array
+        """
+        # Vectorized soft clipping using tanh
+        result = np.copy(audio).astype(np.float64)
+        
+        # Find samples that exceed threshold
+        mask = np.abs(result) > threshold
+        
+        if np.any(mask):
+            # Apply soft clipping only to samples that need it
+            sign = np.sign(result[mask])
+            excess = np.abs(result[mask]) - threshold
+            # Smooth compression using tanh - asymptotes to 1.0
+            headroom = 1.0 - threshold
+            compressed = threshold + headroom * np.tanh(excess / (headroom + 1e-10))
+            result[mask] = sign * compressed
+        
+        return result
+    
+    def _apply_micro_fade(self, audio: np.ndarray, fade_samples: int = 64) -> np.ndarray:
+        """
+        Apply tiny fade in/out at the boundaries to prevent clicks.
+        
+        Args:
+            audio: Audio array
+            fade_samples: Number of samples for the micro fade (default ~1.5ms at 44.1kHz)
+            
+        Returns:
+            Audio with micro fades applied at boundaries
+        """
+        if len(audio) < fade_samples * 2:
+            return audio
+            
+        result = np.copy(audio).astype(np.float64)
+        
+        # Create smooth fade curves (quadratic for smoother attack/release)
+        fade_in = np.linspace(0, 1, fade_samples) ** 2
+        fade_out = np.linspace(1, 0, fade_samples) ** 2
+        
+        # Handle stereo
+        if len(result.shape) == 2:
+            fade_in = fade_in[:, np.newaxis]
+            fade_out = fade_out[:, np.newaxis]
+        
+        # Apply fades
+        result[:fade_samples] *= fade_in
+        result[-fade_samples:] *= fade_out
+        
+        return result
+
     def create_crossfade(self, 
                          audio_a: np.ndarray,
                          audio_b: np.ndarray,
@@ -283,12 +345,12 @@ class TransitionMixer:
         transition_start_sample = min(transition_start_sample, len(audio_a) - crossfade_samples)
         transition_start_sample = max(0, transition_start_sample)
         
-        # Extract the segments to crossfade
-        segment_a = audio_a[transition_start_sample:transition_start_sample + crossfade_samples]
+        # Extract the segments to crossfade (as float64 for precision)
+        segment_a = audio_a[transition_start_sample:transition_start_sample + crossfade_samples].astype(np.float64)
         
         # For song B, we start at the entry segment
         song_b_end_sample = min(song_b_start_sample + crossfade_samples, len(audio_b))
-        segment_b = audio_b[song_b_start_sample:song_b_end_sample]
+        segment_b = audio_b[song_b_start_sample:song_b_end_sample].astype(np.float64)
         
         # Ensure both segments are the same length
         min_len = min(len(segment_a), len(segment_b))
@@ -311,6 +373,16 @@ class TransitionMixer:
         
         # Apply crossfade
         crossfade_audio = (segment_a * fade_out) + (segment_b * fade_in)
+        
+        # CRITICAL: Apply soft clipping to prevent overflow distortion
+        # This is the main fix for the static/crackling sound
+        crossfade_audio = self._soft_clip(crossfade_audio, threshold=0.95)
+        
+        # Apply micro-fades at boundaries to prevent clicks
+        crossfade_audio = self._apply_micro_fade(crossfade_audio, fade_samples=128)
+        
+        # Final safety clamp to ensure we're in valid range
+        crossfade_audio = np.clip(crossfade_audio, -1.0, 1.0)
         
         # Where song B continues after crossfade
         song_b_continue_sample = song_b_start_sample + min_len
@@ -339,6 +411,24 @@ class TransitionMixer:
         
         # Post-transition: everything in song B after the crossfade
         post_transition = audio_b[continue_sample:]
+        
+        # Apply micro-fade to the boundaries for seamless connection
+        # Fade out the end of pre_transition
+        fade_samples = 128
+        if len(pre_transition) > fade_samples:
+            pre_transition = pre_transition.astype(np.float64)
+            fade_out = np.linspace(1, 0, fade_samples) ** 2
+            if len(pre_transition.shape) == 2:
+                fade_out = fade_out[:, np.newaxis]
+            pre_transition[-fade_samples:] *= fade_out
+        
+        # Fade in the beginning of post_transition  
+        if len(post_transition) > fade_samples:
+            post_transition = post_transition.astype(np.float64)
+            fade_in = np.linspace(0, 1, fade_samples) ** 2
+            if len(post_transition.shape) == 2:
+                fade_in = fade_in[:, np.newaxis]
+            post_transition[:fade_samples] *= fade_in
         
         return {
             'pre_transition': pre_transition,
