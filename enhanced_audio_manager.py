@@ -225,7 +225,8 @@ class EnhancedAudioManager:
             self._ensure_segments(track_info.track_data, track_info.duration)
             
             # Convert to int16 for transmission
-            audio_int16 = (track_info.audio * 32767).astype(np.int16)
+            audio_clipped = np.clip(track_info.audio, -1.0, 1.0)
+            audio_int16 = (audio_clipped * 32767).astype(np.int16) 
             
             # Send track metadata
             await websocket.send_json({
@@ -309,7 +310,10 @@ class EnhancedAudioManager:
         try:
             # Stream the crossfade audio
             crossfade = self.transition_audio['crossfade']
-            crossfade_int16 = (crossfade * 32767).astype(np.int16)
+            
+            # CRITICAL FIX: Clip audio before int16 conversion to prevent overflow
+            crossfade_clipped = np.clip(crossfade, -1.0, 1.0)
+            crossfade_int16 = (crossfade_clipped * 32767).astype(np.int16)
             
             for i in range(0, len(crossfade_int16), self.chunk_size):
                 if self.state == PlaybackState.STOPPED:
@@ -349,7 +353,10 @@ class EnhancedAudioManager:
                 
                 # Stream remaining audio
                 post_audio = self.transition_audio['post_transition']
-                post_int16 = (post_audio * 32767).astype(np.int16)
+                
+                # CRITICAL FIX: Clip audio before int16 conversion
+                post_clipped = np.clip(post_audio, -1.0, 1.0)
+                post_int16 = (post_clipped * 32767).astype(np.int16)
                 
                 self.samples_sent = 0
                 self.current_position = self.transition_audio['timing']['song_b_continue_sample'] / self.sample_rate
@@ -374,7 +381,7 @@ class EnhancedAudioManager:
             
         except Exception as e:
             print(f"[TRANSITION ERROR] {e}")
-            self.state = PlaybackState.PLAYING
+            self.state = PlaybackState.PLAYING 
     
     async def play_queue(self, websocket):
         """Play all songs in queue with transitions."""
