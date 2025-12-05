@@ -15,8 +15,12 @@ app = FastAPI(title="AI DJ Backend")
 llm = LlamaLLM()
 music_library = MusicLibrary('music_data/audio', 'music_data/segmented_alex_pre_analysis_results_converted.json')
 
-MODEL_PATH = 'models/dj_transition_model'  # or wherver
-audio_manager = AudioManager(music_library, model_path=MODEL_PATH)
+MODEL_PATH = 'models/dj_transition_model'  # or wherever your model is
+audio_manager = AudioManager(
+    music_library, 
+    model_path=MODEL_PATH,
+    enable_auto_play=True  # Enable auto-play feature
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -70,6 +74,7 @@ async def audio_stream(websocket: WebSocket):
     Handles:
     - Song queue requests via LLM
     - Audio streaming with transitions
+    - Auto-play of similar songs
     - Playback status updates
     """
     await websocket.accept()
@@ -137,7 +142,7 @@ async def audio_stream(websocket: WebSocket):
                 elif intent == 'help':
                     await websocket.send_json({
                         "type": "help",
-                        "message": "You can say things like: 'Play Wake Me Up by Avicii', 'Queue Stargazing', 'Stop the music'"
+                        "message": "You can say things like: 'Play Wake Me Up by Avicii', 'Queue Stargazing', 'Stop the music'. I'll automatically queue similar songs to keep the music going!"
                     })
                 
                 else:
@@ -172,7 +177,7 @@ async def audio_stream(websocket: WebSocket):
 
 @app.get("/api/status")
 async def get_status():
-    """Get current playback status."""
+    """Get current playback status including auto-play info."""
     return audio_manager.get_queue_status()
 
 
@@ -188,6 +193,26 @@ async def get_library():
             "key": data['features'].get('key'),
         })
     return {"songs": songs}
+
+
+@app.post("/api/auto-play/toggle")
+async def toggle_auto_play():
+    """Toggle auto-play feature on/off."""
+    audio_manager.enable_auto_play = not audio_manager.enable_auto_play
+    return {
+        "auto_play_enabled": audio_manager.enable_auto_play,
+        "message": f"Auto-play {'enabled' if audio_manager.enable_auto_play else 'disabled'}"
+    }
+
+
+@app.get("/api/auto-play/status")
+async def get_auto_play_status():
+    """Get auto-play status and recently played songs."""
+    return {
+        "enabled": audio_manager.enable_auto_play,
+        "recently_played": audio_manager.recently_played,
+        "similarity_service_ready": audio_manager.similarity_service is not None
+    }
 
 
 if __name__ == "__main__":

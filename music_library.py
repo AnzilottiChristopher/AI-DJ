@@ -1,9 +1,10 @@
 # so when the LLM requests a specific song, this class will search the files and load it to be played
+# so when the LLM requests a specific song, this class will search the files and load it to be played
 import json
 from pathlib import Path
 
 class MusicLibrary:
-    def __init__(self,audio_path, metadata_path):
+    def __init__(self, audio_path, metadata_path):
         self.audio_path = Path(audio_path)
         self.metadata = self._load_metadata(metadata_path)
         self.index = self._build_idx()
@@ -28,7 +29,7 @@ class MusicLibrary:
                 'filename': song['song_name'],
                 'path': self.audio_path / song['song_name'],
                 'features': song['features'],
-                # 'segments': song['segments']
+                'segments': song.get('segments', [])
             }
         return idx
     
@@ -56,6 +57,6 @@ class MusicLibrary:
         
         return None
     
-    
-            
-        
+    def get_all_songs(self):
+        """Return all songs in the library."""
+        return list(self.index.keys())
