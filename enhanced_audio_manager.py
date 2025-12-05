@@ -4,17 +4,23 @@ Enhanced Audio Manager with DJ Transition Support
 This module manages audio playback with intelligent mixing between tracks.
 When a new song is queued while one is playing, it computes the optimal
 transition and streams the mixed audio seamlessly.
+
+Features:
+- Auto-play: Automatically queues similar songs when queue is empty
+- Smart transitions: Uses ML model to compute optimal crossfade points
+- User override: User requests always take priority over auto-queued songs
 """
 
 import asyncio
 import soundfile as sf
 import numpy as np
 from pathlib import Path
-from typing import Optional, List, Dict, Any
-from dataclasses import dataclass
+from typing import Optional, List, Dict, Any, Set
+from dataclasses import dataclass, field
 from enum import Enum
 
 from transition_mixer import TransitionMixer, TransitionPlan, generate_placeholder_segments
+from song_similarity import SongSimilarityService
 
 
 class PlaybackState(Enum):
@@ -29,28 +35,32 @@ class TrackInfo:
     title: str
     artist: str
     track_data: Dict
+    song_key: str = ""  # Key in music library index
     audio: Optional[np.ndarray] = None
     duration: float = 0.0
+    is_auto_queued: bool = False  # True if auto-queued by similarity
 
 
 class EnhancedAudioManager:
     """
-    Audio manager with intelligent DJ transitions.
+    Audio manager with intelligent DJ transitions and auto-play.
     
     Key features:
     - Streams audio via WebSocket
     - Computes optimal transitions using ML model
     - Creates smooth crossfades between tracks
+    - Auto-queues similar songs when queue is empty
     - Tracks playback position for timing
     """
     
-    def __init__(self, music_library, model_path: str = None):
+    def __init__(self, music_library, model_path: str = None, enable_auto_play: bool = True):
         """
         Initialize the audio manager.
         
         Args:
             music_library: MusicLibrary instance for looking up songs
             model_path: Path to trained transition model (optional, enables smart mixing)
+            enable_auto_play: Whether to automatically queue similar songs
         """
         self.music_library = music_library
         self.queue: List[TrackInfo] = []
@@ -70,9 +80,16 @@ class EnhancedAudioManager:
         self.pending_transition: Optional[TransitionPlan] = None
         self.transition_audio: Optional[Dict] = None
         
+        # Auto-play / similarity
+        self.enable_auto_play = enable_auto_play
+        self.similarity_service: Optional[SongSimilarityService] = None
+        self.recently_played: List[str] = []  # Track song keys to avoid repeats
+        self.max_history = 10  # How many songs to remember for avoiding repeats
+        
         # WebSocket reference for sending transition notifications
         self._websocket = None
         
+        # Initialize transition mixer
         if model_path:
             try:
                 self.mixer = TransitionMixer(model_path, self.sample_rate)
@@ -80,6 +97,15 @@ class EnhancedAudioManager:
             except Exception as e:
                 print(f"[AUDIO] Could not load transition mixer: {e}")
                 self.mixer = None
+        
+        # Initialize similarity service for auto-play
+        if enable_auto_play:
+            try:
+                self.similarity_service = SongSimilarityService(music_library)
+                print(f"[AUDIO] Auto-play enabled with similarity service")
+            except Exception as e:
+                print(f"[AUDIO] Could not initialize similarity service: {e}")
+                self.similarity_service = None
     
     def _load_audio(self, track_data: Dict) -> tuple[np.ndarray, float]:
         """Load audio file and return (audio_array, duration)."""
@@ -104,12 +130,86 @@ class EnhancedAudioManager:
             print(f"[AUDIO] Generated placeholder segments for track")
         return track_data
     
+    def _get_song_key(self, track_data: Dict) -> str:
+        """Get the song key from track data for similarity lookups."""
+        if self.similarity_service:
+            key = self.similarity_service.get_song_key_from_track_data(track_data)
+            if key:
+                return key
+        return ""
+    
+    def _add_to_history(self, song_key: str):
+        """Add a song to the recently played history."""
+        if song_key and song_key not in self.recently_played:
+            self.recently_played.append(song_key)
+            # Trim history if too long
+            if len(self.recently_played) > self.max_history:
+                self.recently_played.pop(0)
+    
+    def _auto_queue_next_song(self) -> bool:
+        """
+        Automatically queue the next similar song.
+        
+        Returns True if a song was successfully queued.
+        """
+        if not self.enable_auto_play or not self.similarity_service:
+            return False
+        
+        if not self.current_track or not self.current_track.song_key:
+            return False
+        
+        # Don't auto-queue if there's already something in the queue
+        if self.queue:
+            return False
+        
+        # Find the next similar song
+        next_key = self.similarity_service.get_next_song(
+            self.current_track.song_key,
+            exclude_keys=self.recently_played
+        )
+        
+        if not next_key:
+            print("[AUTO-PLAY] No similar songs available")
+            return False
+        
+        # Get the track data from the library
+        track_data = self.music_library.index.get(next_key)
+        if not track_data:
+            print(f"[AUTO-PLAY] Could not find track data for: {next_key}")
+            return False
+        
+        # Get properly formatted title and artist from similarity service
+        song_info = self.similarity_service.get_song_info(next_key)
+        if song_info:
+            title = song_info['title']
+            artist = song_info['artist']
+        else:
+            # Fallback: try to parse from filename directly
+            from song_similarity import parse_title_artist_from_filename
+            filename = track_data.get('filename', next_key)
+            title, artist = parse_title_artist_from_filename(filename)
+        
+        track_info = TrackInfo(
+            title=title,
+            artist=artist,
+            track_data=track_data,
+            song_key=next_key,
+            is_auto_queued=True
+        )
+        
+        self.queue.append(track_info)
+        print(f"[AUTO-PLAY] Queued: {title} by {artist}")
+        
+        return True
+    
     def add_to_queue(self, title: str, artist: str) -> bool:
         """
         Add a song to the queue.
         
         If a song is currently playing and mixer is available,
         this will trigger transition computation.
+        
+        User-requested songs always override auto-queued songs.
         
         Returns True if song was found and added.
         """
@@ -119,13 +219,36 @@ class EnhancedAudioManager:
             print(f"[QUEUE] Not found: {title}")
             return False
         
+        # Get song key for similarity tracking
+        song_key = self._get_song_key(track_data)
+        
         track_info = TrackInfo(
             title=title,
             artist=artist or "Unknown Artist",
-            track_data=track_data
+            track_data=track_data,
+            song_key=song_key,
+            is_auto_queued=False  # User requested
         )
         
-        self.queue.append(track_info)
+        # If there's an auto-queued song in the queue, replace it
+        if self.queue and self.queue[0].is_auto_queued:
+            old_track = self.queue[0]
+            print(f"[QUEUE] Replacing auto-queued '{old_track.title}' with user request '{title}'")
+            self.queue[0] = track_info
+            # Clear any pending transition since we're changing the next song
+            self.pending_transition = None
+            self.transition_audio = None
+        else:
+            # Queue is empty or has user-requested songs, just append
+            # But since we're limiting to 1 song, replace if needed
+            if self.queue:
+                print(f"[QUEUE] Replacing '{self.queue[0].title}' with '{title}'")
+                self.queue[0] = track_info
+                self.pending_transition = None
+                self.transition_audio = None
+            else:
+                self.queue.append(track_info)
+        
         print(f"[QUEUE] Added: {title}" + (f" by {artist}" if artist else ""))
         
         # If we're playing and have a mixer, prepare the transition
@@ -181,12 +304,17 @@ class EnhancedAudioManager:
                 
                 print(f"[MIXER] Transition ready: will start at {plan.transition_start_time:.1f}s")
                 
-                # *** SEND NOTIFICATION TO FRONTEND ***
+                # Send notification to frontend
                 if self._websocket:
                     try:
                         await self._websocket.send_json({
                             "type": "transition_planned",
-                            "transition": plan.to_dict()
+                            "transition": plan.to_dict(),
+                            "next_track": {
+                                "title": next_track.title,
+                                "artist": next_track.artist,
+                                "is_auto_queued": next_track.is_auto_queued
+                            }
                         })
                         print(f"[MIXER] Sent transition_planned to frontend")
                     except Exception as e:
@@ -207,6 +335,23 @@ class EnhancedAudioManager:
             return self.queue.pop(0)
         return None
     
+    async def _notify_auto_queue(self, track_info: TrackInfo):
+        """Notify frontend about auto-queued track."""
+        if self._websocket:
+            try:
+                await self._websocket.send_json({
+                    "type": "auto_queued",
+                    "message": f"Up next: {track_info.title}",
+                    "track": {
+                        "title": track_info.title,
+                        "artist": track_info.artist,
+                        "is_auto_queued": True
+                    },
+                    "queue": self.get_queue_status()
+                })
+            except Exception as e:
+                print(f"[AUTO-PLAY] Could not send notification: {e}")
+    
     async def stream_audio(self, websocket, track_info: TrackInfo):
         """
         Stream audio data to WebSocket.
@@ -224,6 +369,19 @@ class EnhancedAudioManager:
             # Ensure segments exist
             self._ensure_segments(track_info.track_data, track_info.duration)
             
+            # Add to history for similarity exclusion
+            if track_info.song_key:
+                self._add_to_history(track_info.song_key)
+            
+            # Auto-queue the next song if queue is empty
+            if self._auto_queue_next_song():
+                # Notify frontend about the auto-queued track
+                if self.queue:
+                    await self._notify_auto_queue(self.queue[0])
+                    # Prepare transition for the auto-queued song
+                    if self.mixer:
+                        await self._prepare_transition(self.queue[0])
+            
             # Convert to int16 for transmission
             audio_clipped = np.clip(track_info.audio, -1.0, 1.0)
             audio_int16 = (audio_clipped * 32767).astype(np.int16) 
@@ -237,7 +395,8 @@ class EnhancedAudioManager:
                     "bpm": track_info.track_data['features'].get('bpm', 120),
                     "key": track_info.track_data['features'].get('key', 'C'),
                     "duration": track_info.duration,
-                    "sample_rate": self.sample_rate
+                    "sample_rate": self.sample_rate,
+                    "is_auto_queued": track_info.is_auto_queued
                 }
             })
             
@@ -337,6 +496,15 @@ class EnhancedAudioManager:
                 # Update current track
                 self.current_track = next_track
                 
+                # Add to history
+                if next_track.song_key:
+                    self._add_to_history(next_track.song_key)
+                
+                # Auto-queue the next song now that we've moved to a new track
+                if self._auto_queue_next_song():
+                    if self.queue:
+                        await self._notify_auto_queue(self.queue[0])
+                
                 # Send new track info
                 await websocket.send_json({
                     "type": "track_start",
@@ -347,7 +515,8 @@ class EnhancedAudioManager:
                         "key": next_track.track_data['features'].get('key', 'C'),
                         "duration": next_track.duration,
                         "sample_rate": self.sample_rate,
-                        "is_continuation": True  # Frontend knows we're mid-song
+                        "is_continuation": True,  # Frontend knows we're mid-song
+                        "is_auto_queued": next_track.is_auto_queued
                     }
                 })
                 
@@ -373,6 +542,10 @@ class EnhancedAudioManager:
                     await asyncio.sleep(self.chunk_size / self.sample_rate / 2 * 0.9)
                 
                 await websocket.send_json({"type": "track_end"})
+                
+                # Prepare transition for the next auto-queued song
+                if self.queue and self.mixer:
+                    await self._prepare_transition(self.queue[0])
             
             # Clear transition state
             self.pending_transition = None
@@ -398,7 +571,8 @@ class EnhancedAudioManager:
                 await self.stream_audio(websocket, self.current_track)
                 self.current_track = None
             else:
-                # Queue is empty
+                # Queue is empty - with auto-play this shouldn't happen often
+                # but if similarity service isn't working, we end here
                 break
         
         self.state = PlaybackState.STOPPED
@@ -421,14 +595,24 @@ class EnhancedAudioManager:
         """Get current queue and playback status."""
         return {
             "state": self.state.value,
-            "current_track": self.current_track.title if self.current_track else None,
+            "current_track": {
+                "title": self.current_track.title,
+                "artist": self.current_track.artist,
+                "is_auto_queued": self.current_track.is_auto_queued
+            } if self.current_track else None,
             "current_position": round(self.current_position, 1),
             "pending_transition": self.pending_transition.to_dict() if self.pending_transition else None,
             "queue_length": len(self.queue),
             "queue": [
-                {"title": t.title, "artist": t.artist}
+                {
+                    "title": t.title, 
+                    "artist": t.artist,
+                    "is_auto_queued": t.is_auto_queued
+                }
                 for t in self.queue
-            ]
+            ],
+            "auto_play_enabled": self.enable_auto_play,
+            "recently_played": self.recently_played[-5:]  # Last 5 songs
         }
 
 
@@ -436,29 +620,30 @@ class EnhancedAudioManager:
 class AudioManager(EnhancedAudioManager):
     """
     Drop-in replacement for the original AudioManager.
-    Adds transition support while maintaining the same API.
+    Adds transition support and auto-play while maintaining the same API.
     """
     
-    def __init__(self, music_library, model_path: str = None):
+    def __init__(self, music_library, model_path: str = None, enable_auto_play: bool = True):
         # Try to find model in common locations
         if model_path is None:
             possible_paths = [
                 'trained_dj_model',
                 'models/trained_dj_model',
                 '../models/trained_dj_model',
+                'models/dj_transition_model',
             ]
             for path in possible_paths:
                 try:
-                    super().__init__(music_library, path)
+                    super().__init__(music_library, path, enable_auto_play)
                     return
                 except:
                     continue
             
             # No model found, initialize without mixing
             print("[AUDIO] No transition model found, mixing disabled")
-            super().__init__(music_library, None)
+            super().__init__(music_library, None, enable_auto_play)
         else:
-            super().__init__(music_library, model_path)
+            super().__init__(music_library, model_path, enable_auto_play)
     
     @property
     def is_playing(self) -> bool:
