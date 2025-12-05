@@ -373,20 +373,12 @@ class EnhancedAudioManager:
             if track_info.song_key:
                 self._add_to_history(track_info.song_key)
             
-            # Auto-queue the next song if queue is empty
-            if self._auto_queue_next_song():
-                # Notify frontend about the auto-queued track
-                if self.queue:
-                    await self._notify_auto_queue(self.queue[0])
-                    # Prepare transition for the auto-queued song
-                    if self.mixer:
-                        await self._prepare_transition(self.queue[0])
-            
             # Convert to int16 for transmission
             audio_clipped = np.clip(track_info.audio, -1.0, 1.0)
             audio_int16 = (audio_clipped * 32767).astype(np.int16) 
             
-            # Send track metadata
+            # Send track metadata FIRST (before auto-queue messages)
+            # This ensures frontend processes track_start before receiving queued track info
             await websocket.send_json({
                 "type": "track_start",
                 "track": {
@@ -399,6 +391,16 @@ class EnhancedAudioManager:
                     "is_auto_queued": track_info.is_auto_queued
                 }
             })
+            
+            # Auto-queue the next song AFTER track_start is sent
+            # This way the queued track won't be cleared by onTrackStart
+            if self._auto_queue_next_song():
+                # Notify frontend about the auto-queued track
+                if self.queue:
+                    await self._notify_auto_queue(self.queue[0])
+                    # Prepare transition for the auto-queued song
+                    if self.mixer:
+                        await self._prepare_transition(self.queue[0]) 
             
             # Reset position tracking
             self.samples_sent = 0
