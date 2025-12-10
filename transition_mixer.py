@@ -56,8 +56,9 @@ class TransitionPlan:
             'crossfade_duration': self.crossfade_duration,
             'transition_start_time': round(self.transition_start_time, 2),
             'song_b_start_offset': round(self.song_b_start_offset, 2),
-        }
-
+        "start_time": self.transition_start_time,
+        "transition_start_time": self.transition_start_time,
+    }
 
 class TransitionMixer:
     """
