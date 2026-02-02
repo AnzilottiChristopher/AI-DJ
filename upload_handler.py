@@ -215,10 +215,22 @@ async def upload_song(file: UploadFile = File(...)):
         normalized_name = normalize_filename(artist, title)
         audio_path = AUDIO_DIR / normalized_name
         
+        # Check if song already exists BEFORE doing any processing
         segmented_data = load_segmented_songs()
         if any(s['song_name'] == normalized_name for s in segmented_data.get('songs', [])):
-            raise HTTPException(409, f"Song exists: {title} by {artist}")
+            raise HTTPException(
+                status_code=409,
+                detail=f"Song already exists: '{title}' by {artist}. Please delete it first if you want to re-upload."
+            )
         
+        # Also check if audio file exists (safety check)
+        if audio_path.exists():
+            raise HTTPException(
+                status_code=409,
+                detail=f"Audio file already exists: {normalized_name}. Please delete it first."
+            )
+        
+        # Save uploaded file
         with open(audio_path, 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
         
