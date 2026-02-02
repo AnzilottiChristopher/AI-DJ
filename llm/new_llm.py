@@ -5,9 +5,11 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import json, re
 
+
 class LlamaLLM:
     def __init__(self):
-        self.llm = ChatOllama(model="llama3.2:3b", temperature=0.3, repeat_penalty=1.1)
+        # self.llm = ChatOllama(model="llama3.2:3b", temperature=0.3, repeat_penalty=1.1)
+        self.llm = ChatOllama(model="llama3:8b", temperature=0.3, repeat_penalty=1.1)
         self._queue = []
         self.prompt = ChatPromptTemplate.from_template(
             """You are a JSON-only response bot for a DJ app. Classify the user's intent and extract song info if applicable.
@@ -50,17 +52,25 @@ class LlamaLLM:
             "queue_song": self.cmd_queue_song,
             "none": self.cmd_none,
         }
-        
 
     # ---------- commands ----------
-    def cmd_hello(self): print("[CMD] Hello! This is the hello command.")
-    def cmd_start_dj(self): print("[CMD] Starting DJ pipeline... (placeholder)")
-    def cmd_stop_dj(self): print("[CMD] Stopping DJ pipeline... (placeholder)")
-    def cmd_help(self): print("[CMD] Available commands: hello, start_dj, stop_dj, help, queue_song")
-    def cmd_none(self): print("[NO ACTION] No matching command.")
+    def cmd_hello(self):
+        print("[CMD] Hello! This is the hello command.")
+
+    def cmd_start_dj(self):
+        print("[CMD] Starting DJ pipeline... (placeholder)")
+
+    def cmd_stop_dj(self):
+        print("[CMD] Stopping DJ pipeline... (placeholder)")
+
+    def cmd_help(self):
+        print("[CMD] Available commands: hello, start_dj, stop_dj, help, queue_song")
+
+    def cmd_none(self):
+        print("[NO ACTION] No matching command.")
 
     def queue_track(self, title: Optional[str], artist: Optional[str]):
-        if not title: 
+        if not title:
             print("[WARN] No title extracted; ignoring.")
             return False
         self._queue.append({"title": title, "artist": artist})
@@ -72,7 +82,7 @@ class LlamaLLM:
         if ok:
             print(f"[CMD] Queued: {title}" + (f" — {artist}" if artist else ""))
         self.print_queue()
-    
+
     def print_queue(self):
         if not self._queue:
             print("[QUEUE] The queue is currently empty.")
@@ -102,41 +112,50 @@ class LlamaLLM:
     # ---------- helpers ----------
     def extract_json(self, s: str) -> dict:
         if not s or not s.strip():
-            return {"intent": "none", "reason": "Empty model output.", "song": {"title": None, "artist": None}}
-        
+            return {
+                "intent": "none",
+                "reason": "Empty model output.",
+                "song": {"title": None, "artist": None},
+            }
+
         # Print raw output for debugging
         # print(f"[DEBUG] Raw LLM output: {s[:200]}...")  # First 200 chars
-        
+
         # Try direct parse first
         try:
             return json.loads(s)
         except json.JSONDecodeError:
             pass
-        
+
         # Remove markdown code fences
         s_clean = s.strip()
         if s_clean.startswith("```"):
             # Remove ```json or ``` at start
-            s_clean = re.sub(r'^```(?:json)?\s*\n?', '', s_clean)
+            s_clean = re.sub(r"^```(?:json)?\s*\n?", "", s_clean)
             # Remove ``` at end
-            s_clean = re.sub(r'\n?```\s*$', '', s_clean)
-        
+            s_clean = re.sub(r"\n?```\s*$", "", s_clean)
+
         # Try parsing cleaned version
         try:
             return json.loads(s_clean.strip())
         except json.JSONDecodeError:
             pass
-        
+
         # Search for JSON object anywhere in string
-        m = re.search(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', s, re.S)
+        m = re.search(r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}", s, re.S)
         if m:
             try:
                 return json.loads(m.group(0))
             except json.JSONDecodeError:
                 pass
-    
+
         print(f"[ERROR] Could not parse JSON from: {s}")
-        return {"intent": "none", "reason": "Could not parse JSON.", "song": {"title": None, "artist": None}}
+        return {
+            "intent": "none",
+            "reason": "Could not parse JSON.",
+            "song": {"title": None, "artist": None},
+        }
+
     # ---------- API ----------
     # def classify(self, text: str) -> dict:
     #     print("Classifying prompt!")
@@ -161,16 +180,16 @@ class LlamaLLM:
         # print(f"[DEBUG] CLASSIFY CALLED")
         # print(f"[DEBUG] Input text: '{text}'")
         # print("="*50)
-        
+
         # Invoke the chain
         raw = self.chain.invoke({"user_input": text})
-        
+
         # print(f"[DEBUG] Raw LLM output (full): '{raw}'")
         # print("="*50)
-        
+
         data = self.extract_json(raw)
         print(f"[DEBUG] Parsed JSON: {data}")
-        
+
         # normalize / defaults
         intent = data.get("intent", "none")
         if intent not in self.COMMANDS:
@@ -184,10 +203,10 @@ class LlamaLLM:
             "reason": data.get("reason", ""),
             "song": {"title": title, "artist": artist},
         }
-        
+
         # print(f"[DEBUG] Final result: {result}")
         # print("="*50)
-        
+
         return result
 
     def dispatch(self, intent: str, *, song: Optional[dict] = None):

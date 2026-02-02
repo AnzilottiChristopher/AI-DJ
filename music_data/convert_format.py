@@ -1,6 +1,6 @@
 import json
 
-with open("segmented_alex_pre_analysis_results.json", "r") as f:
+with open("segmented_sebastian_pre_analysis_results.json", "r") as f:
     data = json.load(f)
 
 for song in data["songs"]:
@@ -16,5 +16,5 @@ for song in data["songs"]:
 
     song["segments"] = new_segments
 
-with open("segmented_alex_pre_analysis_results_converted.json", "w") as f:
+with open("segmented_sebastian_pre_analysis_results_converted.json", "w") as f:
     json.dump(data, f, indent=2)
