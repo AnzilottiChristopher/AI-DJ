@@ -2454,6 +2454,62 @@
           "end": 266.8901587301587
         }
       ]
+    },
+    {
+      "song_name": "Pepas_Farruko.wav",
+      "features": {},
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 27.5
+        },
+        {
+          "name": "build-up",
+          "start": 27.5,
+          "end": 32.5
+        },
+        {
+          "name": "intro1",
+          "start": 32.5,
+          "end": 35.0
+        },
+        {
+          "name": "build-up1",
+          "start": 35.0,
+          "end": 37.5
+        },
+        {
+          "name": "intro2",
+          "start": 37.5,
+          "end": 40.0
+        },
+        {
+          "name": "build-up2",
+          "start": 40.0,
+          "end": 227.5
+        },
+        {
+          "name": "beat-drop",
+          "start": 227.5,
+          "end": 265.0
+        },
+        {
+          "name": "outro",
+          "start": 265.0,
+          "end": 267.5
+        },
+        {
+          "name": "beat-drop1",
+          "start": 267.5,
+          "end": 277.5
+        },
+        {
+          "name": "outro1",
+          "start": 277.5,
+          "end": 287.85777777777776
+        }
+      ]
     }
   ]
 }

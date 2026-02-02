@@ -52,7 +52,8 @@ def extract_artist_title_from_filename(filename: str) -> Tuple[Optional[str], Op
 
 def normalize_filename(artist: str, title: str) -> str:
     """Convert to "Song-Title_Artist.wav" format."""
-    title_clean = re.sub(r'[^\w\s-]', '', title)
+    # Remove apostrophes and other special characters that cause search issues
+    title_clean = re.sub(r'[^\w\s-]', '', title)  # Removes apostrophes, quotes, etc.
     title_clean = re.sub(r'\s+', '-', title_clean.strip())
     
     artist_clean = re.sub(r'[^\w\s-]', '', artist)
@@ -240,6 +241,16 @@ async def upload_song(file: UploadFile = File(...)):
         
         segmented_data['songs'].append(new_song)
         save_segmented_songs(segmented_data)
+        
+        # Trigger library reload so song is immediately available
+        try:
+            import httpx
+            async with httpx.AsyncClient() as client:
+                await client.post("http://localhost:8000/api/library/reload", timeout=5.0)
+                print(f"[UPLOAD] Library reloaded - song now available")
+        except Exception as e:
+            print(f"[UPLOAD] Warning: Could not trigger library reload: {e}")
+            print("[UPLOAD] You may need to restart the server for the song to be available")
         
         return JSONResponse({
             "success": True,

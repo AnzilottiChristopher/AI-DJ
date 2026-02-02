@@ -6,6 +6,7 @@ from pathlib import Path
 class MusicLibrary:
     def __init__(self, audio_path, metadata_path):
         self.audio_path = Path(audio_path)
+        self.metadata_path = metadata_path
         self.metadata = self._load_metadata(metadata_path)
         self.index = self._build_idx()
     
@@ -32,6 +33,12 @@ class MusicLibrary:
                 'segments': song.get('segments', [])
             }
         return idx
+    def reload(self):
+        """Reload the library from disk (for newly uploaded songs)."""
+        print("[LIBRARY] Reloading from disk...")
+        self.metadata = self._load_metadata(self.metadata_path)
+        self.index = self._build_idx()
+        print(f"[LIBRARY] Reloaded {len(self.index)} songs")
     
     def get_by_filename(self, filename):
         normalized = filename.replace(".wav",'').lower().replace('-','')
@@ -43,7 +50,8 @@ class MusicLibrary:
             return None
         
         query = f"{title} {artist}".lower() if artist else title.lower()
-        query = query.replace('-', ' ')
+        query = query.replace('-', ' ').replace("'", "").replace("'", "")
+
         
         # return exact match
         if query in self.index:
