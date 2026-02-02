@@ -240,14 +240,7 @@ class EnhancedAudioManager:
             self.transition_audio = None
         else:
             # Queue is empty or has user-requested songs, just append
-            # But since we're limiting to 1 song, replace if needed
-            if self.queue:
-                print(f"[QUEUE] Replacing '{self.queue[0].title}' with '{title}'")
-                self.queue[0] = track_info
-                self.pending_transition = None
-                self.transition_audio = None
-            else:
-                self.queue.append(track_info)
+            self.queue.append(track_info)
         
         print(f"[QUEUE] Added: {title}" + (f" by {artist}" if artist else ""))
         
@@ -398,10 +391,11 @@ class EnhancedAudioManager:
                 # Notify frontend about the auto-queued track
                 if self.queue:
                     await self._notify_auto_queue(self.queue[0])
-                    # Prepare transition for the auto-queued song
-                    if self.mixer:
-                        await self._prepare_transition(self.queue[0]) 
-            
+
+            # Prepare transition to the next song in queue (whether user-queued or auto-queued)
+            if self.queue and self.mixer:
+                await self._prepare_transition(self.queue[0])
+
             # Reset position tracking
             self.samples_sent = 0
             self.current_position = 0.0
@@ -427,7 +421,7 @@ class EnhancedAudioManager:
                 self.samples_sent += len(chunk)
                 
                 # Pace the streaming
-                await asyncio.sleep(self.chunk_size / self.sample_rate / 2 * 0.9)
+                await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
             
             # Track ended naturally
             await websocket.send_json({"type": "track_end"})
@@ -482,7 +476,7 @@ class EnhancedAudioManager:
                     
                 chunk = crossfade_int16[i:i + self.chunk_size]
                 await websocket.send_bytes(chunk.tobytes())
-                await asyncio.sleep(self.chunk_size / self.sample_rate / 2 * 0.9)
+                await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
             
             # Transition complete - now stream the rest of song B
             await websocket.send_json({
@@ -495,18 +489,26 @@ class EnhancedAudioManager:
             # Get the next track from queue and stream remaining audio
             next_track = self.get_next_track()
             if next_track and self.transition_audio['post_transition'] is not None:
+                # Capture current transition data BEFORE preparing next transition
+                post_audio = self.transition_audio['post_transition']
+                song_b_continue_sample = self.transition_audio['timing']['song_b_continue_sample']
+
                 # Update current track
                 self.current_track = next_track
-                
+
                 # Add to history
                 if next_track.song_key:
                     self._add_to_history(next_track.song_key)
-                
+
                 # Auto-queue the next song now that we've moved to a new track
                 if self._auto_queue_next_song():
                     if self.queue:
                         await self._notify_auto_queue(self.queue[0])
-                
+
+                # Prepare transition to the next song in queue (whether user-queued or auto-queued)
+                if self.queue and self.mixer:
+                    await self._prepare_transition(self.queue[0])
+
                 # Send new track info
                 await websocket.send_json({
                     "type": "track_start",
@@ -521,30 +523,42 @@ class EnhancedAudioManager:
                         "is_auto_queued": next_track.is_auto_queued
                     }
                 })
-                
-                # Stream remaining audio
-                post_audio = self.transition_audio['post_transition']
-                
+
                 # CRITICAL FIX: Clip audio before int16 conversion
                 post_clipped = np.clip(post_audio, -1.0, 1.0)
                 post_int16 = (post_clipped * 32767).astype(np.int16)
-                
+
                 self.samples_sent = 0
-                self.current_position = self.transition_audio['timing']['song_b_continue_sample'] / self.sample_rate
-                
+                self.current_position = song_b_continue_sample / self.sample_rate
+
+                # Debug: Log post-transition streaming info
+                post_duration = len(post_int16) / self.sample_rate
+                next_transition_time = self.pending_transition.transition_start_time if self.pending_transition else None
+                print(f"[DEBUG] Starting post-transition for {self.current_track.title}")
+                print(f"[DEBUG]   Post-transition duration: {post_duration:.1f}s")
+                print(f"[DEBUG]   Current position starts at: {self.current_position:.1f}s")
+                print(f"[DEBUG]   Next transition at: {next_transition_time}s")
+
                 for i in range(0, len(post_int16), self.chunk_size):
                     if self.state == PlaybackState.STOPPED:
                         break
-                    
-                    self.current_position = (self.transition_audio['timing']['song_b_continue_sample'] + self.samples_sent) / self.sample_rate
-                    
+
+                    self.current_position = (song_b_continue_sample + self.samples_sent) / self.sample_rate
+
+                    # Check if we should start the next transition (for chained playlist songs)
+                    if self._should_start_transition():
+                        print(f"[DEBUG] Transition triggered at position {self.current_position:.1f}s")
+                        await self._stream_transition(websocket)
+                        return  # Recursive transition handles the rest
+
                     chunk = post_int16[i:i + self.chunk_size]
                     await websocket.send_bytes(chunk.tobytes())
                     self.samples_sent += len(chunk)
-                    await asyncio.sleep(self.chunk_size / self.sample_rate / 2 * 0.9)
+                    await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
                 
+                print(f"[DEBUG] Post-transition complete for {self.current_track.title}, position: {self.current_position:.1f}s")
                 await websocket.send_json({"type": "track_end"})
-                
+
                 # Prepare transition for the next auto-queued song
                 if self.queue and self.mixer:
                     await self._prepare_transition(self.queue[0])
