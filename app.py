@@ -12,8 +12,8 @@ import uvicorn
 
 app = FastAPI(title="AI DJ Backend")
 
-llm = LlamaLLM()
 music_library = MusicLibrary('music_data/audio', 'music_data/segmented_alex_pre_analysis_results_converted.json')
+llm = LlamaLLM(music_library=music_library)
 
 MODEL_PATH = 'models/dj_transition_model'  # or wherever your model is
 audio_manager = AudioManager(
@@ -125,6 +125,45 @@ async def audio_stream(websocket: WebSocket):
                             "type": "error",
                             "message": f"Song not found: {song_info['title']}"
                         })
+                        
+                elif intent == 'generate_playlist':
+                    # NEW: Handle playlist generation
+                    playlist = llm.generate_playlist(prompt)
+                    
+                    if not playlist:
+                        await websocket.send_json({
+                            "type": "error",
+                            "message": "Could not generate playlist from your request"
+                        })
+                    else:
+                        queued_songs = []
+                        failed_songs = []
+                        
+                        for song in playlist:
+                            found = audio_manager.add_to_queue(
+                                song['title'],
+                                song.get('artist')
+                            )
+                            if found:
+                                queued_songs.append(song['title'])
+                            else:
+                                failed_songs.append(song['title'])
+                        
+                        await websocket.send_json({
+                            "type": "playlist_generated",
+                            "message": f"Queued {len(queued_songs)} songs",
+                            "queued": queued_songs,
+                            "failed": failed_songs,
+                            "queue": audio_manager.get_queue_status()
+                        })
+                        
+                        # Start playback if not already playing
+                        if not audio_manager.is_playing and queued_songs:
+                            audio_manager.start()
+                            playback_task = asyncio.create_task(
+                                audio_manager.play_queue(websocket)
+                            )
+                
                 
                 elif intent == 'stop_dj':
                     audio_manager.stop()

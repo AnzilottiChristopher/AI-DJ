@@ -60,3 +60,24 @@ class MusicLibrary:
     def get_all_songs(self):
         """Return all songs in the library."""
         return list(self.index.keys())
+    
+
+    def get_library_for_llm(self) -> str:
+        """
+        Export the library in a format optimized for LLM playlist generation.
+        Returns a JSON string with song metadata.
+        """
+        songs = []
+        for key, data in self.index.items():
+            features = data.get('features', {})
+            songs.append({
+                "filename": data['filename'],
+                "title": key,  # The normalized key (e.g., "hey brother avicii")
+                "bpm": round(features.get('bpm', 120), 1),
+                "key": features.get('key', 'C'),
+                "scale": features.get('scale', 'major'),
+                "danceability": round(features.get('danceability', 1.0), 2),
+                "loudness": round(features.get('loudness', 0.8), 2),
+                "energy": round(features.get('onset_rate', 3.5), 2),  # onset_rate as proxy for energy
+            })
+        return json.dumps(songs, indent=2)
