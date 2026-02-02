@@ -1,0 +1,65 @@
+{
+  "song_name": "David Guetta, Showtek, VASSY - Bad (feat. Vassy) - Radio Edit.wav",
+  "segments": [
+    {
+      "name": "intro",
+      "start": 0.0,
+      "end": 15.0
+    },
+    {
+      "name": "buildup",
+      "start": 15.0,
+      "end": 45.0
+    },
+    {
+      "name": "drop",
+      "start": 45.0,
+      "end": 47.5
+    },
+    {
+      "name": "buildup",
+      "start": 47.5,
+      "end": 72.5
+    },
+    {
+      "name": "drop",
+      "start": 72.5,
+      "end": 102.5
+    },
+    {
+      "name": "buildup",
+      "start": 102.5,
+      "end": 105.0
+    },
+    {
+      "name": "cooloff",
+      "start": 105.0,
+      "end": 107.5
+    },
+    {
+      "name": "buildup",
+      "start": 107.5,
+      "end": 112.5
+    },
+    {
+      "name": "cooloff",
+      "start": 112.5,
+      "end": 115.0
+    },
+    {
+      "name": "buildup",
+      "start": 115.0,
+      "end": 130.0
+    },
+    {
+      "name": "drop",
+      "start": 130.0,
+      "end": 162.5
+    },
+    {
+      "name": "outro",
+      "start": 162.5,
+      "end": 170.62503401360544
+    }
+  ]
+}

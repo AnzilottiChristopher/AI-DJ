@@ -1,0 +1,65 @@
+{
+  "song_name": "David Guetta, Bebe Rexha - Im Good (Blue).wav",
+  "segments": [
+    {
+      "name": "intro",
+      "start": 0.0,
+      "end": 15.0
+    },
+    {
+      "name": "buildup",
+      "start": 15.0,
+      "end": 27.5
+    },
+    {
+      "name": "drop",
+      "start": 27.5,
+      "end": 37.5
+    },
+    {
+      "name": "buildup",
+      "start": 37.5,
+      "end": 42.5
+    },
+    {
+      "name": "drop",
+      "start": 42.5,
+      "end": 60.0
+    },
+    {
+      "name": "buildup",
+      "start": 60.0,
+      "end": 67.5
+    },
+    {
+      "name": "drop",
+      "start": 67.5,
+      "end": 70.0
+    },
+    {
+      "name": "buildup",
+      "start": 70.0,
+      "end": 75.0
+    },
+    {
+      "name": "drop",
+      "start": 75.0,
+      "end": 77.5
+    },
+    {
+      "name": "buildup",
+      "start": 77.5,
+      "end": 82.5
+    },
+    {
+      "name": "drop",
+      "start": 82.5,
+      "end": 165.0
+    },
+    {
+      "name": "outro",
+      "start": 165.0,
+      "end": 175.28163265306122
+    }
+  ]
+}
