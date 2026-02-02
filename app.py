@@ -13,7 +13,8 @@ import uvicorn
 
 app = FastAPI(title="AI DJ Backend")
 
-music_library = MusicLibrary('music_data/audio', 'music_data/segmented_alex_pre_analysis_results_converted.json')
+# music_library = MusicLibrary('music_data/audio', 'music_data/segmented_alex_pre_analysis_results_converted.json')
+music_library = MusicLibrary('music_data/audio', 'music_data/segmented_songs.json')
 llm = LlamaLLM(music_library=music_library)
 
 MODEL_PATH = 'models/dj_transition_model'  # or wherever your model is

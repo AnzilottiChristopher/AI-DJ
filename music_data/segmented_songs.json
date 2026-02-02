@@ -2312,6 +2312,148 @@
           "end": 192.0
         }
       ]
+    },
+    {
+      "song_name": "Im-Good_David-Guetta.wav",
+      "features": {},
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 15.0
+        },
+        {
+          "name": "build-up",
+          "start": 15.0,
+          "end": 27.5
+        },
+        {
+          "name": "beat-drop",
+          "start": 27.5,
+          "end": 37.5
+        },
+        {
+          "name": "build-up1",
+          "start": 37.5,
+          "end": 42.5
+        },
+        {
+          "name": "beat-drop1",
+          "start": 42.5,
+          "end": 60.0
+        },
+        {
+          "name": "build-up2",
+          "start": 60.0,
+          "end": 67.5
+        },
+        {
+          "name": "beat-drop2",
+          "start": 67.5,
+          "end": 70.0
+        },
+        {
+          "name": "build-up3",
+          "start": 70.0,
+          "end": 75.0
+        },
+        {
+          "name": "beat-drop3",
+          "start": 75.0,
+          "end": 77.5
+        },
+        {
+          "name": "build-up4",
+          "start": 77.5,
+          "end": 82.5
+        },
+        {
+          "name": "beat-drop4",
+          "start": 82.5,
+          "end": 165.0
+        },
+        {
+          "name": "outro",
+          "start": 165.0,
+          "end": 175.28163265306122
+        }
+      ]
+    },
+    {
+      "song_name": "Dont-Stop-The-Music_Rihanna.wav",
+      "features": {},
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 20.0
+        },
+        {
+          "name": "build-up",
+          "start": 20.0,
+          "end": 25.0
+        },
+        {
+          "name": "intro1",
+          "start": 25.0,
+          "end": 30.0
+        },
+        {
+          "name": "build-up1",
+          "start": 30.0,
+          "end": 102.5
+        },
+        {
+          "name": "beat-drop",
+          "start": 102.5,
+          "end": 105.0
+        },
+        {
+          "name": "build-up2",
+          "start": 105.0,
+          "end": 135.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 135.0,
+          "end": 140.0
+        },
+        {
+          "name": "build-up3",
+          "start": 140.0,
+          "end": 142.5
+        },
+        {
+          "name": "beat-drop2",
+          "start": 142.5,
+          "end": 147.5
+        },
+        {
+          "name": "build-up4",
+          "start": 147.5,
+          "end": 172.5
+        },
+        {
+          "name": "beat-drop3",
+          "start": 172.5,
+          "end": 175.0
+        },
+        {
+          "name": "build-up5",
+          "start": 175.0,
+          "end": 177.5
+        },
+        {
+          "name": "beat-drop4",
+          "start": 177.5,
+          "end": 247.5
+        },
+        {
+          "name": "outro",
+          "start": 247.5,
+          "end": 266.8901587301587
+        }
+      ]
     }
   ]
 }

@@ -1,6 +1,10 @@
 """
+Segment New Song - AI Segmentation for Upload System
+
 Run from user_songs/ folder:
   python segment_new_song.py path/to/song.wav
+
+This script is called by upload_handler.py when users upload songs.
 """
 
 import sys
@@ -18,7 +22,7 @@ def load_model(model_dir):
     model_dir = Path(model_dir)
     
     if not model_dir.exists():
-        print(f"Model directory not found: {model_dir}")
+        print(f"[ERROR] Model directory not found: {model_dir}")
         print("\nRun train_rf.py first!")
         return None, None, None
     
@@ -37,11 +41,11 @@ def load_model(model_dir):
         with open(model_dir / "model_metadata.pkl", 'rb') as f:
             metadata = pickle.load(f)
         
-        print("✓ Model loaded")
+        print("[OK] Model loaded")
         return model, scaler, metadata
     
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f"[ERROR] Error loading model: {e}")
         return None, None, None
 
 
@@ -121,7 +125,7 @@ def extract_song_features(audio_path, window_size=5.0, hop_size=2.5):
     try:
         y, sr = librosa.load(audio_path, sr=22050, mono=True)
     except Exception as e:
-        print(f"Error loading audio: {e}")
+        print(f"[ERROR] Error loading audio: {e}")
         return None
     
     duration = len(y) / sr
@@ -157,7 +161,7 @@ def extract_song_features(audio_path, window_size=5.0, hop_size=2.5):
         windows.append(all_features)
         window_start += hop_size
     
-    print(f" {len(windows)} windows ✓")
+    print(f" {len(windows)} windows [OK]")
     
     return windows
 
@@ -209,24 +213,37 @@ def predict_segments(windows, model, scaler, metadata):
             'end': windows[-1]['window_end']
         })
     
-    print(f"✓ Found {len(segments)} segments")
+    print(f"[OK] Found {len(segments)} segments")
     
     return segments
 
 
 def save_segments(segments, song_path, output_file):
-    """Save segments to JSON file."""
+    """
+    Save segments to JSON file.
+    
+    IMPORTANT: Output format matches existing segmented_songs.json structure:
+    {
+        "song_name": "...",
+        "features": {},  # Empty for AI-uploaded songs
+        "segments": [...]
+    }
+    """
     song_name = Path(song_path).name
+    
+    # Create empty features object to match existing JSON structure
+    empty_features = {}
     
     output_data = {
         'song_name': song_name,
+        'features': empty_features,  # ← Added to match existing structure
         'segments': segments
     }
     
     with open(output_file, 'w') as f:
         json.dump(output_data, f, indent=2)
     
-    print(f"\n✓ Saved segments to: {output_file}")
+    print(f"\n[OK] Saved segments to: {output_file}")
 
 
 def display_segments(segments):
@@ -255,24 +272,24 @@ def display_segments(segments):
 
 def main():
     print("="*60)
-    print("PHASE 3 - STEP 3: SEGMENT NEW SONG")
+    print("AI SONG SEGMENTATION")
     print("="*60)
     
     # Check arguments
     if len(sys.argv) < 2:
         print("\nUsage: python segment_new_song.py <path/to/song.wav>")
         print("\nExample:")
-        print("  python segment_new_song.py ../user_uploaded_songs/my_song.wav")
+        print("  python segment_new_song.py ../music_data/audio/Test-Song_Artist.wav")
         return
     
     audio_path = sys.argv[1]
     
     # Check if file exists
     if not Path(audio_path).exists():
-        print(f"\nAudio file not found: {audio_path}")
+        print(f"\n[ERROR] Audio file not found: {audio_path}")
         return
     
-    # Load model
+    # Load model (looks for ./models from user_songs/ folder)
     model_dir = "./models"
     model, scaler, metadata = load_model(model_dir)
     
@@ -291,14 +308,14 @@ def main():
     # Display results
     display_segments(segments)
     
-    # Save to file
+    # Save to file (creates {song_name}_segments.json in current directory)
     output_file = Path(audio_path).stem + "_segments.json"
     save_segments(segments, audio_path, output_file)
     
     print("\n" + "="*60)
-    print("✅ SEGMENTATION COMPLETE!")
+    print("[SUCCESS] SEGMENTATION COMPLETE!")
     print("="*60)
-    print(f"\nYour DJ tool can now use: {output_file}")
+    print(f"\nOutput: {output_file}")
 
 
 if __name__ == "__main__":

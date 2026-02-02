@@ -26,7 +26,7 @@ import shutil
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
-# Paths
+# Paths - Relative to src/ directory
 MUSIC_DATA_DIR = Path("music_data")
 AUDIO_DIR = MUSIC_DATA_DIR / "audio"
 SEGMENTED_SONGS_FILE = MUSIC_DATA_DIR / "segmented_songs.json"
@@ -84,31 +84,45 @@ def save_segmented_songs(data: dict):
 def run_segmentation(audio_path: Path) -> Optional[dict]:
     """Run segment_new_song.py on uploaded audio."""
     try:
+        # Run from user_songs directory
+        script_dir = Path("user_songs")
+        script_name = "segment_new_song.py"
+        
+        # Make audio path absolute
+        audio_path_abs = Path(audio_path).resolve()
+        
         result = subprocess.run(
-            ["python", str(SEGMENT_SCRIPT), str(audio_path)],
+            ["python", script_name, str(audio_path_abs)],
             capture_output=True,
             text=True,
             timeout=300,
-            cwd=SEGMENT_SCRIPT.parent
+            cwd=str(script_dir)  # Run from user_songs/ directory
         )
         
         if result.returncode != 0:
-            print(f"Segmentation failed: {result.stderr}")
+            print(f"Segmentation failed:")
+            print(f"STDOUT: {result.stdout}")
+            print(f"STDERR: {result.stderr}")
             return None
         
-        segments_file = SEGMENT_SCRIPT.parent / f"{audio_path.stem}_segments.json"
+        # Segments file created in user_songs/ directory
+        segments_file = script_dir / f"{audio_path.stem}_segments.json"
         
         if not segments_file.exists():
+            print(f"Segments file not found: {segments_file}")
             return None
         
         with open(segments_file, 'r') as f:
             segments_data = json.load(f)
         
+        # Clean up temp file
         segments_file.unlink()
         return segments_data
         
     except Exception as e:
         print(f"Segmentation error: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
