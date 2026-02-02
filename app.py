@@ -7,6 +7,7 @@ import atexit
 from llm.new_llm import LlamaLLM
 from music_library import MusicLibrary
 from enhanced_audio_manager import AudioManager 
+from upload_handler import router as upload_router
 
 import uvicorn
 
@@ -29,6 +30,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(upload_router)
 
 # Ollama process management
 ollama_process = None
