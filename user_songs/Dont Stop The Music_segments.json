@@ -1,0 +1,75 @@
+{
+  "song_name": "Dont Stop The Music.wav",
+  "segments": [
+    {
+      "name": "intro",
+      "start": 0.0,
+      "end": 20.0
+    },
+    {
+      "name": "buildup",
+      "start": 20.0,
+      "end": 25.0
+    },
+    {
+      "name": "intro",
+      "start": 25.0,
+      "end": 30.0
+    },
+    {
+      "name": "buildup",
+      "start": 30.0,
+      "end": 102.5
+    },
+    {
+      "name": "drop",
+      "start": 102.5,
+      "end": 105.0
+    },
+    {
+      "name": "buildup",
+      "start": 105.0,
+      "end": 135.0
+    },
+    {
+      "name": "drop",
+      "start": 135.0,
+      "end": 140.0
+    },
+    {
+      "name": "buildup",
+      "start": 140.0,
+      "end": 142.5
+    },
+    {
+      "name": "drop",
+      "start": 142.5,
+      "end": 147.5
+    },
+    {
+      "name": "buildup",
+      "start": 147.5,
+      "end": 172.5
+    },
+    {
+      "name": "drop",
+      "start": 172.5,
+      "end": 175.0
+    },
+    {
+      "name": "buildup",
+      "start": 175.0,
+      "end": 177.5
+    },
+    {
+      "name": "drop",
+      "start": 177.5,
+      "end": 247.5
+    },
+    {
+      "name": "outro",
+      "start": 247.5,
+      "end": 266.8901587301587
+    }
+  ]
+}
