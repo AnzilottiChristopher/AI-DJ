@@ -1,0 +1,2016 @@
+{
+  "songs": [
+    {
+      "song_name": "hey-brother_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 3.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 3.0,
+          "end": 64.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 64.0,
+          "end": 91.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 91.0,
+          "end": 106.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 106.0,
+          "end": 139.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 139.0,
+          "end": 142.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 142.0,
+          "end": 171.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 171.0,
+          "end": 198.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 198.0,
+          "end": 214.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 214.0,
+          "end": 245.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 245.0,
+          "end": 255.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "glad-you-came_the-wanted.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 33.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 33.0,
+          "end": 65.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 65.0,
+          "end": 93.0,
+          "name": "drop",
+          "original_name": "chorus + beat-drop"
+        },
+        {
+          "start": 93.0,
+          "end": 124.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 124.0,
+          "end": 170.0,
+          "name": "drop",
+          "original_name": "chorus1 + beat-drop1"
+        },
+        {
+          "start": 170.0,
+          "end": 197.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "waiting-for-love_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 6.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 6.0,
+          "end": 37.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 37.0,
+          "end": 74.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 74.0,
+          "end": 104.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 104.0,
+          "end": 119.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 119.0,
+          "end": 135.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 135.0,
+          "end": 166.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 166.0,
+          "end": 193.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 193.0,
+          "end": 225.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 225.0,
+          "end": 230.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "hymn-for-the-weekend_coldplay.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 41.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 41.0,
+          "end": 84.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 84.0,
+          "end": 104.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 104.0,
+          "end": 106.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 106.0,
+          "end": 128.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 128.0,
+          "end": 137.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 137.0,
+          "end": 159.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 159.0,
+          "end": 167.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 167.0,
+          "end": 171.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 171.0,
+          "end": 192.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 192.0,
+          "end": 202.0,
+          "name": "cooloff",
+          "original_name": "cool-down1"
+        },
+        {
+          "start": 202.0,
+          "end": 258.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "feel-so-close_calvin-harris.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 31.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 31.0,
+          "end": 46.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 46.0,
+          "end": 99.0,
+          "name": "drop",
+          "original_name": "beat-drop + chorus1"
+        },
+        {
+          "start": 99.0,
+          "end": 105.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 105.0,
+          "end": 136.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 136.0,
+          "end": 150.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 150.0,
+          "end": 165.0,
+          "name": "buildup",
+          "original_name": "build-up2"
+        },
+        {
+          "start": 165.0,
+          "end": 196.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        },
+        {
+          "start": 196.0,
+          "end": 207.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "how-deep-is-your-love_calvin-harris.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 14.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 16.0,
+          "end": 30.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 30.0,
+          "end": 48.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 48.0,
+          "end": 61.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 61.0,
+          "end": 77.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 77.0,
+          "end": 92.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 92.0,
+          "end": 108.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 108.0,
+          "end": 124.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 124.0,
+          "end": 142.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 142.0,
+          "end": 149.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 154.0,
+          "end": 171.0,
+          "name": "buildup",
+          "original_name": "build-up2"
+        },
+        {
+          "start": 171.0,
+          "end": 205.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        },
+        {
+          "start": 205.0,
+          "end": 212.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "firestone-kygo.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 32.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 32.0,
+          "end": 66.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 66.0,
+          "end": 106.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 106.0,
+          "end": 124.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 124.0,
+          "end": 159.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 159.0,
+          "end": 179.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 179.0,
+          "end": 215.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 215.0,
+          "end": 231.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 231.0,
+          "end": 266.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 266.0,
+          "end": 273.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "heroes-we-could-be_alesso-tove-lo.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 7.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 7.0,
+          "end": 37.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 37.0,
+          "end": 51.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 51.0,
+          "end": 68.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 68.0,
+          "end": 83.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 83.0,
+          "end": 113.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 113.0,
+          "end": 128.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 128.0,
+          "end": 144.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 144.0,
+          "end": 176.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 176.0,
+          "end": 189.0,
+          "name": "buildup",
+          "original_name": "build-up2"
+        },
+        {
+          "start": 189.0,
+          "end": 206.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        },
+        {
+          "start": 206.0,
+          "end": 210.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "under-control_alesso-calvin-harris.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 15.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 15.0,
+          "end": 45.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 45.0,
+          "end": 61.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 61.0,
+          "end": 77.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 77.0,
+          "end": 84.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 84.0,
+          "end": 100.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 100.0,
+          "end": 129.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 129.0,
+          "end": 145.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 145.0,
+          "end": 175.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 175.0,
+          "end": 184.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "heaven_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 19.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 19.0,
+          "end": 49.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 49.0,
+          "end": 81.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 81.0,
+          "end": 96.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 96.0,
+          "end": 130.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 130.0,
+          "end": 161.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 161.0,
+          "end": 255.0,
+          "name": "drop",
+          "original_name": "beat-drop + chorus2"
+        },
+        {
+          "start": 255.0,
+          "end": 277.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "five-more-hours_chris-brown.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 14.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 14.0,
+          "end": 75.0,
+          "name": "buildup",
+          "original_name": "verse + build-up"
+        },
+        {
+          "start": 75.0,
+          "end": 89.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 89.0,
+          "end": 103.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 103.0,
+          "end": 120.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 120.0,
+          "end": 135.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 135.0,
+          "end": 163.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 163.0,
+          "end": 195.0,
+          "name": "buildup",
+          "original_name": "verse2 + build-up2"
+        },
+        {
+          "start": 195.0,
+          "end": 206.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        },
+        {
+          "start": 206.0,
+          "end": 211.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "A-Sky-Full-of-Stars_Coldplay.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 45.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 45.0,
+          "end": 78.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 78.0,
+          "end": 100.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 100.0,
+          "end": 132.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 133.0,
+          "end": 148.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 148.0,
+          "end": 170.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 170.0,
+          "end": 240.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 240.0,
+          "end": 250.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 250.0,
+          "end": 267.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "Am-I-Wrong_Nico-Vinz.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 9.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 9.0,
+          "end": 48.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 48.0,
+          "end": 80.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 80.0,
+          "end": 112.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 112.0,
+          "end": 145.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 145.0,
+          "end": 208.0,
+          "name": "buildup",
+          "original_name": "verse2 + build-up"
+        },
+        {
+          "start": 208.0,
+          "end": 241.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 241.0,
+          "end": 247.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "Fast-Car_Jonas-Blue.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 19.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 20.0,
+          "end": 78.0,
+          "name": "buildup",
+          "original_name": "verse + build-up"
+        },
+        {
+          "start": 78.0,
+          "end": 113.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 113.0,
+          "end": 120.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 120.0,
+          "end": 170.0,
+          "name": "buildup",
+          "original_name": "verse1 + build-up1"
+        },
+        {
+          "start": 170.0,
+          "end": 205.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 205.0,
+          "end": 212.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "Addicted-To-You_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 10.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 10.0,
+          "end": 51.0,
+          "name": "buildup",
+          "original_name": "verse + build-up"
+        },
+        {
+          "start": 51.0,
+          "end": 73.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 73.0,
+          "end": 76.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 76.0,
+          "end": 101.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 101.0,
+          "end": 141.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 141.0,
+          "end": 148.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "Clarity_Zedd.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 36.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 36.0,
+          "end": 66.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 66.0,
+          "end": 111.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 111.0,
+          "end": 118.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 118.0,
+          "end": 209.0,
+          "name": "buildup",
+          "original_name": "verse + build-up1"
+        },
+        {
+          "start": 209.0,
+          "end": 254.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 254.0,
+          "end": 261.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "wake-me-up_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 9.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 9.0,
+          "end": 39.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 39.0,
+          "end": 70.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 70.0,
+          "end": 84.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 84.0,
+          "end": 117.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 117.0,
+          "end": 147.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 147.0,
+          "end": 180.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 180.0,
+          "end": 210.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 210.0,
+          "end": 242.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 242.0,
+          "end": 247.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "Fade-Into-Darkness_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 18.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 18.0,
+          "end": 61.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 61.0,
+          "end": 101.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 101.0,
+          "end": 107.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 107.0,
+          "end": 152.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 152.0,
+          "end": 192.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 192.0,
+          "end": 198.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "Die-Young_Kesha.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 8.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 8.0,
+          "end": 38.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 38.0,
+          "end": 52.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 52.0,
+          "end": 113.0,
+          "name": "buildup",
+          "original_name": "verse + build-up1"
+        },
+        {
+          "start": 113.0,
+          "end": 127.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 127.0,
+          "end": 180.0,
+          "name": "buildup",
+          "original_name": "verse1 + build-up2"
+        },
+        {
+          "start": 180.0,
+          "end": 211.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        }
+      ]
+    },
+    {
+      "song_name": "Adventure-of-Lifetime_Coldplay.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 37.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 37.0,
+          "end": 88.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 88.0,
+          "end": 105.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 105.0,
+          "end": 138.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 138.0,
+          "end": 155.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 155.0,
+          "end": 185.0,
+          "name": "buildup",
+          "original_name": "build-up2"
+        },
+        {
+          "start": 185.0,
+          "end": 253.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        },
+        {
+          "start": 253.0,
+          "end": 263.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "2U_Justin-Bieber.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 15.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 15.0,
+          "end": 57.0,
+          "name": "buildup",
+          "original_name": "verse + build-up"
+        },
+        {
+          "start": 57.0,
+          "end": 72.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 72.0,
+          "end": 73.0,
+          "name": "outro",
+          "original_name": "outro"
+        },
+        {
+          "start": 73.0,
+          "end": 129.0,
+          "name": "buildup",
+          "original_name": "verse1 + build-up1"
+        },
+        {
+          "start": 129.0,
+          "end": 155.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 155.0,
+          "end": 185.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 185.0,
+          "end": 194.0,
+          "name": "outro",
+          "original_name": "outro1"
+        }
+      ]
+    },
+    {
+      "song_name": "Counting-Stars_OneRepublic.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 23.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 23.0,
+          "end": 78.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 78.0,
+          "end": 118.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 118.0,
+          "end": 149.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 149.0,
+          "end": 181.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 181.0,
+          "end": 207.0,
+          "name": "buildup",
+          "original_name": "verse2"
+        },
+        {
+          "start": 207.0,
+          "end": 254.0,
+          "name": "drop",
+          "original_name": "chorus2"
+        },
+        {
+          "start": 254.0,
+          "end": 257.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "Waves_Robin-Schulz.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 25.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 25.0,
+          "end": 49.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 49.0,
+          "end": 73.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 73.0,
+          "end": 104.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 104.0,
+          "end": 137.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 137.0,
+          "end": 154.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 154.0,
+          "end": 192.0,
+          "name": "drop",
+          "original_name": "chorus2"
+        },
+        {
+          "start": 192.0,
+          "end": 206.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "this-is-what-you-came-for_calvin-harris_rihanna.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 15.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 15.0,
+          "end": 30.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 30.0,
+          "end": 46.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 46.0,
+          "end": 78.0,
+          "name": "drop",
+          "original_name": "beat-drop + chorus1"
+        },
+        {
+          "start": 78.0,
+          "end": 109.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 109.0,
+          "end": 156.0,
+          "name": "drop",
+          "original_name": "chorus2 + beat-drop1 + chorus3"
+        },
+        {
+          "start": 156.0,
+          "end": 171.0,
+          "name": "buildup",
+          "original_name": "verse2"
+        },
+        {
+          "start": 171.0,
+          "end": 217.0,
+          "name": "drop",
+          "original_name": "chorus4 + beat-drop2 + beat-drop3"
+        },
+        {
+          "start": 217.0,
+          "end": 222.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "summer_calvin-harris.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 78.0,
+          "name": "buildup",
+          "original_name": "verse + build-up + build-up1"
+        },
+        {
+          "start": 78.0,
+          "end": 110.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 110.0,
+          "end": 125.0,
+          "name": "buildup",
+          "original_name": "build-up2"
+        },
+        {
+          "start": 125.0,
+          "end": 153.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 153.0,
+          "end": 170.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 170.0,
+          "end": 184.0,
+          "name": "buildup",
+          "original_name": "build-up3"
+        },
+        {
+          "start": 184.0,
+          "end": 220.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 220.0,
+          "end": 224.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "without-you_david-guetta_usher.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 45.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 45.0,
+          "end": 72.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 72.0,
+          "end": 76.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 76.0,
+          "end": 98.0,
+          "name": "drop",
+          "original_name": "beat-drop + chorus1"
+        },
+        {
+          "start": 98.0,
+          "end": 101.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 101.0,
+          "end": 131.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 131.0,
+          "end": 158.0,
+          "name": "drop",
+          "original_name": "chorus2"
+        },
+        {
+          "start": 158.0,
+          "end": 162.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 162.0,
+          "end": 184.0,
+          "name": "drop",
+          "original_name": "beat-drop1 + chorus3"
+        },
+        {
+          "start": 184.0,
+          "end": 188.0,
+          "name": "cooloff",
+          "original_name": "cool-down1"
+        },
+        {
+          "start": 188.0,
+          "end": 208.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "the-nights_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 3.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 3.0,
+          "end": 17.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 17.0,
+          "end": 49.0,
+          "name": "drop",
+          "original_name": "chorus + chorus1"
+        },
+        {
+          "start": 49.0,
+          "end": 64.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 64.0,
+          "end": 79.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 79.0,
+          "end": 93.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 93.0,
+          "end": 125.0,
+          "name": "drop",
+          "original_name": "chorus2"
+        },
+        {
+          "start": 125.0,
+          "end": 140.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 140.0,
+          "end": 169.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 169.0,
+          "end": 176.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "pray-to-god_calvin-harris_haim.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 4.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 4.0,
+          "end": 51.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 51.0,
+          "end": 84.0,
+          "name": "drop",
+          "original_name": "chorus + beat-drop"
+        },
+        {
+          "start": 84.0,
+          "end": 116.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 116.0,
+          "end": 149.0,
+          "name": "drop",
+          "original_name": "chorus1 + beat-drop1"
+        },
+        {
+          "start": 149.0,
+          "end": 179.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 179.0,
+          "end": 212.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        },
+        {
+          "start": 212.0,
+          "end": 232.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "sweet-nothing_calvin-harris_florence-welch.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 3.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 3.0,
+          "end": 31.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 31.0,
+          "end": 79.0,
+          "name": "drop",
+          "original_name": "chorus + beat-drop"
+        },
+        {
+          "start": 79.0,
+          "end": 108.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 108.0,
+          "end": 153.0,
+          "name": "drop",
+          "original_name": "chorus1 + beat-drop1"
+        },
+        {
+          "start": 153.0,
+          "end": 170.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 170.0,
+          "end": 175.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 175.0,
+          "end": 205.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        },
+        {
+          "start": 205.0,
+          "end": 213.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "stole-the-show_kygo.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 2.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 2.0,
+          "end": 21.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 21.0,
+          "end": 72.0,
+          "name": "drop",
+          "original_name": "chorus + chorus1"
+        },
+        {
+          "start": 72.0,
+          "end": 91.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 91.0,
+          "end": 112.0,
+          "name": "drop",
+          "original_name": "chorus2"
+        },
+        {
+          "start": 112.0,
+          "end": 132.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 132.0,
+          "end": 174.0,
+          "name": "drop",
+          "original_name": "chorus3"
+        },
+        {
+          "start": 174.0,
+          "end": 182.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 182.0,
+          "end": 221.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 221.0,
+          "end": 222.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "stargazing_kygo.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 8.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 8.0,
+          "end": 48.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 48.0,
+          "end": 70.0,
+          "name": "drop",
+          "original_name": "chorus"
+        },
+        {
+          "start": 70.0,
+          "end": 90.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 90.0,
+          "end": 110.0,
+          "name": "drop",
+          "original_name": "beat-drop"
+        },
+        {
+          "start": 110.0,
+          "end": 113.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 113.0,
+          "end": 133.0,
+          "name": "buildup",
+          "original_name": "verse1"
+        },
+        {
+          "start": 133.0,
+          "end": 172.0,
+          "name": "drop",
+          "original_name": "chorus1"
+        },
+        {
+          "start": 172.0,
+          "end": 191.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 191.0,
+          "end": 231.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 231.0,
+          "end": 236.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "true-believer_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 15.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 15.0,
+          "end": 64.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 64.0,
+          "end": 72.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 72.0,
+          "end": 103.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 103.0,
+          "end": 155.0,
+          "name": "drop",
+          "original_name": "chorus + beat-drop"
+        },
+        {
+          "start": 155.0,
+          "end": 180.0,
+          "name": "cooloff",
+          "original_name": "cool-down1"
+        },
+        {
+          "start": 180.0,
+          "end": 203.0,
+          "name": "buildup",
+          "original_name": "build-up1 + verse1"
+        },
+        {
+          "start": 203.0,
+          "end": 265.0,
+          "name": "drop",
+          "original_name": "chorus1 + beat-drop1"
+        },
+        {
+          "start": 265.0,
+          "end": 288.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "silhouettes_avicii.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 8.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 8.0,
+          "end": 23.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 23.0,
+          "end": 90.0,
+          "name": "drop",
+          "original_name": "chorus + beat-drop"
+        },
+        {
+          "start": 90.0,
+          "end": 95.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 95.0,
+          "end": 112.0,
+          "name": "buildup",
+          "original_name": "build-up + verse1"
+        },
+        {
+          "start": 112.0,
+          "end": 203.0,
+          "name": "drop",
+          "original_name": "chorus1 + beat-drop1"
+        },
+        {
+          "start": 203.0,
+          "end": 211.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    },
+    {
+      "song_name": "safe-and-sound_capital-cities.wav",
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 17.0,
+          "name": "intro",
+          "original_name": "intro"
+        },
+        {
+          "start": 17.0,
+          "end": 35.0,
+          "name": "buildup",
+          "original_name": "verse"
+        },
+        {
+          "start": 35.0,
+          "end": 60.0,
+          "name": "drop",
+          "original_name": "chorus + beat-drop + chorus1"
+        },
+        {
+          "start": 60.0,
+          "end": 74.0,
+          "name": "buildup",
+          "original_name": "build-up"
+        },
+        {
+          "start": 74.0,
+          "end": 84.0,
+          "name": "cooloff",
+          "original_name": "cool-down"
+        },
+        {
+          "start": 84.0,
+          "end": 90.0,
+          "name": "buildup",
+          "original_name": "build-up1"
+        },
+        {
+          "start": 90.0,
+          "end": 100.0,
+          "name": "drop",
+          "original_name": "beat-drop1"
+        },
+        {
+          "start": 100.0,
+          "end": 140.0,
+          "name": "buildup",
+          "original_name": "build-up2 + build-up3 + verse1"
+        },
+        {
+          "start": 140.0,
+          "end": 188.0,
+          "name": "drop",
+          "original_name": "beat-drop2"
+        },
+        {
+          "start": 188.0,
+          "end": 192.0,
+          "name": "outro",
+          "original_name": "outro"
+        }
+      ]
+    }
+  ]
+}

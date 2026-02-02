@@ -7,12 +7,14 @@ import atexit
 from llm.new_llm import LlamaLLM
 from music_library import MusicLibrary
 from enhanced_audio_manager import AudioManager 
+from upload_handler import router as upload_router
 
 import uvicorn
 
 app = FastAPI(title="AI DJ Backend")
 
-music_library = MusicLibrary('music_data/audio', 'music_data/segmented_alex_pre_analysis_results_converted.json')
+# music_library = MusicLibrary('music_data/audio', 'music_data/segmented_alex_pre_analysis_results_converted.json')
+music_library = MusicLibrary('music_data/audio', 'music_data/segmented_songs.json')
 llm = LlamaLLM(music_library=music_library)
 
 MODEL_PATH = 'models/dj_transition_model'  # or wherever your model is
@@ -29,6 +31,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(upload_router)
 
 # Ollama process management
 ollama_process = None
@@ -252,6 +256,39 @@ async def get_auto_play_status():
         "recently_played": audio_manager.recently_played,
         "similarity_service_ready": audio_manager.similarity_service is not None
     }
+@app.post("/api/library/reload")
+async def reload_library():
+    """
+    Reload music library to pick up newly uploaded songs.
+    
+    Call this after uploading a new song to make it available immediately.
+    """
+    global music_library, audio_manager, llm
+    try:
+        print("[RELOAD] Reloading music library...")
+        
+        # Reload the music library (re-reads JSON and rebuilds index)
+        music_library.reload()
+        
+        # Rebuild similarity embeddings if similarity service exists
+        if audio_manager.similarity_service:
+            print("[RELOAD] Rebuilding similarity embeddings...")
+            audio_manager.similarity_service.build_embeddings(music_library)
+        
+        song_count = len(music_library.index)
+        print(f"[RELOAD] Complete: {song_count} songs available")
+        
+        return {
+            "success": True,
+            "message": f"Library reloaded: {song_count} songs",
+            "song_count": song_count
+        }
+    except Exception as e:
+        print(f"[RELOAD ERROR] {e}")
+        return {
+            "success": False,
+            "message": f"Failed to reload library: {str(e)}"
+        }
 
 
 if __name__ == "__main__":

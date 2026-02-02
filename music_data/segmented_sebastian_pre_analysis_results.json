@@ -1,0 +1,699 @@
+{
+  "songs": [
+    {
+      "song_name": "this-is-what-you-came-for_calvin-harris_rihanna.wav",
+      "features": {
+        "bpm": 123.76566314697266,
+        "key": "C",
+        "scale": "major",
+        "key_strength": 0.8936289548873901,
+        "loudness": 0.9370653033256531,
+        "danceability": 1.1872494220733643,
+        "spectral_centroid": 1321.440185546875,
+        "spectral_rolloff": 1780.5101318359375,
+        "dissonance": 0.4559396803379059,
+        "onset_rate": 4.473613739013672
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          15.0
+        ],
+        "chorus": [
+          15.0,
+          30.0
+        ],
+        "verse": [
+          30.0,
+          46.0
+        ],
+        "beat-drop": [
+          46.0,
+          48.0
+        ],
+        "chorus1": [
+          48.0,
+          78.0
+        ],
+        "verse1": [
+          78.0,
+          109.0
+        ],
+        "chorus2": [
+          109.0,
+          123.0
+        ],
+        "beat-drop1": [
+          123.0,
+          126.0
+        ],
+        "chorus3": [
+          126.0,
+          156.0
+        ],
+        "verse2": [
+          156.0,
+          171.0
+        ],
+        "chorus4": [
+          171.0,
+          186.0
+        ],
+        "beat-drop2": [
+          186.0,
+          188.0
+        ],
+        "beat-drop3": [
+          188.0,
+          217.0
+        ],
+        "outro": [
+          217.0,
+          222.0
+        ]
+      }
+    },
+    {
+      "song_name": "summer_calvin-harris.wav",
+      "features": {
+        "bpm": 128.0211639404297,
+        "key": "G",
+        "scale": "major",
+        "key_strength": 0.8826115727424622,
+        "loudness": 0.9297196865081787,
+        "danceability": 1.0525528192520142,
+        "spectral_centroid": 1532.6343994140625,
+        "spectral_rolloff": 1728.8785400390625,
+        "dissonance": 0.4690220057964325,
+        "onset_rate": 3.4873569011688232
+      },
+      "segments": {
+        "verse": [
+          0.0,
+          36.0
+        ],
+        "build-up": [
+          36.0,
+          49.0
+        ],
+        "build-up1": [
+          49.0,
+          78.0
+        ],
+        "chorus": [
+          78.0,
+          110.0
+        ],
+        "build-up2": [
+          110.0,
+          125.0
+        ],
+        "beat-drop": [
+          125.0,
+          153.0
+        ],
+        "cool-down": [
+          153.0,
+          170.0
+        ],
+        "build-up3": [
+          170.0,
+          184.0
+        ],
+        "beat-drop1": [
+          184.0,
+          220.0
+        ],
+        "outro": [
+          220.0,
+          224.0
+        ]
+      }
+    },
+    {
+      "song_name": "without-you_david-guetta_usher.wav",
+      "features": {
+        "bpm": 127.98335266113281,
+        "key": "D",
+        "scale": "major",
+        "key_strength": 0.8917890787124634,
+        "loudness": 0.687950611114502,
+        "danceability": 1.0777086019515991,
+        "spectral_centroid": 1455.4613037109375,
+        "spectral_rolloff": 1822.0645751953125,
+        "dissonance": 0.45136377215385437,
+        "onset_rate": 3.348461627960205
+      },
+      "segments": {
+        "verse": [
+          0.0,
+          45.0
+        ],
+        "chorus": [
+          45.0,
+          72.0
+        ],
+        "build-up": [
+          72.0,
+          76.0
+        ],
+        "beat-drop": [
+          76.0,
+          82.0
+        ],
+        "chorus1": [
+          82.0,
+          98.0
+        ],
+        "cool-down": [
+          98.0,
+          101.0
+        ],
+        "verse1": [
+          101.0,
+          131.0
+        ],
+        "chorus2": [
+          131.0,
+          158.0
+        ],
+        "build-up1": [
+          158.0,
+          162.0
+        ],
+        "beat-drop1": [
+          162.0,
+          167.0
+        ],
+        "chorus3": [
+          167.0,
+          184.0
+        ],
+        "cool-down1": [
+          184.0,
+          188.0
+        ],
+        "outro": [
+          188.0,
+          208.0
+        ]
+      }
+    },
+    {
+      "song_name": "the-nights_avicii.wav",
+      "features": {
+        "bpm": 125.83724212646484,
+        "key": "F#",
+        "scale": "major",
+        "key_strength": 0.9648151993751526,
+        "loudness": 0.9417001008987427,
+        "danceability": 1.1861380338668823,
+        "spectral_centroid": 1514.2801513671875,
+        "spectral_rolloff": 2361.43701171875,
+        "dissonance": 0.4649057984352112,
+        "onset_rate": 3.8091328144073486
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          3.0
+        ],
+        "verse": [
+          3.0,
+          17.0
+        ],
+        "chorus": [
+          17.0,
+          33.0
+        ],
+        "chorus1": [
+          33.0,
+          49.0
+        ],
+        "build-up": [
+          49.0,
+          64.0
+        ],
+        "beat-drop": [
+          64.0,
+          79.0
+        ],
+        "verse1": [
+          79.0,
+          93.0
+        ],
+        "chorus2": [
+          93.0,
+          125.0
+        ],
+        "build-up1": [
+          125.0,
+          140.0
+        ],
+        "beat-drop1": [
+          140.0,
+          169.0
+        ],
+        "outro": [
+          169.0,
+          176.0
+        ]
+      }
+    },
+    {
+      "song_name": "pray-to-god_calvin-harris_haim.wav",
+      "features": {
+        "bpm": 119.98812866210938,
+        "key": "G",
+        "scale": "minor",
+        "key_strength": 0.8654090166091919,
+        "loudness": 0.8884966969490051,
+        "danceability": 1.1224806308746338,
+        "spectral_centroid": 1673.76025390625,
+        "spectral_rolloff": 1975.5819091796875,
+        "dissonance": 0.4689229726791382,
+        "onset_rate": 4.008279800415039
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          4.0
+        ],
+        "verse": [
+          4.0,
+          51.0
+        ],
+        "chorus": [
+          51.0,
+          67.0
+        ],
+        "beat-drop": [
+          67.0,
+          84.0
+        ],
+        "verse1": [
+          84.0,
+          116.0
+        ],
+        "chorus1": [
+          116.0,
+          131.0
+        ],
+        "beat-drop1": [
+          131.0,
+          149.0
+        ],
+        "cool-down": [
+          149.0,
+          179.0
+        ],
+        "beat-drop2": [
+          179.0,
+          212.0
+        ],
+        "outro": [
+          212.0,
+          232.0
+        ]
+      }
+    },
+    {
+      "song_name": "sweet-nothing_calvin-harris_florence-welch.wav",
+      "features": {
+        "bpm": 128.0272674560547,
+        "key": "Ab",
+        "scale": "minor",
+        "key_strength": 0.870753288269043,
+        "loudness": 0.8141047954559326,
+        "danceability": 1.090524435043335,
+        "spectral_centroid": 1453.6552734375,
+        "spectral_rolloff": 1832.6998291015625,
+        "dissonance": 0.4614574611186981,
+        "onset_rate": 4.2430877685546875
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          3.0
+        ],
+        "verse": [
+          3.0,
+          31.0
+        ],
+        "chorus": [
+          31.0,
+          63.0
+        ],
+        "beat-drop": [
+          63.0,
+          79.0
+        ],
+        "verse1": [
+          79.0,
+          108.0
+        ],
+        "chorus1": [
+          108.0,
+          137.0
+        ],
+        "beat-drop1": [
+          137.0,
+          153.0
+        ],
+        "cool-down": [
+          153.0,
+          170.0
+        ],
+        "build-up": [
+          170.0,
+          175.0
+        ],
+        "beat-drop2": [
+          175.0,
+          205.0
+        ],
+        "outro": [
+          205.0,
+          213.0
+        ]
+      }
+    },
+    {
+      "song_name": "stole-the-show_kygo.wav",
+      "features": {
+        "bpm": 99.928955078125,
+        "key": "B",
+        "scale": "major",
+        "key_strength": 0.8564895987510681,
+        "loudness": 0.7623104453086853,
+        "danceability": 1.2060292959213257,
+        "spectral_centroid": 1026.972412109375,
+        "spectral_rolloff": 1379.702392578125,
+        "dissonance": 0.4356299042701721,
+        "onset_rate": 4.277020454406738
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          2.0
+        ],
+        "verse": [
+          2.0,
+          21.0
+        ],
+        "chorus": [
+          21.0,
+          52.0
+        ],
+        "chorus1": [
+          52.0,
+          72.0
+        ],
+        "build-up": [
+          72.0,
+          91.0
+        ],
+        "chorus2": [
+          91.0,
+          112.0
+        ],
+        "verse1": [
+          112.0,
+          132.0
+        ],
+        "chorus3": [
+          132.0,
+          174.0
+        ],
+        "build-up1": [
+          174.0,
+          182.0
+        ],
+        "beat-drop": [
+          182.0,
+          221.0
+        ],
+        "outro": [
+          221.0,
+          222.0
+        ]
+      }
+    },
+    {
+      "song_name": "stargazing_kygo.wav",
+      "features": {
+        "bpm": 98.84703826904297,
+        "key": "F",
+        "scale": "major",
+        "key_strength": 0.9270086884498596,
+        "loudness": 0.6151524782180786,
+        "danceability": 1.0322901010513306,
+        "spectral_centroid": 1408.3460693359375,
+        "spectral_rolloff": 1925.634765625,
+        "dissonance": 0.4460153877735138,
+        "onset_rate": 3.698281764984131
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          8.0
+        ],
+        "verse": [
+          8.0,
+          48.0
+        ],
+        "chorus": [
+          48.0,
+          70.0
+        ],
+        "build-up": [
+          70.0,
+          90.0
+        ],
+        "beat-drop": [
+          90.0,
+          110.0
+        ],
+        "cool-down": [
+          110.0,
+          113.0
+        ],
+        "verse1": [
+          113.0,
+          133.0
+        ],
+        "chorus1": [
+          133.0,
+          172.0
+        ],
+        "build-up1": [
+          172.0,
+          191.0
+        ],
+        "beat-drop1": [
+          191.0,
+          231.0
+        ],
+        "outro": [
+          231.0,
+          236.0
+        ]
+      }
+    },
+    {
+      "song_name": "true-believer_avicii.wav",
+      "features": {
+        "bpm": 120.02740478515625,
+        "key": "Ab",
+        "scale": "minor",
+        "key_strength": 0.8945605754852295,
+        "loudness": 0.936393141746521,
+        "danceability": 1.3490581512451172,
+        "spectral_centroid": 1506.252197265625,
+        "spectral_rolloff": 2143.532470703125,
+        "dissonance": 0.462181955575943,
+        "onset_rate": 4.584264278411865
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          15.0
+        ],
+        "build-up": [
+          15.0,
+          64.0
+        ],
+        "cool-down": [
+          64.0,
+          72.0
+        ],
+        "verse": [
+          72.0,
+          103.0
+        ],
+        "chorus": [
+          103.0,
+          124.0
+        ],
+        "beat-drop": [
+          124.0,
+          155.0
+        ],
+        "cool-down1": [
+          155.0,
+          180.0
+        ],
+        "build-up1": [
+          180.0,
+          188.0
+        ],
+        "verse1": [
+          188.0,
+          203.0
+        ],
+        "chorus1": [
+          203.0,
+          223.0
+        ],
+        "beat-drop1": [
+          223.0,
+          265.0
+        ],
+        "outro": [
+          265.0,
+          288.0
+        ]
+      }
+    },
+    {
+      "song_name": "silhouettes_avicii.wav",
+      "features": {
+        "bpm": 127.98444366455078,
+        "key": "Ab",
+        "scale": "major",
+        "key_strength": 0.8292222619056702,
+        "loudness": 0.9135184288024902,
+        "danceability": 1.1944307088851929,
+        "spectral_centroid": 1273.1783447265625,
+        "spectral_rolloff": 1571.9366455078125,
+        "dissonance": 0.4566417336463928,
+        "onset_rate": 3.860426425933838
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          8.0
+        ],
+        "verse": [
+          8.0,
+          23.0
+        ],
+        "chorus": [
+          23.0,
+          53.0
+        ],
+        "beat-drop": [
+          53.0,
+          90.0
+        ],
+        "cool-down": [
+          90.0,
+          95.0
+        ],
+        "build-up": [
+          95.0,
+          98.0
+        ],
+        "verse1": [
+          98.0,
+          112.0
+        ],
+        "chorus1": [
+          112.0,
+          157.0
+        ],
+        "beat-drop1": [
+          157.0,
+          203.0
+        ],
+        "outro": [
+          203.0,
+          211.0
+        ]
+      }
+    },
+    {
+      "song_name": "safe-and-sound_capital-cities.wav",
+      "features": {
+        "bpm": 117.99655151367188,
+        "key": "C",
+        "scale": "major",
+        "key_strength": 0.9345179200172424,
+        "loudness": 0.9465805888175964,
+        "danceability": 1.573390007019043,
+        "spectral_centroid": 1675.225341796875,
+        "spectral_rolloff": 1837.84521484375,
+        "dissonance": 0.47218090295791626,
+        "onset_rate": 3.9771156311035156
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          17.0
+        ],
+        "verse": [
+          17.0,
+          35.0
+        ],
+        "chorus": [
+          35.0,
+          42.0
+        ],
+        "beat-drop": [
+          42.0,
+          45.0
+        ],
+        "chorus1": [
+          45.0,
+          60.0
+        ],
+        "build-up": [
+          60.0,
+          74.0
+        ],
+        "cool-down": [
+          74.0,
+          84.0
+        ],
+        "build-up1": [
+          84.0,
+          90.0
+        ],
+        "beat-drop1": [
+          90.0,
+          100.0
+        ],
+        "build-up2": [
+          100.0,
+          107.0
+        ],
+        "build-up3": [
+          107.0,
+          125.0
+        ],
+        "verse1": [
+          125.0,
+          140.0
+        ],
+        "beat-drop2": [
+          140.0,
+          188.0
+        ],
+        "outro": [
+          188.0,
+          192.0
+        ]
+      }
+    }
+  ]
+}
