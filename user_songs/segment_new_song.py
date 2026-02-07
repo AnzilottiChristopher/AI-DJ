@@ -1,12 +1,3 @@
-"""
-Segment New Song - AI Segmentation for Upload System
-
-Run from user_songs/ folder:
-  python segment_new_song.py path/to/song.wav
-
-This script is called by upload_handler.py when users upload songs.
-"""
-
 import sys
 import json
 import numpy as np
@@ -15,6 +6,16 @@ import librosa
 from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+# Import feature extraction
+try:
+    from extract_features import extract_features
+    FEATURES_AVAILABLE = True
+except ImportError:
+    print("[WARNING] extract_features not available - features will be empty")
+    FEATURES_AVAILABLE = False
+    def extract_features(path):
+        return {}
 
 
 def load_model(model_dir):
@@ -50,7 +51,6 @@ def load_model(model_dir):
 
 
 def extract_features_for_window(y, sr, start_time, end_time):
-    """Extract audio features for a time window (same as training)."""
     start_sample = int(start_time * sr)
     end_sample = int(end_time * sr)
     y_segment = y[start_sample:end_sample]
@@ -104,7 +104,6 @@ def extract_features_for_window(y, sr, start_time, end_time):
 
 
 def extract_positional_features(window_center, duration, peak_time):
-    """Extract position-based features."""
     features = {}
     
     features['time_from_start'] = float(window_center)
@@ -118,7 +117,6 @@ def extract_positional_features(window_center, duration, peak_time):
 
 
 def extract_song_features(audio_path, window_size=5.0, hop_size=2.5):
-    """Extract features from entire song."""
     print(f"\nExtracting features from: {Path(audio_path).name}")
     
     # Load audio
@@ -167,7 +165,6 @@ def extract_song_features(audio_path, window_size=5.0, hop_size=2.5):
 
 
 def predict_segments(windows, model, scaler, metadata):
-    """Predict segments using Random Forest."""
     feature_names = metadata['feature_names']
     
     print("\nPredicting segments...")
@@ -219,24 +216,18 @@ def predict_segments(windows, model, scaler, metadata):
 
 
 def save_segments(segments, song_path, output_file):
-    """
-    Save segments to JSON file.
-    
-    IMPORTANT: Output format matches existing segmented_songs.json structure:
-    {
-        "song_name": "...",
-        "features": {},  # Empty for AI-uploaded songs
-        "segments": [...]
-    }
-    """
     song_name = Path(song_path).name
     
-    # Create empty features object to match existing JSON structure
-    empty_features = {}
+    # Extract features from audio file
+    if FEATURES_AVAILABLE:
+        print("\n[FEATURES] Extracting musical features...")
+        features = extract_audio_features(song_path)
+    else:
+        features = {}
     
     output_data = {
         'song_name': song_name,
-        'features': empty_features,  # ← Added to match existing structure
+        'features': features,  
         'segments': segments
     }
     
@@ -244,10 +235,19 @@ def save_segments(segments, song_path, output_file):
         json.dump(output_data, f, indent=2)
     
     print(f"\n[OK] Saved segments to: {output_file}")
+    
+    # Show extracted features
+    if features:
+        print("\n[OK] Extracted features:")
+        if features.get('bpm'):
+            print(f"  BPM: {features['bpm']:.1f}")
+        if features.get('key') and features.get('scale'):
+            print(f"  Key: {features['key']} {features['scale']}")
+        if features.get('danceability'):
+            print(f"  Danceability: {features['danceability']:.2f}")
 
 
 def display_segments(segments):
-    """Display segments in a readable format."""
     print("\n" + "="*60)
     print("DETECTED SEGMENTS")
     print("="*60)

@@ -1,20 +1,3 @@
-"""
-Upload Handler API - Matches Original JSON Structure with Features
-
-Users upload: "Artist - Song Title.wav"
-Backend stores: "Song-Title_Artist.wav"
-Appends to segmented_songs.json with structure:
-  {
-    "song_name": "...",
-    "features": {},
-    "segments": [...]
-  }
-
-FastAPI Integration:
-    from upload_handler import router as upload_router
-    app.include_router(upload_router)
-"""
-
 import re
 import json
 import subprocess
@@ -51,7 +34,6 @@ def extract_artist_title_from_filename(filename: str) -> Tuple[Optional[str], Op
 
 
 def normalize_filename(artist: str, title: str) -> str:
-    """Convert to "Song-Title_Artist.wav" format."""
     # Remove apostrophes and other special characters that cause search issues
     title_clean = re.sub(r'[^\w\s-]', '', title)  # Removes apostrophes, quotes, etc.
     title_clean = re.sub(r'\s+', '-', title_clean.strip())
@@ -63,7 +45,6 @@ def normalize_filename(artist: str, title: str) -> str:
 
 
 def ensure_directories():
-    """Create required directories."""
     AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     MUSIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -128,18 +109,6 @@ def run_segmentation(audio_path: Path) -> Optional[dict]:
 
 
 def convert_segment_names(segments: list) -> list:
-    """
-    Convert AI segment names to original convention and add numbers to duplicates.
-    
-    This is ONLY for newly uploaded songs (AI-segmented).
-    Existing songs keep their original names (verse, chorus, etc.)
-    
-    AI names: intro, buildup, drop, cooloff, outro
-    Convert to: intro, build-up, beat-drop, cool-down, outro
-    
-    Also adds numbers to duplicates:
-    ['build-up', 'beat-drop', 'build-up'] -> ['build-up', 'beat-drop', 'build-up1']
-    """
     # Mapping from AI names to original names
     name_map = {
         'intro': 'intro',
@@ -185,19 +154,6 @@ def convert_segment_names(segments: list) -> list:
 
 @router.post("/song")
 async def upload_song(file: UploadFile = File(...)):
-    """
-    Upload song with format: "Artist - Song Title.wav"
-    
-    Returns:
-        {
-            "success": true,
-            "filename": "A-Sky-Full-Of-Stars_Coldplay.wav",
-            "artist": "Coldplay",
-            "title": "A Sky Full of Stars",
-            "segments": [...],
-            "segment_count": 9
-        }
-    """
     try:
         if not file.filename.endswith(('.wav', '.mp3')):
             raise HTTPException(400, "Only .wav and .mp3 files supported")
@@ -244,10 +200,13 @@ async def upload_song(file: UploadFile = File(...)):
         # Convert AI segments to original naming convention and add numbers
         converted_segments = convert_segment_names(segments_result['segments'])
         
+        # Use extracted features from segmentation (includes BPM, key, etc.)
+        extracted_features = segments_result.get('features', {})
+        
         # Add to segmented_songs.json - MATCH ORIGINAL STRUCTURE
         new_song = {
             "song_name": normalized_name,
-            "features": {},  # Empty for now - can be computed later if needed
+            "features": extracted_features,  # ← Now includes real features!
             "segments": converted_segments
         }
         
