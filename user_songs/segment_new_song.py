@@ -221,7 +221,7 @@ def save_segments(segments, song_path, output_file):
     # Extract features from audio file
     if FEATURES_AVAILABLE:
         print("\n[FEATURES] Extracting musical features...")
-        features = extract_audio_features(song_path)
+        features = extract_features(song_path)
     else:
         features = {}
     

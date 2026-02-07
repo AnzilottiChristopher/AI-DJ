@@ -2312,6 +2312,83 @@
           "end": 192.0
         }
       ]
+    },
+    {
+      "song_name": "Bad_David-Guetta.wav",
+      "features": {
+        "bpm": 129.19921875,
+        "key": "F",
+        "key_strength": 0.14957840740680695,
+        "scale": "minor",
+        "loudness": -11.408416748046875,
+        "danceability": 0.020394196040122235,
+        "spectral_centroid": 3057.326750617103,
+        "spectral_rolloff": 6385.812177358314,
+        "dissonance": 0.059095002710819244,
+        "onset_rate": 3.4227099404031915
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 15.0
+        },
+        {
+          "name": "build-up",
+          "start": 15.0,
+          "end": 45.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 45.0,
+          "end": 47.5
+        },
+        {
+          "name": "build-up1",
+          "start": 47.5,
+          "end": 72.5
+        },
+        {
+          "name": "beat-drop1",
+          "start": 72.5,
+          "end": 102.5
+        },
+        {
+          "name": "build-up2",
+          "start": 102.5,
+          "end": 105.0
+        },
+        {
+          "name": "cool-down",
+          "start": 105.0,
+          "end": 107.5
+        },
+        {
+          "name": "build-up3",
+          "start": 107.5,
+          "end": 112.5
+        },
+        {
+          "name": "cool-down1",
+          "start": 112.5,
+          "end": 115.0
+        },
+        {
+          "name": "build-up4",
+          "start": 115.0,
+          "end": 130.0
+        },
+        {
+          "name": "beat-drop2",
+          "start": 130.0,
+          "end": 162.5
+        },
+        {
+          "name": "outro",
+          "start": 162.5,
+          "end": 170.62503401360544
+        }
+      ]
     }
   ]
 }
