@@ -2320,7 +2320,7 @@
         "key": "F",
         "key_strength": 0.14957840740680695,
         "scale": "minor",
-        "loudness": -11.408416748046875,
+        "loudness": 0.8098596930503845,
         "danceability": 0.020394196040122235,
         "spectral_centroid": 3057.326750617103,
         "spectral_rolloff": 6385.812177358314,
@@ -2387,6 +2387,150 @@
           "name": "outro",
           "start": 162.5,
           "end": 170.62503401360544
+        }
+      ]
+    },
+    {
+      "song_name": "Pepas_Farruko.wav",
+      "features": {
+        "bpm": 129.19921875,
+        "key": "A",
+        "key_strength": 0.1026734858751297,
+        "scale": "major",
+        "loudness": 0.7909530997276306,
+        "danceability": 0.015945307875409268,
+        "spectral_centroid": 2579.0932520088895,
+        "spectral_rolloff": 5750.0260977230455,
+        "dissonance": 0.026615498587489128,
+        "onset_rate": 3.9533411561264824
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 27.5
+        },
+        {
+          "name": "build-up",
+          "start": 27.5,
+          "end": 32.5
+        },
+        {
+          "name": "intro1",
+          "start": 32.5,
+          "end": 35.0
+        },
+        {
+          "name": "build-up1",
+          "start": 35.0,
+          "end": 37.5
+        },
+        {
+          "name": "intro2",
+          "start": 37.5,
+          "end": 40.0
+        },
+        {
+          "name": "build-up2",
+          "start": 40.0,
+          "end": 227.5
+        },
+        {
+          "name": "beat-drop",
+          "start": 227.5,
+          "end": 265.0
+        },
+        {
+          "name": "outro",
+          "start": 265.0,
+          "end": 267.5
+        },
+        {
+          "name": "beat-drop1",
+          "start": 267.5,
+          "end": 277.5
+        },
+        {
+          "name": "outro1",
+          "start": 277.5,
+          "end": 287.85777777777776
+        }
+      ]
+    },
+    {
+      "song_name": "Im-Good_David-Guetta.wav",
+      "features": {
+        "bpm": 129.19921875,
+        "key": "G",
+        "key_strength": 0.16205088794231415,
+        "scale": "major",
+        "loudness": 0.8260425329208374,
+        "danceability": 0.020333302537176762,
+        "spectral_centroid": 2626.709289221077,
+        "spectral_rolloff": 5740.553992561101,
+        "dissonance": 0.03193798288702965,
+        "onset_rate": 2.0253120342771984
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 15.0
+        },
+        {
+          "name": "build-up",
+          "start": 15.0,
+          "end": 27.5
+        },
+        {
+          "name": "beat-drop",
+          "start": 27.5,
+          "end": 37.5
+        },
+        {
+          "name": "build-up1",
+          "start": 37.5,
+          "end": 42.5
+        },
+        {
+          "name": "beat-drop1",
+          "start": 42.5,
+          "end": 60.0
+        },
+        {
+          "name": "build-up2",
+          "start": 60.0,
+          "end": 67.5
+        },
+        {
+          "name": "beat-drop2",
+          "start": 67.5,
+          "end": 70.0
+        },
+        {
+          "name": "build-up3",
+          "start": 70.0,
+          "end": 75.0
+        },
+        {
+          "name": "beat-drop3",
+          "start": 75.0,
+          "end": 77.5
+        },
+        {
+          "name": "build-up4",
+          "start": 77.5,
+          "end": 82.5
+        },
+        {
+          "name": "beat-drop4",
+          "start": 82.5,
+          "end": 165.0
+        },
+        {
+          "name": "outro",
+          "start": 165.0,
+          "end": 175.28163265306122
         }
       ]
     }

@@ -38,7 +38,10 @@ def extract_features(audio_path):
         
         # 3. Loudness (RMS energy in dB)
         rms = librosa.feature.rms(y=y)[0]
-        features['loudness'] = float(20 * np.log10(np.mean(rms) + 1e-6))
+        rms_db = 20 * np.log10(np.mean(rms) + 1e-6)
+
+        normalized_loudness = np.clip((rms_db + 60) / 60, 0, 1)
+        features['loudness'] = float(normalized_loudness)
         
         # 4. Danceability (based on beat strength and regularity)
         onset_env = librosa.onset.onset_strength(y=y, sr=sr)

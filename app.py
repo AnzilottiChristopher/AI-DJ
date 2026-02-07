@@ -258,38 +258,41 @@ async def get_auto_play_status():
     }
 @app.post("/api/library/reload")
 async def reload_library():
-    """
-    Reload music library to pick up newly uploaded songs.
-    
-    Call this after uploading a new song to make it available immediately.
-    """
-    global music_library, audio_manager, llm
+    global music_library, audio_manager, llm 
     try:
-        print("[RELOAD] Reloading music library...")
-        
-        # Reload the music library (re-reads JSON and rebuilds index)
+        print("[Reload] Reloading Music library")
+
         music_library.reload()
-        
-        # Rebuild similarity embeddings if similarity service exists
+
         if audio_manager.similarity_service:
-            print("[RELOAD] Rebuilding similarity embeddings...")
-            audio_manager.similarity_service.build_embeddings(music_library)
-        
-        song_count = len(music_library.index)
-        print(f"[RELOAD] Complete: {song_count} songs available")
-        
-        return {
-            "success": True,
-            "message": f"Library reloaded: {song_count} songs",
-            "song_count": song_count
-        }
+            print("[Reload] Scheduling similarity rebuild in background")
+
+            async def rebuild_embeddings_background():
+                import asyncio
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(
+                    None,
+                    audio_manager.similarity_service._build_embeddings,
+                    music_library
+                )
+                print("[Reload] Similarity embeddings rebuilt")
+
+                asyncio.create_task(rebuild_embeddings_background)
+
+            song_count = len(music_library.index)
+            print(f"[Reload] Complete: {song_count} songs available")
+
+            return {
+                "success": True,
+                "message": f"Library reloaded: {song_count} songs",
+                "song_count": song_count
+            }
     except Exception as e:
-        print(f"[RELOAD ERROR] {e}")
+        print(f"[Reload error] {e}")
         return {
             "success": False,
             "message": f"Failed to reload library: {str(e)}"
         }
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
