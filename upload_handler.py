@@ -166,21 +166,73 @@ def convert_segment_names(segments: list) -> list:
     return numbered_segments
 
 
+
+async def process_upload_background(audio_path: Path, normalized_name: str, artist: str, title: str):
+    """
+    Background task to process uploaded song without blocking.
+    
+    Runs segmentation, feature extraction, and library reload.
+    """
+    import asyncio
+    
+    try:
+        print(f"\n[BACKGROUND] Processing: {normalized_name}")
+        
+        # Run segmentation in executor (CPU-intensive, runs in thread pool)
+        loop = asyncio.get_event_loop()
+        segments_result = await loop.run_in_executor(
+            None,  # Use default executor
+            run_segmentation,
+            audio_path
+        )
+        
+        if not segments_result:
+            print(f"[BACKGROUND] Segmentation failed for {normalized_name}")
+            if audio_path.exists():
+                audio_path.unlink()
+            return
+        
+        print(f"[BACKGROUND] Segmentation complete: {len(segments_result['segments'])} segments")
+        
+        # Convert AI segments to original naming convention
+        converted_segments = convert_segment_names(segments_result['segments'])
+        
+        # Use extracted features from segmentation
+        extracted_features = segments_result.get('features', {})
+        
+        # Add to segmented_songs.json
+        new_song = {
+            "song_name": normalized_name,
+            "features": extracted_features,
+            "segments": converted_segments
+        }
+        
+        segmented_data = load_segmented_songs()
+        segmented_data['songs'].append(new_song)
+        save_segmented_songs(segmented_data)
+        
+        print(f"[BACKGROUND] Saved to database")
+        
+        # Trigger library reload (now safe during playback)
+        try:
+            import httpx
+            async with httpx.AsyncClient() as client:
+                await client.post("http://localhost:8000/api/library/reload", timeout=5.0)
+                print(f"[BACKGROUND] Library reloaded - '{title}' by {artist} is now available!")
+        except Exception as e:
+            print(f"[BACKGROUND] Warning: Could not trigger library reload: {e}")
+        
+        print(f"[BACKGROUND] ✓ COMPLETE: {normalized_name}\n")
+        
+    except Exception as e:
+        print(f"[BACKGROUND ERROR] {e}")
+        import traceback
+        traceback.print_exc()
+
+
 @router.post("/song")
 async def upload_song(file: UploadFile = File(...)):
-    """
-    Upload song with format: "Artist - Song Title.wav"
-    
-    Returns:
-        {
-            "success": true,
-            "filename": "A-Sky-Full-Of-Stars_Coldplay.wav",
-            "artist": "Coldplay",
-            "title": "A Sky Full of Stars",
-            "segments": [...],
-            "segment_count": 9
-        }
-    """
+    """Upload song - returns immediately, processes in background."""
     try:
         if not file.filename.endswith(('.wav', '.mp3')):
             raise HTTPException(400, "Only .wav and .mp3 files supported")
@@ -188,136 +240,49 @@ async def upload_song(file: UploadFile = File(...)):
         artist, title = extract_artist_title_from_filename(file.filename)
         
         if not artist or not title:
-            raise HTTPException(
-                400,
-                'Invalid filename. Use: "Artist - Song Title.wav"'
-            )
+            raise HTTPException(400, 'Invalid filename. Use: "Artist - Song Title.wav"')
         
         ensure_directories()
         
         normalized_name = normalize_filename(artist, title)
         audio_path = AUDIO_DIR / normalized_name
         
-        # Check if song already exists BEFORE doing any processing
+        # Check if song already exists
         segmented_data = load_segmented_songs()
         if any(s['song_name'] == normalized_name for s in segmented_data.get('songs', [])):
-            raise HTTPException(
-                status_code=409,
-                detail=f"Song already exists: '{title}' by {artist}. Please delete it first if you want to re-upload."
-            )
+            raise HTTPException(409, f"Song already exists: '{title}' by {artist}")
         
-        # Also check if audio file exists (safety check)
         if audio_path.exists():
-            raise HTTPException(
-                status_code=409,
-                detail=f"Audio file already exists: {normalized_name}. Please delete it first."
-            )
+            raise HTTPException(409, f"Audio file already exists: {normalized_name}")
         
-        # Save uploaded file
+        # Save uploaded file (fast, ~1 second)
         with open(audio_path, 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        segments_result = run_segmentation(audio_path)
+        print(f"[UPLOAD] File saved: {normalized_name}")
+        print(f"[UPLOAD] Starting background processing...")
         
-        if not segments_result:
-            if audio_path.exists():
-                audio_path.unlink()
-            raise HTTPException(500, "Segmentation failed")
+        # Process in background (don't wait!)
+        import asyncio
+        asyncio.create_task(process_upload_background(
+            audio_path=audio_path,
+            normalized_name=normalized_name,
+            artist=artist,
+            title=title
+        ))
         
-        # Convert AI segments to original naming convention and add numbers
-        converted_segments = convert_segment_names(segments_result['segments'])
-        
-        # Use extracted features from segmentation (includes BPM, key, etc.)
-        extracted_features = segments_result.get('features', {})
-        
-        # Add to segmented_songs.json - MATCH ORIGINAL STRUCTURE
-        new_song = {
-            "song_name": normalized_name,
-            "features": extracted_features,  # ← Now includes real features!
-            "segments": converted_segments
-        }
-        
-        segmented_data['songs'].append(new_song)
-        save_segmented_songs(segmented_data)
-        
-        # Trigger library reload (now safe during playback)
-        try:
-            import httpx
-            async with httpx.AsyncClient() as client:
-                await client.post("http://localhost:8000/api/library/reload", timeout=5.0)
-                print(f"[UPLOAD] Library reloaded - song immediately available!")
-        except Exception as e:
-            print(f"[UPLOAD] Warning: Could not trigger library reload: {e}")
-            print("[UPLOAD] Song saved to JSON - will be available after restart")
-        
+        # Return immediately - processing continues in background
         return JSONResponse({
             "success": True,
             "filename": normalized_name,
             "artist": artist,
             "title": title,
-            "segments": segments_result['segments'],
-            "segment_count": len(segments_result['segments']),
-            "message": f"'{title}' by {artist} uploaded successfully"
+            "message": f"Upload started! Processing in background (~60 seconds)...",
+            "processing": True
         })
         
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(500, f"Error: {str(e)}")
-
-
-@router.get("/songs")
-async def list_songs():
-    """List all segmented songs."""
-    try:
-        data = load_segmented_songs()
-        songs = []
-        
-        for s in data.get('songs', []):
-            # Extract artist and title from song_name
-            song_name = s['song_name']
-            name_without_ext = song_name.replace('.wav', '')
-            
-            if '_' in name_without_ext:
-                parts = name_without_ext.split('_')
-                title = '_'.join(parts[:-1]).replace('-', ' ').title()
-                artist = parts[-1].replace('-', ' ').title()
-            else:
-                title = name_without_ext.replace('-', ' ').title()
-                artist = 'Unknown'
-            
-            songs.append({
-                "song_name": song_name,
-                "artist": artist,
-                "title": title,
-                "segment_count": len(s.get('segments', []))
-            })
-        
-        return JSONResponse({"songs": songs, "total": len(songs)})
-    except Exception as e:
-        raise HTTPException(500, f"Failed to load songs: {str(e)}")
-
-
-@router.delete("/song/{filename}")
-async def delete_song(filename: str):
-    """Delete a song."""
-    try:
-        data = load_segmented_songs()
-        original_count = len(data['songs'])
-        
-        data['songs'] = [s for s in data['songs'] if s['song_name'] != filename]
-        
-        if len(data['songs']) == original_count:
-            raise HTTPException(404, f"Song not found: {filename}")
-        
-        save_segmented_songs(data)
-        
-        audio_path = AUDIO_DIR / filename
-        if audio_path.exists():
-            audio_path.unlink()
-        
-        return JSONResponse({"success": True, "message": f"Deleted: {filename}"})
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(500, f"Failed to delete: {str(e)}")
+        print(f"[UPLOAD ERROR] {e}")
+        raise HTTPException(500, f"Upload failed: {str(e)}")
