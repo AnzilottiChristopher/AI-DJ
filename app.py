@@ -33,6 +33,8 @@ app.add_middleware(
 
 app.include_router(upload_router)
 
+background_tasks = set()
+
 # Ollama process management
 ollama_process = None
 
@@ -54,6 +56,19 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     global ollama_process
+    
+    print(f"ancelling {len(background_tasks)} background tasks")
+    for task in background_tasks:
+        task.cancel()
+
+    if background_tasks:
+        try:
+            await asyncio.wait(background_tasks, timeout=2.0)
+            print("Background tasks cancelled")
+        except Exception as e:
+            print(f"Warning during task cancellation: {e}")
+
+
     if ollama_process:
         print("Shutting down Ollama server...")
         ollama_process.terminate()
@@ -287,17 +302,23 @@ async def reload_library():
             print("[RELOAD] Scheduling similarity rebuild in background...")
 
             async def rebuild_embeddings_background():
-                import asyncio
-                loop = asyncio.get_event_loop()
-                await loop.run_in_executor(
-                    None,
-                    audio_manager.similarity_service.build_embeddings,
-                    music_library
-                )
-                print("[RELOAD] Similarity embeddings rebuilt")
+                try: 
+                    import asyncio
+                    loop = asyncio.get_event_loop()
+                    await loop.run_in_executor(
+                        None,
+                        audio_manager.similarity_service.build_embeddings,
+                        music_library
+                    )
+                    print("[RELOAD] Similarity embeddings rebuilt")
+                except asyncio.CancelledError:
+                    print("[RELOAD] Embedding rebuild cancelled")
+                    raise
             
             # Start background task
-            asyncio.create_task(rebuild_embeddings_background())
+            task = asyncio.create_task(rebuild_embeddings_background())
+            background_tasks.add(task)
+            task.add_done_callback(background_tasks.discard)
 
         print(f"[RELOAD] Complete: {song_count} songs available")
 
@@ -330,16 +351,22 @@ async def add_song_to_library(song_data: dict):
             print("[HOT-ADD] Updating similarity embeddings...")
 
             async def update_embeddings_background():
-                import asyncio
-                loop = asyncio.get_event_loop()
-                await loop.run_in_executor(
-                    None,
-                    audio_manager.similarity_service.build_embeddings,
-                    music_library
-                )
-                print("[HOT-ADD] Similarity embeddings updated")
+                try:
+                    import asyncio
+                    loop = asyncio.get_event_loop()
+                    await loop.run_in_executor(
+                        None,
+                        audio_manager.similarity_service.build_embeddings,
+                        music_library
+                    )
+                    print("[HOT-ADD] Similarity embeddings updated")
+                except asyncio.CancelledError:
+                    print("[HOT-ADD] Embedding update cancelled")
+                    raise
             
-            asyncio.create_task(update_embeddings_background())
+            task = asyncio.create_task(update_embeddings_background())
+            background_tasks.add(task)
+            task.add_done_callback(background_tasks.discard)
 
         print(f"[HOT-ADD] Song available: {normalized_key}")
         
