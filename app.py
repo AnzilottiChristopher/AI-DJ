@@ -294,5 +294,42 @@ async def reload_library():
             "message": f"Failed to reload library: {str(e)}"
         }
 
+@app.post("/api/library/add-song")
+async def add_song_to_library(song_data: dict):
+    global music_library, audio_manager
+    try:
+        print(f"Adding Song: {song_data.get('song_name')}")
+
+        normalized_key = music_library.add_song_hot(song_data)
+
+        if audio_manager.similarity_service:
+            print("Updating Similarity embeddings")
+
+            async def update_embeddings_background():
+                import asyncio
+                loop = asyncio.get_event_loop()
+                # Full rebuild is fine - only takes 5-10 seconds and runs in background
+                await loop.run_in_executor(
+                    None,
+                    audio_manager.similarity_service.build_embeddings,
+                    music_library
+                )
+                print("[HOT-ADD] Similarity embeddings updated")
+            asyncio.create_task(update_embeddings_background())
+
+        print(f"[HOT-ADD] Song available: {normalized_key}")
+        
+        return {
+            "success": True,
+            "message": f"Song added: {normalized_key}",
+            "key": normalized_key
+        }
+    except Exception as e:
+        print(f"[HOT-ADD ERROR] {e}")
+        return {
+            "success": False,
+            "message": f"Failed to add song: {str(e)}"
+        }
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

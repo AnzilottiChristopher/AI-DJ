@@ -34,6 +34,7 @@ def extract_artist_title_from_filename(filename: str) -> Tuple[Optional[str], Op
 
 
 def normalize_filename(artist: str, title: str) -> str:
+    """Convert to "Song-Title_Artist.wav" format."""
     # Remove apostrophes and other special characters that cause search issues
     title_clean = re.sub(r'[^\w\s-]', '', title)  # Removes apostrophes, quotes, etc.
     title_clean = re.sub(r'\s+', '-', title_clean.strip())
@@ -45,6 +46,7 @@ def normalize_filename(artist: str, title: str) -> str:
 
 
 def ensure_directories():
+    """Create required directories."""
     AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     MUSIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -109,6 +111,18 @@ def run_segmentation(audio_path: Path) -> Optional[dict]:
 
 
 def convert_segment_names(segments: list) -> list:
+    """
+    Convert AI segment names to original convention and add numbers to duplicates.
+    
+    This is ONLY for newly uploaded songs (AI-segmented).
+    Existing songs keep their original names (verse, chorus, etc.)
+    
+    AI names: intro, buildup, drop, cooloff, outro
+    Convert to: intro, build-up, beat-drop, cool-down, outro
+    
+    Also adds numbers to duplicates:
+    ['build-up', 'beat-drop', 'build-up'] -> ['build-up', 'beat-drop', 'build-up1']
+    """
     # Mapping from AI names to original names
     name_map = {
         'intro': 'intro',
@@ -154,6 +168,19 @@ def convert_segment_names(segments: list) -> list:
 
 @router.post("/song")
 async def upload_song(file: UploadFile = File(...)):
+    """
+    Upload song with format: "Artist - Song Title.wav"
+    
+    Returns:
+        {
+            "success": true,
+            "filename": "A-Sky-Full-Of-Stars_Coldplay.wav",
+            "artist": "Coldplay",
+            "title": "A Sky Full of Stars",
+            "segments": [...],
+            "segment_count": 9
+        }
+    """
     try:
         if not file.filename.endswith(('.wav', '.mp3')):
             raise HTTPException(400, "Only .wav and .mp3 files supported")
@@ -213,15 +240,15 @@ async def upload_song(file: UploadFile = File(...)):
         segmented_data['songs'].append(new_song)
         save_segmented_songs(segmented_data)
         
-        # Trigger library reload so song is immediately available
+        # Trigger library reload (now safe during playback)
         try:
             import httpx
             async with httpx.AsyncClient() as client:
                 await client.post("http://localhost:8000/api/library/reload", timeout=5.0)
-                print(f"[UPLOAD] Library reloaded - song now available")
+                print(f"[UPLOAD] Library reloaded - song immediately available!")
         except Exception as e:
             print(f"[UPLOAD] Warning: Could not trigger library reload: {e}")
-            print("[UPLOAD] You may need to restart the server for the song to be available")
+            print("[UPLOAD] Song saved to JSON - will be available after restart")
         
         return JSONResponse({
             "success": True,
