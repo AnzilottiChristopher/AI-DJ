@@ -202,10 +202,16 @@ async def audio_stream(websocket: WebSocket):
             print(f"[WS] Command listener error: {e}")
     
     async def audio_streamer():
-        """Stream audio - play_queue handles its own loop."""
+        """Continuously stream audio without blocking on commands."""
         try:
-            # Just call play_queue once - it loops internally until stopped
-            await audio_manager.play_queue(websocket)
+            while True:
+                if audio_manager.is_playing and audio_manager.queue:
+                    # Stream audio from the queue
+                    await audio_manager.play_queue(websocket)
+                else:
+                    # No music playing, wait a bit before checking again
+                    await asyncio.sleep(0.1)
+        
         except Exception as e:
             print(f"[WS] Audio streamer error: {e}")
     
