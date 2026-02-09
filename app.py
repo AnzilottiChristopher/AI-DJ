@@ -29,7 +29,7 @@ app.add_middleware(
     allow_origins=["http://localhost:5173", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 app.include_router(upload_router)
@@ -82,42 +82,130 @@ async def audio_stream(websocket: WebSocket):
     - Playback status updates
     """
     await websocket.accept()
+
+    def _serialize_track(item):
+        """Best-effort conversion of whatever the queue stores into a UI-friendly object."""
+        if item is None:
+            return None
+        # Common case: already a dict
+        if isinstance(item, dict):
+            title = item.get("title") or item.get("name") or item.get("track") or item.get("filename")
+            artist = item.get("artist") or item.get("artist_name") or item.get("by")
+            return {
+                "title": title,
+                "artist": artist,
+            }
+        # If the queue stores a custom object
+        if hasattr(item, "title") or hasattr(item, "artist"):
+            return {
+                "title": getattr(item, "title", None),
+                "artist": getattr(item, "artist", None),
+            }
+        # Fallback: string
+        return {
+            "title": str(item),
+            "artist": None,
+        }
+
+    def _queue_payload(extra: dict | None = None):
+        status = audio_manager.get_queue_status()
+
+        # Different versions of the backend used different keys; normalize here.
+        raw_upcoming = (
+            status.get("queue")
+            or status.get("upcoming")
+            or status.get("upcoming_songs")
+            or status.get("next_up")
+            or status.get("upcomingQueue")
+            or []
+        )
+
+        # If the queue is an asyncio.Queue (or another queue-like object), convert it to a list.
+        # asyncio.Queue keeps items in a private deque at `._queue`.
+        try:
+            if hasattr(raw_upcoming, "_queue"):
+                raw_upcoming = list(raw_upcoming._queue)
+        except Exception:
+            pass
+
+        # Some implementations might store upcoming as a single item; normalize to a list.
+        if raw_upcoming is None:
+            raw_upcoming = []
+
+        # UI-friendly list of upcoming tracks, in order.
+        upcoming_tracks = []
+        try:
+            for x in raw_upcoming:
+                s = _serialize_track(x)
+                if s:
+                    upcoming_tracks.append(s)
+        except Exception:
+            # If raw_upcoming isn't iterable for some reason
+            s = _serialize_track(raw_upcoming)
+            if s:
+                upcoming_tracks = [s]
+
+        # Keep the original status, but also provide the normalized list.
+        payload = {
+            "queue_status": status,
+            "upcoming": upcoming_tracks,        # <-- frontend should read this for the ordered list
+            "queue": upcoming_tracks,           # <-- alias for convenience / backwards compat
+            "upcoming_count": len(upcoming_tracks),
+        }
+        if extra:
+            payload.update(extra)
+        return payload
+
+    # Send an initial snapshot so the frontend can render the queue immediately
+    try:
+        await websocket.send_json(_queue_payload({
+            "type": "queue_snapshot",
+        }))
+    except Exception as e:
+        # Client disconnected before we could send
+        print(f"[WS] initial queue_snapshot send failed: {e}")
+        return
+
     playback_task = None
-    
     try:
         while True:
-            data = await websocket.receive_json()
+            try:
+                data = await websocket.receive_json()
+            except Exception as e:
+                # Client disconnected or sent invalid JSON
+                print(f"[WS] receive_json failed / disconnected: {e}")
+                break
+
             prompt = data.get('data', '')
-            
+
             print(f"[WS] Received prompt: {prompt}")
-            
+
             try:
                 # Classify the intent
                 result = llm.classify(prompt)
                 intent = result['intent']
                 song_info = result['song']
-                
+
                 if intent == 'queue_song':
                     found = audio_manager.add_to_queue(
-                        song_info['title'], 
+                        song_info['title'],
                         song_info['artist']
                     )
-                    
+
                     if found:
-                        # Send queue update
-                        await websocket.send_json({
-                            "type": "queued",
+                        await websocket.send_json(_queue_payload({
+                            "type": "queue_update",
+                            "action": "added",
                             "message": f"Queued: {song_info['title']}",
-                            "queue": audio_manager.get_queue_status()
-                        })
-                        
+                        }))
+
                         # Check if a transition is being prepared
                         if audio_manager.pending_transition:
                             await websocket.send_json({
                                 "type": "transition_planned",
                                 "transition": audio_manager.pending_transition.to_dict()
                             })
-                        
+
                         # Start playback if not already playing
                         if not audio_manager.is_playing:
                             audio_manager.start()
@@ -129,11 +217,11 @@ async def audio_stream(websocket: WebSocket):
                             "type": "error",
                             "message": f"Song not found: {song_info['title']}"
                         })
-                        
+
                 elif intent == 'generate_playlist':
                     # NEW: Handle playlist generation
                     playlist = llm.generate_playlist(prompt)
-                    
+
                     if not playlist:
                         await websocket.send_json({
                             "type": "error",
@@ -142,7 +230,7 @@ async def audio_stream(websocket: WebSocket):
                     else:
                         queued_songs = []
                         failed_songs = []
-                        
+
                         for song in playlist:
                             found = audio_manager.add_to_queue(
                                 song['title'],
@@ -152,70 +240,65 @@ async def audio_stream(websocket: WebSocket):
                                 queued_songs.append(song['title'])
                             else:
                                 failed_songs.append(song['title'])
-                        
-                        await websocket.send_json({
-                            "type": "playlist_generated",
+
+                        await websocket.send_json(_queue_payload({
+                            "type": "queue_update",
+                            "action": "playlist_generated",
                             "message": f"Queued {len(queued_songs)} songs",
                             "queued": queued_songs,
                             "failed": failed_songs,
-                            "queue": audio_manager.get_queue_status()
-                        })
-                        
+                        }))
+
                         # Start playback if not already playing
                         if not audio_manager.is_playing and queued_songs:
                             audio_manager.start()
                             playback_task = asyncio.create_task(
                                 audio_manager.play_queue(websocket)
                             )
-                
-                
+
                 elif intent == 'stop_dj':
                     audio_manager.stop()
                     await websocket.send_json({
                         "type": "stopped",
                         "message": "Playback stopped"
                     })
-                
+
                 elif intent == 'hello':
                     await websocket.send_json({
                         "type": "greeting",
                         "message": "Hey! I'm your AI DJ. Tell me what you want to hear!"
                     })
-                
+
                 elif intent == 'help':
                     await websocket.send_json({
                         "type": "help",
                         "message": "You can say things like: 'Play Wake Me Up by Avicii', 'Queue Stargazing', 'Stop the music'. I'll automatically queue similar songs to keep the music going!"
                     })
-                
+
                 else:
                     await websocket.send_json({
                         "type": "unknown",
                         "message": "I didn't quite catch that. Try asking me to play a song!"
                     })
-                
+
             except Exception as e:
                 print(f"[ERROR] LLM processing: {e}")
                 await websocket.send_json({
                     "type": "error",
                     "message": f"Error processing request: {str(e)}"
                 })
-            
-            # Acknowledge receipt
-            await websocket.send_json({
-                "status": "received",
-                "prompt": prompt
-            })
-    
+
     except Exception as e:
-        print(f"[WS ERROR] {e}")
+        print(f"[WS ERROR] audio_stream: {e}")
     finally:
+        # Ensure we stop any background playback work when the client disconnects.
+        try:
+            audio_manager.stop()
+        except Exception:
+            pass
+
         if playback_task:
             playback_task.cancel()
-        try:
-            await websocket.close()
-        except:
-            pass
 
 
 @app.get("/api/status")

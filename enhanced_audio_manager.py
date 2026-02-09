@@ -198,9 +198,12 @@ class EnhancedAudioManager:
         )
         
         self.queue.append(track_info)
+        self._push_queue_update("auto_queued")
         print(f"[AUTO-PLAY] Queued: {title} by {artist}")
+        self._push_queue_update("user_queued")
         
         return True
+    
     
     def add_to_queue(self, title: str, artist: str) -> bool:
         """
@@ -325,7 +328,9 @@ class EnhancedAudioManager:
     def get_next_track(self) -> Optional[TrackInfo]:
         """Get next track from queue."""
         if self.queue:
-            return self.queue.pop(0)
+            next_track = self.queue.pop(0)
+            self._push_queue_update("dequeued")
+            return next_track
         return None
     
     async def _notify_auto_queue(self, track_info: TrackInfo):
@@ -606,6 +611,7 @@ class EnhancedAudioManager:
         self.state = PlaybackState.STOPPED
         self.pending_transition = None
         self.transition_audio = None
+        self._push_queue_update("stopped")
     
     def get_queue_status(self) -> Dict:
         """Get current queue and playback status."""
@@ -630,7 +636,33 @@ class EnhancedAudioManager:
             "auto_play_enabled": self.enable_auto_play,
             "recently_played": self.recently_played[-5:]  # Last 5 songs
         }
+    
+    def _push_queue_update(self, reason: str = "queue_changed"):
+        """
+        Best-effort push of current queue status to the connected frontend.
+        Safe to call from sync code (schedules async send).
+        """
+        if not self._websocket:
+            return
 
+        payload = {
+            "type": "queue_update",
+            "reason": reason,
+            "queue_status": self.get_queue_status()
+        }
+
+        async def _send():
+            try:
+                await self._websocket.send_json(payload)
+            except Exception as e:
+                print(f"[QUEUE] Could not send queue_update: {e}")
+
+        try:
+            loop = asyncio.get_running_loop()
+            loop.create_task(_send())
+        except RuntimeError:
+            # No running event loop (rare in your app); ignore
+            pass
 
 # Backwards compatibility - original AudioManager interface
 class AudioManager(EnhancedAudioManager):
