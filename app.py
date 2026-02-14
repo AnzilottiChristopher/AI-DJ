@@ -273,7 +273,7 @@ async def reload_library():
         # Rebuild similarity embeddings if similarity service exists
         if audio_manager.similarity_service:
             print("[RELOAD] Rebuilding similarity embeddings...")
-            audio_manager.similarity_service.build_embeddings(music_library)
+            audio_manager.similarity_service._build_embeddings(music_library)
         
         song_count = len(music_library.index)
         print(f"[RELOAD] Complete: {song_count} songs available")
