@@ -23,6 +23,7 @@ Return ONLY this JSON format:
 Intent types:
 - "queue_song": User wants to play/queue/add a SPECIFIC song (e.g., "play waiting for love", "add levels by avicii")
 - "generate_playlist": User wants multiple songs based on a mood/vibe/criteria (e.g., "give me upbeat songs", "play something danceable", "make me a playlist for a party")
+- "quick_transition": User wants to transition to next song immediately/soon (e.g., "transition now", "switch songs", "next song now", "skip to next within a minute")
 - "start_dj": User wants to start DJ/music with NO specific song (e.g., "start the dj", "play some music")
 - "stop_dj": User wants to stop the music (e.g., "stop", "end the music")
 - "hello": User is greeting (e.g., "hi", "hello")
@@ -37,6 +38,7 @@ Rules:
 
 Examples:
 "play stargazing by kygo" → {{"intent":"queue_song", "reason":"specific song request", "song":{{"title":"Stargazing", "artist":"Kygo"}}}}
+"transition to next song now" → {{"intent":"quick_transition", "reason":"user wants immediate transition", "song":{{"title":null, "artist":null}}}}
 "give me some high energy songs" → {{"intent":"generate_playlist", "reason":"mood-based playlist request", "song":{{"title":null, "artist":null}}}}
 "play something danceable" → {{"intent":"generate_playlist", "reason":"vibe-based request", "song":{{"title":null, "artist":null}}}}
 "start the music" → {{"intent":"start_dj", "reason":"generic start request", "song":{{"title":null, "artist":null}}}}
@@ -79,6 +81,7 @@ Return ONLY the JSON array, nothing else."""
             "hello": self.cmd_hello,
             "start_dj": self.cmd_start_dj,
             "stop_dj": self.cmd_stop_dj,
+            "quick_transition": self.cmd_quick_transition,
             "help": self.cmd_help,
             "queue_song": self.cmd_queue_song,
             "generate_playlist": self.cmd_generate_playlist,
@@ -91,6 +94,9 @@ Return ONLY the JSON array, nothing else."""
     def cmd_stop_dj(self): print("[CMD] Stopping DJ pipeline... (placeholder)")
     def cmd_help(self): print("[CMD] Available commands: hello, start_dj, stop_dj, help, queue_song, generate_playlist")
     def cmd_none(self): print("[NO ACTION] No matching command.")
+
+    def cmd_quick_transition(self):
+        print("[CMD] Quick Transition Requested...")
 
     def queue_track(self, title: Optional[str], artist: Optional[str]):
         if not title: 
