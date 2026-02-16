@@ -6,6 +6,7 @@ from typing import Optional, Tuple
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 import shutil
+import sys
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
@@ -76,7 +77,7 @@ def run_segmentation(audio_path: Path) -> Optional[dict]:
         audio_path_abs = Path(audio_path).resolve()
         
         result = subprocess.run(
-            ["python", script_name, str(audio_path_abs)],
+            [sys.executable, script_name, str(audio_path_abs)],
             capture_output=True,
             text=True,
             timeout=300,

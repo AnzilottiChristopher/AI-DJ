@@ -505,10 +505,11 @@ async def reload_library():
     global music_library, audio_manager, llm
     try:
         print("[RELOAD] Reloading music library...")
-        music_library.reload()
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, music_library.reload)
         if audio_manager.similarity_service:
             print("[RELOAD] Rebuilding similarity embeddings...")
-            audio_manager.similarity_service._build_embeddings(music_library)
+            await loop.run_in_executor(None, audio_manager.similarity_service._build_embeddings)
         song_count = len(music_library.index)
         print(f"[RELOAD] Complete: {song_count} songs available")
         return {

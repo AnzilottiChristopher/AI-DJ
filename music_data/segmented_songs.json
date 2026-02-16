@@ -2389,6 +2389,232 @@
           "end": 170.62503401360544
         }
       ]
+    },
+    {
+      "song_name": "Levels_Avicii.wav",
+      "features": {
+        "bpm": 123.046875,
+        "key": "G#",
+        "key_strength": 0.12249578535556793,
+        "scale": "major",
+        "loudness": 0.7795326113700867,
+        "danceability": 0.01894071381281897,
+        "spectral_centroid": 2781.7166704039246,
+        "spectral_rolloff": 5823.470965129573,
+        "dissonance": 0.042793937027454376,
+        "onset_rate": 3.511688158479813
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 12.5
+        },
+        {
+          "name": "build-up",
+          "start": 12.5,
+          "end": 30.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 30.0,
+          "end": 35.0
+        },
+        {
+          "name": "build-up1",
+          "start": 35.0,
+          "end": 52.5
+        },
+        {
+          "name": "beat-drop1",
+          "start": 52.5,
+          "end": 70.0
+        },
+        {
+          "name": "build-up2",
+          "start": 70.0,
+          "end": 75.0
+        },
+        {
+          "name": "cool-down",
+          "start": 75.0,
+          "end": 80.0
+        },
+        {
+          "name": "build-up3",
+          "start": 80.0,
+          "end": 130.0
+        },
+        {
+          "name": "cool-down1",
+          "start": 130.0,
+          "end": 142.5
+        },
+        {
+          "name": "build-up4",
+          "start": 142.5,
+          "end": 150.0
+        },
+        {
+          "name": "cool-down2",
+          "start": 150.0,
+          "end": 152.5
+        },
+        {
+          "name": "build-up5",
+          "start": 152.5,
+          "end": 157.5
+        },
+        {
+          "name": "beat-drop2",
+          "start": 157.5,
+          "end": 182.5
+        },
+        {
+          "name": "outro",
+          "start": 182.5,
+          "end": 199.90385487528346
+        }
+      ]
+    },
+    {
+      "song_name": "Lights_Ellie-Goulding.wav",
+      "features": {
+        "bpm": 117.45383522727273,
+        "key": "E",
+        "key_strength": 0.12031375616788864,
+        "scale": "major",
+        "loudness": 0.7990761399269104,
+        "danceability": 0.016424278998142142,
+        "spectral_centroid": 2394.5436566877615,
+        "spectral_rolloff": 5141.924554322327,
+        "dissonance": 0.021984323859214783,
+        "onset_rate": 3.2738134760437694
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 22.5
+        },
+        {
+          "name": "build-up",
+          "start": 22.5,
+          "end": 62.5
+        },
+        {
+          "name": "beat-drop",
+          "start": 62.5,
+          "end": 65.0
+        },
+        {
+          "name": "build-up1",
+          "start": 65.0,
+          "end": 102.5
+        },
+        {
+          "name": "beat-drop1",
+          "start": 102.5,
+          "end": 132.5
+        },
+        {
+          "name": "build-up2",
+          "start": 132.5,
+          "end": 152.5
+        },
+        {
+          "name": "beat-drop2",
+          "start": 152.5,
+          "end": 162.5
+        },
+        {
+          "name": "build-up3",
+          "start": 162.5,
+          "end": 167.5
+        },
+        {
+          "name": "beat-drop3",
+          "start": 167.5,
+          "end": 230.0
+        },
+        {
+          "name": "outro",
+          "start": 230.0,
+          "end": 245.89061224489797
+        }
+      ]
+    },
+    {
+      "song_name": "David-Guetta_Memories.wav",
+      "features": {
+        "bpm": 129.19921875,
+        "key": "G#",
+        "key_strength": 0.14059364795684814,
+        "scale": "minor",
+        "loudness": 0.8210028409957886,
+        "danceability": 0.01670373468761796,
+        "spectral_centroid": 2527.6624733024014,
+        "spectral_rolloff": 5934.16735526843,
+        "dissonance": 0.029965706169605255,
+        "onset_rate": 3.5829945489356225
+      },
+      "segments": [
+        {
+          "name": "intro",
+          "start": 0.0,
+          "end": 12.5
+        },
+        {
+          "name": "build-up",
+          "start": 12.5,
+          "end": 40.0
+        },
+        {
+          "name": "beat-drop",
+          "start": 40.0,
+          "end": 52.5
+        },
+        {
+          "name": "build-up1",
+          "start": 52.5,
+          "end": 85.0
+        },
+        {
+          "name": "beat-drop1",
+          "start": 85.0,
+          "end": 97.5
+        },
+        {
+          "name": "build-up2",
+          "start": 97.5,
+          "end": 100.0
+        },
+        {
+          "name": "beat-drop2",
+          "start": 100.0,
+          "end": 115.0
+        },
+        {
+          "name": "cool-down",
+          "start": 115.0,
+          "end": 117.5
+        },
+        {
+          "name": "build-up3",
+          "start": 117.5,
+          "end": 125.0
+        },
+        {
+          "name": "beat-drop3",
+          "start": 125.0,
+          "end": 155.0
+        },
+        {
+          "name": "outro",
+          "start": 155.0,
+          "end": 162.99215419501132
+        }
+      ]
     }
   ]
 }
