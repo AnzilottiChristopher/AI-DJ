@@ -146,7 +146,8 @@ class TransitionMixer:
     def compute_transition(self, 
                            song_a_data: Dict,
                            song_b_data: Dict,
-                           current_position: float = 0.0) -> Optional[TransitionPlan]:
+                           current_position: float = 0.0,
+                           force_next_segment: bool = False) -> Optional[TransitionPlan]:
         """
         Compute the optimal transition between two songs.
         
@@ -168,6 +169,20 @@ class TransitionMixer:
         
         # Get available exit segments (ones we haven't passed yet)
         available_exits = self._get_available_exit_segments(segments_a, current_position)
+
+        if force_next_segment: 
+            min_time = current_position + 5.0 
+            max_time = current_position + 60.0 
+
+            quick_exits = [s for s in available_exits if min_time <= s.start <= max_time]
+
+            if quick_exits: 
+                available_exits = quick_exits
+                print(f"[MIXER] QUICK TRANSITION: Found {len(quick_exits)} segments between {min_time:.1f}s and {max_time:.1f}s")
+            else: 
+                print(f"[MIXER] QUICK TRANSITION: No segments in ideal window, using next available segments")
+                if available_exits:
+                    available_exits = [available_exits[0]]
         
         if not available_exits:
             print("[MIXER] No exit segments available ahead of current position")

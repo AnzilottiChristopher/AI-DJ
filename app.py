@@ -82,67 +82,220 @@ async def audio_stream(websocket: WebSocket):
     - Playback status updates
     """
     await websocket.accept()
-    playback_task = None
     
+    # FIX FOR AUDIO CUTOUTS: Create a WebSocket wrapper with send locking
+    class LockedWebSocket:
+        """WebSocket wrapper that prevents send contention between tasks."""
+        def __init__(self, ws):
+            self._ws = ws
+            self._send_lock = asyncio.Lock()
+        
+        async def send_json(self, data):
+            async with self._send_lock:
+                await self._ws.send_json(data)
+        
+        async def send_bytes(self, data):
+            async with self._send_lock:
+                await self._ws.send_bytes(data)
+        
+        async def receive_json(self):
+            # Receiving doesn't need a lock
+            return await self._ws.receive_json()
+        
+        # Delegate other methods to the original websocket
+        def __getattr__(self, name):
+            return getattr(self._ws, name)
+    
+    # Wrap the websocket with locking
+    locked_websocket = LockedWebSocket(websocket)
+
+    def _serialize_track(item):
+        """Best-effort conversion of whatever the queue stores into a UI-friendly object."""
+        if item is None:
+            return None
+        # Common case: already a dict
+        if isinstance(item, dict):
+            title = item.get("title") or item.get("name") or item.get("track") or item.get("filename")
+            artist = item.get("artist") or item.get("artist_name") or item.get("by")
+            return {
+                "title": title,
+                "artist": artist,
+            }
+        # If the queue stores a custom object
+        if hasattr(item, "title") or hasattr(item, "artist"):
+            return {
+                "title": getattr(item, "title", None),
+                "artist": getattr(item, "artist", None),
+            }
+        # Fallback: string
+        return {
+            "title": str(item),
+            "artist": None,
+        }
+
+    def _queue_payload(extra: dict | None = None):
+        status = audio_manager.get_queue_status()
+
+        # Different versions of the backend used different keys; normalize here.
+        raw_upcoming = (
+            status.get("queue")
+            or status.get("upcoming")
+            or status.get("upcoming_songs")
+            or status.get("next_up")
+            or status.get("upcomingQueue")
+            or []
+        )
+
+        # If the queue is an asyncio.Queue (or another queue-like object), convert it to a list.
+        # asyncio.Queue keeps items in a private deque at `._queue`.
+        try:
+            if hasattr(raw_upcoming, "_queue"):
+                raw_upcoming = list(raw_upcoming._queue)
+        except Exception:
+            pass
+
+        # Some implementations might store upcoming as a single item; normalize to a list.
+        if raw_upcoming is None:
+            raw_upcoming = []
+
+        # UI-friendly list of upcoming tracks, in order.
+        upcoming_tracks = []
+        try:
+            for x in raw_upcoming:
+                s = _serialize_track(x)
+                if s:
+                    upcoming_tracks.append(s)
+        except Exception:
+            # If raw_upcoming isn't iterable for some reason
+            s = _serialize_track(raw_upcoming)
+            if s:
+                upcoming_tracks = [s]
+
+        # Keep the original status, but also provide the normalized list.
+        payload = {
+            "queue_status": status,
+            "upcoming": upcoming_tracks,        # <-- frontend should read this for the ordered list
+            "queue": upcoming_tracks,           # <-- alias for convenience / backwards compat
+            "upcoming_count": len(upcoming_tracks),
+        }
+        if extra:
+            payload.update(extra)
+        return payload
+
+    # Send an initial snapshot so the frontend can render the queue immediately
     try:
+        await locked_websocket.send_json(_queue_payload({
+            "type": "queue_snapshot",
+        }))
+    except Exception as e:
+        # Client disconnected before we could send
+        print(f"[WS] initial queue_snapshot send failed: {e}")
+        return
+
+    # Define variables that will be shared between tasks
+    playback_task = None
+    message_handler_task = None
+    
+    # Track if THIS WebSocket has started playback
+    # This prevents issues when frontend refreshes and reconnects
+    has_started_playback = False
+    
+    # Move message handling to a separate async function
+    # This allows it to run concurrently with audio playback
+    async def handle_messages():
+        """
+        Handle incoming user messages without blocking audio playback.
+        Runs as a separate concurrent task.
+        """
+        nonlocal playback_task, has_started_playback  # Allow modification from outer scope
+        
         while True:
-            data = await websocket.receive_json()
-            prompt = data.get('data', '')
-            
-            print(f"[WS] Received prompt: {prompt}")
-            
             try:
-                # Classify the intent
-                result = llm.classify(prompt)
+                data = await locked_websocket.receive_json()
+            except Exception as e:
+                # Client disconnected or sent invalid JSON
+                print(f"[WS] receive_json failed / disconnected: {e}")
+                break
+
+            prompt = data.get('data', '')
+            print(f"[WS] Received prompt: {prompt}")
+
+            try:
+                # Run LLM in thread pool to prevent blocking event loop
+                # The LLM classification is CPU-intensive and synchronous, which would
+                # freeze the audio streaming if run directly in the async context
+                loop = asyncio.get_event_loop()
+                
+                # Run classify in a thread pool executor (non-blocking)
+                result = await loop.run_in_executor(None, llm.classify, prompt)
                 intent = result['intent']
                 song_info = result['song']
-                
+
                 if intent == 'queue_song':
                     found = audio_manager.add_to_queue(
-                        song_info['title'], 
+                        song_info['title'],
                         song_info['artist']
                     )
-                    
+
                     if found:
-                        # Send queue update
-                        await websocket.send_json({
-                            "type": "queued",
+                        await locked_websocket.send_json(_queue_payload({
+                            "type": "queue_update",
+                            "action": "added",
                             "message": f"Queued: {song_info['title']}",
-                            "queue": audio_manager.get_queue_status()
-                        })
-                        
+                        }))
+
                         # Check if a transition is being prepared
                         if audio_manager.pending_transition:
-                            await websocket.send_json({
+                            await locked_websocket.send_json({
                                 "type": "transition_planned",
                                 "transition": audio_manager.pending_transition.to_dict()
                             })
-                        
-                        # Start playback if not already playing
-                        if not audio_manager.is_playing:
-                            audio_manager.start()
+
+                        # Start playback if:
+                        # 1. Backend says not playing, OR
+                        # 2. This WebSocket hasn't started its own playback task yet
+                        #    (handles frontend refresh where old task is orphaned)
+                        if not audio_manager.is_playing or not has_started_playback:
+                            # If backend thinks it's playing but we haven't started playback,
+                            # it means the old WebSocket was disconnected. Start fresh.
+                            if audio_manager.is_playing and not has_started_playback:
+                                print("[WS] Backend playing but new WebSocket - forcing clean restart")
+                                audio_manager.stop()  # Stop the orphaned task
+                                audio_manager.current_track = None  # Clear old track
+                                audio_manager.start()
+                            elif not audio_manager.is_playing:
+                                # Even if stopped, clear current_track if this is a new WebSocket
+                                # (handles refresh where cleanup stopped playback but left track)
+                                if not has_started_playback and audio_manager.current_track:
+                                    print(f"[WS] New WebSocket, clearing old current_track: {audio_manager.current_track.title if audio_manager.current_track else 'None'}")
+                                    audio_manager.current_track = None
+                                audio_manager.start()
+                            
+                            # Use locked_websocket to prevent send contention
                             playback_task = asyncio.create_task(
-                                audio_manager.play_queue(websocket)
+                                audio_manager.play_queue(locked_websocket)
                             )
+                            has_started_playback = True
+                            print(f"[WS] Started playback task for this WebSocket")
                     else:
-                        await websocket.send_json({
+                        await locked_websocket.send_json({
                             "type": "error",
                             "message": f"Song not found: {song_info['title']}"
                         })
-                        
+
                 elif intent == 'generate_playlist':
-                    # NEW: Handle playlist generation
-                    playlist = llm.generate_playlist(prompt)
-                    
+                    # Handle playlist generation (also CPU-intensive, run in thread pool)
+                    playlist = await loop.run_in_executor(None, llm.generate_playlist, prompt)
+
                     if not playlist:
-                        await websocket.send_json({
+                        await locked_websocket.send_json({
                             "type": "error",
                             "message": "Could not generate playlist from your request"
                         })
                     else:
                         queued_songs = []
                         failed_songs = []
-                        
+
                         for song in playlist:
                             found = audio_manager.add_to_queue(
                                 song['title'],
@@ -152,70 +305,129 @@ async def audio_stream(websocket: WebSocket):
                                 queued_songs.append(song['title'])
                             else:
                                 failed_songs.append(song['title'])
-                        
-                        await websocket.send_json({
-                            "type": "playlist_generated",
+
+                        await locked_websocket.send_json(_queue_payload({
+                            "type": "queue_update",
+                            "action": "playlist_generated",
                             "message": f"Queued {len(queued_songs)} songs",
                             "queued": queued_songs,
                             "failed": failed_songs,
-                            "queue": audio_manager.get_queue_status()
+                        }))
+
+                        # Start playback if not already playing (or new WebSocket)
+                        if (not audio_manager.is_playing or not has_started_playback) and queued_songs:
+                            if audio_manager.is_playing and not has_started_playback:
+                                print("[WS] Backend playing but new WebSocket - restarting for playlist")
+                                audio_manager.stop()
+                                audio_manager.current_track = None
+                                audio_manager.start()
+                            elif not audio_manager.is_playing:
+                                # Clear old track if new WebSocket
+                                if not has_started_playback and audio_manager.current_track:
+                                    print(f"[WS] New WebSocket (playlist), clearing old track")
+                                    audio_manager.current_track = None
+                                audio_manager.start()
+                            
+                            playback_task = asyncio.create_task(
+                                audio_manager.play_queue(locked_websocket)
+                            )
+                            has_started_playback = True
+
+                elif intent == 'quick_transition':
+                    try:
+                        success = audio_manager.force_quick_transition()
+                        if success:
+                            await locked_websocket.send_json({
+                                "type": "quick_transition_scheduled",
+                                "message": "Transitioning at next segment boundary..."
+                            })
+                        else:
+                            await locked_websocket.send_json({
+                                "type": "error",
+                                "message": "No song queued to transition to"
+                            })
+                    except Exception as e:
+                        await locked_websocket.send_json({
+                            "type": "error",
+                            "message": f"Could not schedule quick transition: {str(e)}"
                         })
                         
-                        # Start playback if not already playing
-                        if not audio_manager.is_playing and queued_songs:
-                            audio_manager.start()
-                            playback_task = asyncio.create_task(
-                                audio_manager.play_queue(websocket)
-                            )
-                
-                
                 elif intent == 'stop_dj':
                     audio_manager.stop()
-                    await websocket.send_json({
+                    await locked_websocket.send_json({
                         "type": "stopped",
                         "message": "Playback stopped"
                     })
-                
+
                 elif intent == 'hello':
-                    await websocket.send_json({
+                    await locked_websocket.send_json({
                         "type": "greeting",
                         "message": "Hey! I'm your AI DJ. Tell me what you want to hear!"
                     })
-                
+
                 elif intent == 'help':
-                    await websocket.send_json({
+                    await locked_websocket.send_json({
                         "type": "help",
-                        "message": "You can say things like: 'Play Wake Me Up by Avicii', 'Queue Stargazing', 'Stop the music'. I'll automatically queue similar songs to keep the music going!"
+                       "message": "You can say things like: 'Play Wake Me Up by Avicii', 'Queue Stargazing', 'Stop the music'. I'll automatically queue similar songs to keep the music going!"
                     })
-                
+
                 else:
-                    await websocket.send_json({
+                    await locked_websocket.send_json({
                         "type": "unknown",
                         "message": "I didn't quite catch that. Try asking me to play a song!"
                     })
-                
+
             except Exception as e:
                 print(f"[ERROR] LLM processing: {e}")
-                await websocket.send_json({
+                await locked_websocket.send_json({
                     "type": "error",
                     "message": f"Error processing request: {str(e)}"
                 })
-            
-            # Acknowledge receipt
-            await websocket.send_json({
-                "status": "received",
-                "prompt": prompt
-            })
-    
+
+    # Run message handler as a concurrent task instead of blocking
+    # message handling no longer blocks audio streaming
+    try:
+        # Start the message handler as a background task
+        message_handler_task = asyncio.create_task(handle_messages())
+        print("[WS] Message handler task started")
+        
+        # Wait for the message handler to finish (usually means disconnect)
+        # Audio playback happens in its own task (playback_task) which runs independently
+        await message_handler_task
+        
     except Exception as e:
         print(f"[WS ERROR] {e}")
     finally:
-        if playback_task:
-            playback_task.cancel()
+        # Enhanced cleanup to handle both tasks
+        print("[WS] Cleaning up WebSocket connection...")
+        
+        # Stop audio manager
         try:
-            await websocket.close()
-        except:
-            pass
+            audio_manager.stop()
+        except Exception as e:
+            print(f"[CLEANUP] Error stopping audio manager: {e}")
+
+        # Cancel playback task if running
+        if playback_task and not playback_task.done():
+            playback_task.cancel()
+            try:
+                await playback_task
+            except asyncio.CancelledError:
+                print("[CLEANUP] Playback task cancelled")
+            except Exception as e:
+                print(f"[CLEANUP] Error cancelling playback task: {e}")
+        
+        # Cancel message handler task if running
+        if message_handler_task and not message_handler_task.done():
+            message_handler_task.cancel()
+            try:
+                await message_handler_task
+            except asyncio.CancelledError:
+                print("[CLEANUP] Message handler task cancelled")
+            except Exception as e:
+                print(f"[CLEANUP] Error cancelling message handler: {e}")
+        
+        print("[WS] Cleanup complete")
 
 
 @app.get("/api/status")
@@ -273,7 +485,7 @@ async def reload_library():
         # Rebuild similarity embeddings if similarity service exists
         if audio_manager.similarity_service:
             print("[RELOAD] Rebuilding similarity embeddings...")
-            audio_manager.similarity_service.build_embeddings(music_library)
+            audio_manager.similarity_service._build_embeddings(music_library)
         
         song_count = len(music_library.index)
         print(f"[RELOAD] Complete: {song_count} songs available")
