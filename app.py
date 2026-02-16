@@ -196,6 +196,10 @@ async def audio_stream(websocket: WebSocket):
     playback_task = None
     message_handler_task = None
     
+    # Track if THIS WebSocket has started playback
+    # This prevents issues when frontend refreshes and reconnects
+    has_started_playback = False
+    
     # Move message handling to a separate async function
     # This allows it to run concurrently with audio playback
     async def handle_messages():
@@ -203,7 +207,7 @@ async def audio_stream(websocket: WebSocket):
         Handle incoming user messages without blocking audio playback.
         Runs as a separate concurrent task.
         """
-        nonlocal playback_task  # Allow modification of playback_task from outer scope
+        nonlocal playback_task, has_started_playback  # Allow modification from outer scope
         
         while True:
             try:
@@ -247,13 +251,32 @@ async def audio_stream(websocket: WebSocket):
                                 "transition": audio_manager.pending_transition.to_dict()
                             })
 
-                        # Start playback if not already playing
-                        if not audio_manager.is_playing:
-                            audio_manager.start()
+                        # Start playback if:
+                        # 1. Backend says not playing, OR
+                        # 2. This WebSocket hasn't started its own playback task yet
+                        #    (handles frontend refresh where old task is orphaned)
+                        if not audio_manager.is_playing or not has_started_playback:
+                            # If backend thinks it's playing but we haven't started playback,
+                            # it means the old WebSocket was disconnected. Start fresh.
+                            if audio_manager.is_playing and not has_started_playback:
+                                print("[WS] Backend playing but new WebSocket - forcing clean restart")
+                                audio_manager.stop()  # Stop the orphaned task
+                                audio_manager.current_track = None  # Clear old track
+                                audio_manager.start()
+                            elif not audio_manager.is_playing:
+                                # Even if stopped, clear current_track if this is a new WebSocket
+                                # (handles refresh where cleanup stopped playback but left track)
+                                if not has_started_playback and audio_manager.current_track:
+                                    print(f"[WS] New WebSocket, clearing old current_track: {audio_manager.current_track.title if audio_manager.current_track else 'None'}")
+                                    audio_manager.current_track = None
+                                audio_manager.start()
+                            
                             # Use locked_websocket to prevent send contention
                             playback_task = asyncio.create_task(
                                 audio_manager.play_queue(locked_websocket)
                             )
+                            has_started_playback = True
+                            print(f"[WS] Started playback task for this WebSocket")
                     else:
                         await locked_websocket.send_json({
                             "type": "error",
@@ -291,12 +314,24 @@ async def audio_stream(websocket: WebSocket):
                             "failed": failed_songs,
                         }))
 
-                        # Start playback if not already playing
-                        if not audio_manager.is_playing and queued_songs:
-                            audio_manager.start()
+                        # Start playback if not already playing (or new WebSocket)
+                        if (not audio_manager.is_playing or not has_started_playback) and queued_songs:
+                            if audio_manager.is_playing and not has_started_playback:
+                                print("[WS] Backend playing but new WebSocket - restarting for playlist")
+                                audio_manager.stop()
+                                audio_manager.current_track = None
+                                audio_manager.start()
+                            elif not audio_manager.is_playing:
+                                # Clear old track if new WebSocket
+                                if not has_started_playback and audio_manager.current_track:
+                                    print(f"[WS] New WebSocket (playlist), clearing old track")
+                                    audio_manager.current_track = None
+                                audio_manager.start()
+                            
                             playback_task = asyncio.create_task(
                                 audio_manager.play_queue(locked_websocket)
                             )
+                            has_started_playback = True
 
                 elif intent == 'quick_transition':
                     try:
