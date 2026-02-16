@@ -2,5 +2,6 @@ Music/
 venv/
 music_data/audio/*
 *.pyc
+__pycache__/
 .DS_Store
 user_songs/user_uploaded_songs/*

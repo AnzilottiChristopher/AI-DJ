@@ -1,12 +1,11 @@
 # so when the LLM requests a specific song, this class will search the files and load it to be played
-# so when the LLM requests a specific song, this class will search the files and load it to be played
 import json
 from pathlib import Path
 
 class MusicLibrary:
     def __init__(self, audio_path, metadata_path):
         self.audio_path = Path(audio_path)
-        self.metadata_path = metadata_path
+        self.metadata_path = metadata_path  # Store path for reload
         self.metadata = self._load_metadata(metadata_path)
         self.index = self._build_idx()
     
@@ -33,12 +32,62 @@ class MusicLibrary:
                 'segments': song.get('segments', [])
             }
         return idx
+    
     def reload(self):
-        """Reload the library from disk (for newly uploaded songs)."""
+        """
+        Reload the library from disk (for newly uploaded songs).
+        Thread-safe: builds new index then swaps atomically.
+        """
         print("[LIBRARY] Reloading from disk...")
-        self.metadata = self._load_metadata(self.metadata_path)
-        self.index = self._build_idx()
+        
+        # Load new metadata
+        new_metadata = self._load_metadata(self.metadata_path)
+        
+        # Build new index (doesn't affect current index yet)
+        new_index = {}
+        for song in new_metadata["songs"]:
+            name = song['song_name'].replace('.wav', '')
+            normalized = name.lower().replace('-',' ').replace('_', ' ')
+            print(f"entering the name: {normalized} as a key")
+            new_index[normalized] = {
+                'filename': song['song_name'],
+                'path': self.audio_path / song['song_name'],
+                'features': song['features'],
+                'segments': song.get('segments', [])
+            }
+        
+        # Atomic swap - single assignment, thread-safe
+        self.metadata = new_metadata
+        self.index = new_index
+        
         print(f"[LIBRARY] Reloaded {len(self.index)} songs")
+        return len(self.index)
+    
+    def add_song_hot(self, song_data):
+        """
+        Add a single song to the library WITHOUT full reload.
+        Safe to call during playback - doesn't invalidate existing references.
+        
+        Args:
+            song_data: dict with 'song_name', 'features', 'segments'
+        """
+        name = song_data['song_name'].replace('.wav', '')
+        normalized = name.lower().replace('-',' ').replace('_', ' ')
+        
+        # Add to index (existing references still valid)
+        self.index[normalized] = {
+            'filename': song_data['song_name'],
+            'path': self.audio_path / song_data['song_name'],
+            'features': song_data.get('features', {}),
+            'segments': song_data.get('segments', [])
+        }
+        
+        # Add to metadata
+        if song_data not in self.metadata['songs']:
+            self.metadata['songs'].append(song_data)
+        
+        print(f"[LIBRARY] Hot-added: {normalized} ({len(self.index)} songs total)")
+        return normalized
     
     def get_by_filename(self, filename):
         normalized = filename.replace(".wav",'').lower().replace('-','')
@@ -50,8 +99,7 @@ class MusicLibrary:
             return None
         
         query = f"{title} {artist}".lower() if artist else title.lower()
-        query = query.replace('-', ' ').replace("'", "").replace("'", "")
-
+        query = query.replace('-', ' ').replace("'", "").replace("'", "")  # ← ADDED: Strip apostrophes
         
         # return exact match
         if query in self.index:
