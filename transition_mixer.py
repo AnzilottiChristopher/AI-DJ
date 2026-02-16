@@ -43,7 +43,7 @@ class TransitionPlan:
     crossfade_duration: float  # seconds
     
     # Timing info
-    transition_start_time: float  # when to start the crossfade (seconds into song A)
+    transition_start_time: float  # when to start the crossfade (seconds into song A) 
     song_b_start_offset: float    # where to start song B (seconds)
     
     def to_dict(self) -> Dict:

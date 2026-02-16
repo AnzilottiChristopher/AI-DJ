@@ -1,0 +1,611 @@
+{
+  "songs": [
+    {
+      "song_name": "it-aint-me_kygo-selena-gomez.wav",
+      "features": {
+        "bpm": 117.85015106201172,
+        "key": "C",
+        "scale": "major",
+        "key_strength": 0.9304864406585693,
+        "loudness": 0.8291051387786865,
+        "danceability": 1.3057152032852173,
+        "spectral_centroid": 1588.740234375,
+        "spectral_rolloff": 1467.7864990234375,
+        "dissonance": 0.4614696800708771,
+        "onset_rate": 3.4838857650756836
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          23.0
+        ],
+        "chorus": [
+          23.0,
+          41.0
+        ],
+        "build-up": [
+          41.0,
+          57.0
+        ],
+        "beat-drop": [
+          57.0,
+          75.0
+        ],
+        "verse": [
+          75.0,
+          91.0
+        ],
+        "chorus1": [
+          91.0,
+          124.0
+        ],
+        "build-up1": [
+          124.0,
+          140.0
+        ],
+        "beat-drop1": [
+          140.0,
+          190.0
+        ],
+        "outro": [
+          190.0,
+          208.0
+        ]
+      }
+    },
+    {
+      "song_name": "paradise_coldplay.wav",
+      "features": {
+        "bpm": 139.64283752441406,
+        "key": "C",
+        "scale": "major",
+        "key_strength": 0.8135742545127869,
+        "loudness": 0.6302003264427185,
+        "danceability": 0.9393532872200012,
+        "spectral_centroid": 1403.982666015625,
+        "spectral_rolloff": 1556.0908203125,
+        "dissonance": 0.459585040807724,
+        "onset_rate": 3.2213263511657715
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          62.0
+        ],
+        "verse": [
+          62.0,
+          90.0
+        ],
+        "cool-down": [
+          90.0,
+          103.0
+        ],
+        "verse1": [
+          103.0,
+          141.0
+        ],
+        "chorus": [
+          141.0,
+          169.0
+        ],
+        "cool-down1": [
+          169.0,
+          182.0
+        ],
+        "verse2": [
+          185.0,
+          203.0
+        ],
+        "chorus1": [
+          203.0,
+          258.0
+        ],
+        "outro": [
+          258.0,
+          275.0
+        ]
+      }
+    },
+    {
+      "song_name": "my-way_calvin-harris.wav",
+      "features": {
+        "bpm": 119.99190521240234,
+        "key": "A",
+        "scale": "minor",
+        "key_strength": 0.8312219381332397,
+        "loudness": 0.9160500764846802,
+        "danceability": 1.2509468793869019,
+        "spectral_centroid": 1207.3687744140625,
+        "spectral_rolloff": 1236.050537109375,
+        "dissonance": 0.4516910910606384,
+        "onset_rate": 4.206051349639893
+      },
+      "segments": {
+        "verse": [
+          0.0,
+          31.0
+        ],
+        "build-up": [
+          31.0,
+          49.0
+        ],
+        "beat-drop": [
+          49.0,
+          80.0
+        ],
+        "verse1": [
+          80.0,
+          112.0
+        ],
+        "build-up1": [
+          112.0,
+          128.0
+        ],
+        "beat-drop1": [
+          128.0,
+          143.0
+        ],
+        "verse2": [
+          143.0,
+          159.0
+        ],
+        "build-up2": [
+          159.0,
+          176.0
+        ],
+        "beat-drop2": [
+          176.0,
+          208.0
+        ],
+        "outro": [
+          208.0,
+          217.0
+        ]
+      }
+    },
+    {
+      "song_name": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "features": {
+        "bpm": 99.94053649902344,
+        "key": "C",
+        "scale": "minor",
+        "key_strength": 0.838303804397583,
+        "loudness": 0.9505303502082825,
+        "danceability": 1.399764060974121,
+        "spectral_centroid": 910.2588500976562,
+        "spectral_rolloff": 1038.5120849609375,
+        "dissonance": 0.44279101490974426,
+        "onset_rate": 4.379469871520996
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          9.0
+        ],
+        "verse": [
+          9.0,
+          48.0
+        ],
+        "chorus": [
+          48.0,
+          67.0
+        ],
+        "beat-drop": [
+          67.0,
+          86.0
+        ],
+        "verse1": [
+          86.0,
+          125.0
+        ],
+        "chorus1": [
+          125.0,
+          144.0
+        ],
+        "beat-drop1": [
+          144.0,
+          164.0
+        ],
+        "cool-down": [
+          164.0,
+          181.0
+        ],
+        "outro": [
+          181.0,
+          201.0
+        ]
+      }
+    },
+    {
+      "song_name": "one-kiss_calvin-harris-dua-lipa.wav",
+      "features": {
+        "bpm": 123.81842803955078,
+        "key": "F",
+        "scale": "major",
+        "key_strength": 0.8502381443977356,
+        "loudness": 0.9570758938789368,
+        "danceability": 1.3290377855300903,
+        "spectral_centroid": 1296.23828125,
+        "spectral_rolloff": 1867.3472900390625,
+        "dissonance": 0.45041683316230774,
+        "onset_rate": 4.564899444580078
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          24.0
+        ],
+        "verse": [
+          24.0,
+          39.0
+        ],
+        "chorus": [
+          39.0,
+          55.0
+        ],
+        "beat-drop": [
+          55.0,
+          85.0
+        ],
+        "verse1": [
+          85.0,
+          101.0
+        ],
+        "chorus1": [
+          101.0,
+          116.0
+        ],
+        "beat-drop1": [
+          116.0,
+          147.0
+        ],
+        "cool-down": [
+          147.0,
+          162.0
+        ],
+        "chorus2": [
+          162.0,
+          179.0
+        ],
+        "beat-drop2": [
+          179.0,
+          194.0
+        ],
+        "outro": [
+          194.0,
+          210.0
+        ]
+      }
+    },
+    {
+      "song_name": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "features": {
+        "bpm": 97.95574951171875,
+        "key": "G",
+        "scale": "minor",
+        "key_strength": 0.9134538173675537,
+        "loudness": 0.894251823425293,
+        "danceability": 1.094557523727417,
+        "spectral_centroid": 1583.5552978515625,
+        "spectral_rolloff": 1511.1373291015625,
+        "dissonance": 0.45662814378738403,
+        "onset_rate": 4.4272284507751465
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          11.0
+        ],
+        "verse": [
+          11.0,
+          30.0
+        ],
+        "chorus": [
+          30.0,
+          50.0
+        ],
+        "beat-drop": [
+          50.0,
+          70.0
+        ],
+        "verse1": [
+          70.0,
+          88.0
+        ],
+        "chorus1": [
+          88.0,
+          108.0
+        ],
+        "beat-drop1": [
+          108.0,
+          128.0
+        ],
+        "cool-down": [
+          128.0,
+          152.0
+        ],
+        "chorus2": [
+          152.0,
+          167.0
+        ],
+        "outro": [
+          167.0,
+          174.0
+        ]
+      }
+    },
+    {
+      "song_name": "levels-radio-edit_avicii.wav",
+      "features": {
+        "bpm": 125.85761260986328,
+        "key": "E",
+        "scale": "major",
+        "key_strength": 0.912093997001648,
+        "loudness": 0.6959112286567688,
+        "danceability": 0.9864606857299805,
+        "spectral_centroid": 1711.2498779296875,
+        "spectral_rolloff": 2000.492431640625,
+        "dissonance": 0.4651728868484497,
+        "onset_rate": 3.1762099266052246
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          8.0
+        ],
+        "beat-drop": [
+          8.0,
+          39.0
+        ],
+        "cool-down": [
+          39.0,
+          46.0
+        ],
+        "build-up": [
+          46.0,
+          54.0
+        ],
+        "beat-drop1": [
+          54.0,
+          76.0
+        ],
+        "cool-down1": [
+          76.0,
+          84.0
+        ],
+        "chorus": [
+          84.0,
+          115.0
+        ],
+        "build-up1": [
+          115.0,
+          145.0
+        ],
+        "beat-drop2": [
+          145.0,
+          183.0
+        ],
+        "outro": [
+          183.0,
+          195.0
+        ]
+      }
+    },
+    {
+      "song_name": "lights_ellie-goulding.wav",
+      "features": {
+        "bpm": 119.97124481201172,
+        "key": "C#",
+        "scale": "minor",
+        "key_strength": 0.8219985961914062,
+        "loudness": 0.8709279894828796,
+        "danceability": 1.1432275772094727,
+        "spectral_centroid": 1223.7581787109375,
+        "spectral_rolloff": 1723.6204833984375,
+        "dissonance": 0.42425793409347534,
+        "onset_rate": 3.684260845184326
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          7.0
+        ],
+        "verse": [
+          7.0,
+          40.0
+        ],
+        "chorus": [
+          40.0,
+          72.0
+        ],
+        "verse1": [
+          72.0,
+          104.0
+        ],
+        "chorus1": [
+          104.0,
+          136.0
+        ],
+        "cool-down": [
+          136.0,
+          152.0
+        ],
+        "beat-drop": [
+          152.0,
+          168.0
+        ],
+        "chorus2": [
+          168.0,
+          232.0
+        ],
+        "outro": [
+          232.0,
+          242.0
+        ]
+      }
+    },
+    {
+      "song_name": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "features": {
+        "bpm": 139.9376220703125,
+        "key": "G",
+        "scale": "major",
+        "key_strength": 0.872561514377594,
+        "loudness": 0.7869284152984619,
+        "danceability": 0.950718879699707,
+        "spectral_centroid": 1178.4649658203125,
+        "spectral_rolloff": 1241.1754150390625,
+        "dissonance": 0.4500153958797455,
+        "onset_rate": 4.590500354766846
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          21.0
+        ],
+        "verse": [
+          21.0,
+          47.0
+        ],
+        "build-up": [
+          47.0,
+          69.0
+        ],
+        "beat-drop": [
+          69.0,
+          124.0
+        ],
+        "verse1": [
+          124.0,
+          154.0
+        ],
+        "build-up1": [
+          154.0,
+          182.0
+        ],
+        "beat-drop1": [
+          182.0,
+          236.0
+        ],
+        "outro": [
+          236.0,
+          242.0
+        ]
+      }
+    },
+    {
+      "song_name": "memories_david-guetta-kid-cudi.wav",
+      "features": {
+        "bpm": 127.01013946533203,
+        "key": "Bb",
+        "scale": "minor",
+        "key_strength": 0.7886266708374023,
+        "loudness": 0.9058489203453064,
+        "danceability": 1.1850883960723877,
+        "spectral_centroid": 1020.119384765625,
+        "spectral_rolloff": 1223.996826171875,
+        "dissonance": 0.45279210805892944,
+        "onset_rate": 4.024439334869385
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          8.0
+        ],
+        "verse": [
+          8.0,
+          22.0
+        ],
+        "build-up": [
+          22.0,
+          38.0
+        ],
+        "beat-drop": [
+          38.0,
+          53.0
+        ],
+        "verse1": [
+          53.0,
+          68.0
+        ],
+        "build-up1": [
+          68.0,
+          85.0
+        ],
+        "beat-drop1": [
+          85.0,
+          114.0
+        ],
+        "build-up2": [
+          114.0,
+          129.0
+        ],
+        "beat-drop2": [
+          129.0,
+          144.0
+        ],
+        "outro": [
+          144.0,
+          161.0
+        ]
+      }
+    },
+    {
+      "song_name": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "features": {
+        "bpm": 102.90328216552734,
+        "key": "C#",
+        "scale": "minor",
+        "key_strength": 0.8365234732627869,
+        "loudness": 0.8862453103065491,
+        "danceability": 1.2275662422180176,
+        "spectral_centroid": 1369.0323486328125,
+        "spectral_rolloff": 1627.21337890625,
+        "dissonance": 0.4528637230396271,
+        "onset_rate": 5.146299839019775
+      },
+      "segments": {
+        "intro": [
+          0.0,
+          10.0
+        ],
+        "verse": [
+          10.0,
+          28.0
+        ],
+        "chorus": [
+          28.0,
+          47.0
+        ],
+        "beat-drop": [
+          47.0,
+          66.0
+        ],
+        "verse1": [
+          66.0,
+          85.0
+        ],
+        "chorus1": [
+          85.0,
+          103.0
+        ],
+        "build-up": [
+          103.0,
+          105.0
+        ],
+        "beat-drop1": [
+          105.0,
+          124.0
+        ],
+        "chorus2": [
+          124.0,
+          143.0
+        ],
+        "outro": [
+          143.0,
+          162.0
+        ]
+      }
+    }
+  ]
+}
