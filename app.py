@@ -438,16 +438,61 @@ async def get_status():
 
 @app.get("/api/library")
 async def get_library():
-    """Get list of available songs."""
+    """Get list of available songs.
+
+    Returns UI-friendly fields:
+    - id: normalized lookup key used by the backend (e.g., "hey brother avicii")
+    - title: human-readable title parsed from filename
+    - artist: human-readable artist parsed from filename
+    - bpm/key: extracted features when available
+    - filename: underlying wav filename
+    """
+
+    def _title_case(s: str) -> str:
+        # Keep it simple: replace separators and title-case.
+        return s.replace('-', ' ').replace('_', ' ').strip().title()
+
     songs = []
-    for key, data in music_library.index.items():
+
+    for normalized_key, data in music_library.index.items():
+        filename = data.get('filename')
+        features = data.get('features') or {}
+
+        # Parse title/artist from the filename format: "title-words_artist-words.wav"
+        display_title = normalized_key
+        display_artist = None
+
+        try:
+            if filename:
+                stem = filename
+                if stem.lower().endswith('.wav'):
+                    stem = stem[:-4]
+
+                if '_' in stem:
+                    title_part, artist_part = stem.split('_', 1)
+                    display_title = _title_case(title_part)
+                    display_artist = _title_case(artist_part) if artist_part else None
+                else:
+                    display_title = _title_case(stem)
+        except Exception:
+            # Fallback: show the normalized key if parsing fails
+            display_title = normalized_key
+            display_artist = None
+
         songs.append({
-            "title": key,
-            "filename": data['filename'],
-            "bpm": data['features'].get('bpm'),
-            "key": data['features'].get('key'),
+            "id": normalized_key,                 # use this when sending queue requests
+            "title": display_title,
+            "artist": display_artist,
+            "filename": filename,
+            "bpm": features.get('bpm'),
+            "key": features.get('key'),
+            "scale": features.get('scale'),
         })
-    return {"songs": songs}
+
+    # Sort for a nicer UI
+    songs.sort(key=lambda s: ((s.get('artist') or ''), (s.get('title') or '')))
+
+    return {"count": len(songs), "songs": songs}
 
 
 @app.post("/api/auto-play/toggle")
