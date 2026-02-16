@@ -53,7 +53,7 @@ class EnhancedAudioManager:
     - Tracks playback position for timing
     """
     
-    def __init__(self, music_library, model_path: str = None, enable_auto_play: bool = True):
+    def __init__(self, music_library, model_path: Optional[str] = None, enable_auto_play: bool = True):
         """
         Initialize the audio manager.
         
@@ -253,13 +253,14 @@ class EnhancedAudioManager:
         
         return True
     
-    async def _prepare_transition(self, next_track: TrackInfo):
+    async def _prepare_transition(self, next_track: TrackInfo, force_quick: bool = False):
         """
         Prepare transition to the next track asynchronously.
         """
         if not self.current_track or not self.mixer:
             return
         
+        transition_type = "QUICK" if force_quick else "NORMAL"
         print(f"[MIXER] Preparing transition: {self.current_track.title} → {next_track.title}")
         
         try:
@@ -282,10 +283,12 @@ class EnhancedAudioManager:
             next_data['title'] = next_track.title
             
             # Compute optimal transition
+            # Pass force_quick parameter to compute_transition
             plan = self.mixer.compute_transition(
                 song_a_data=current_data,
                 song_b_data=next_data,
-                current_position=self.current_position
+                current_position=self.current_position,
+                force_next_segment=force_quick
             )
             
             if plan:
@@ -298,7 +301,8 @@ class EnhancedAudioManager:
                     plan
                 )
                 
-                print(f"[MIXER] Transition ready: will start at {plan.transition_start_time:.1f}s")
+                transition_timing = "SOON (next segment)" if force_quick else "at end of song"
+                print(f"[MIXER] Transition ready ({transition_timing}): will start at {plan.transition_start_time:.1f}s")
                 
                 # Send notification to frontend
                 if self._websocket:
@@ -306,6 +310,7 @@ class EnhancedAudioManager:
                         await self._websocket.send_json({
                             "type": "transition_planned",
                             "transition": plan.to_dict(),
+                            "is_quick": force_quick,
                             "next_track": {
                                 "title": next_track.title,
                                 "artist": next_track.artist,
@@ -324,6 +329,37 @@ class EnhancedAudioManager:
             import traceback
             traceback.print_exc()
             self.pending_transition = None
+
+    def force_quick_transition(self) -> bool:
+        """ 
+        Force a quick transition at the next available segments
+        
+        This recomputes the transition to happen at the next up coming segment 
+        instead of waiting until the end of song. 
+
+        Returns: 
+            bool: True if transition was scheduled, False if not 
+        """
+
+        # Only force transition if: 
+        # 1. Currently playing song 
+        # 2. Have a mixer 
+        # 3. Have a next track in queue 
+        if(self.state != PlaybackState.PLAYING or 
+           not self.mixer or 
+           not self.current_track or 
+           not self.queue):
+            print("[Quick Transition] Cannot force transition - requirements not met")
+            return False;
+
+        print(f"[QUICK TRANSITION] Forcinng quick transition from {self.current_track.title}")
+        
+        asyncio.create_task(self._prepare_transition(
+            self.queue[0],
+            force_quick=True
+            ))
+        return True
+
     
     def get_next_track(self) -> Optional[TrackInfo]:
         """Get next track from queue."""

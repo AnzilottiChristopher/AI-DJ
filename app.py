@@ -29,7 +29,7 @@ app.add_middleware(
     allow_origins=["http://localhost:5173", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 app.include_router(upload_router)
@@ -256,6 +256,24 @@ async def audio_stream(websocket: WebSocket):
                                 audio_manager.play_queue(websocket)
                             )
 
+                elif intent == 'quick_transition':
+                    try:
+                        success = audio_manager.force_quick_transition()
+                        if success:
+                            await websocket.send_json({
+                                "type": "quick_transition_scheduled",
+                                "message": "Transitioning at next segment boundary..."
+                                })
+                        else:
+                            await websocket.send_json({
+                                "type": "error",
+                                "message": "No song queued to transition to"
+                                })
+                    except Exception as e:
+                        await websocket.send_json({
+                            "type": "error",
+                            "message": f"COuld not schedule quick transition: {str(e)}"
+                            })
                 elif intent == 'stop_dj':
                     audio_manager.stop()
                     await websocket.send_json({
@@ -272,7 +290,7 @@ async def audio_stream(websocket: WebSocket):
                 elif intent == 'help':
                     await websocket.send_json({
                         "type": "help",
-                        "message": "You can say things like: 'Play Wake Me Up by Avicii', 'Queue Stargazing', 'Stop the music'. I'll automatically queue similar songs to keep the music going!"
+                       "message": "You can say things like: 'Play Wake Me Up by Avicii', 'Queue Stargazing', 'Stop the music'. I'll automatically queue similar songs to keep the music going!"
                     })
 
                 else:
@@ -289,7 +307,7 @@ async def audio_stream(websocket: WebSocket):
                 })
 
     except Exception as e:
-        print(f"[WS ERROR] audio_stream: {e}")
+        print(f"[WS ERROR] {e}")
     finally:
         # Ensure we stop any background playback work when the client disconnects.
         try:
@@ -356,7 +374,7 @@ async def reload_library():
         # Rebuild similarity embeddings if similarity service exists
         if audio_manager.similarity_service:
             print("[RELOAD] Rebuilding similarity embeddings...")
-            audio_manager.similarity_service.build_embeddings(music_library)
+            audio_manager.similarity_service._build_embeddings(music_library)
         
         song_count = len(music_library.index)
         print(f"[RELOAD] Complete: {song_count} songs available")
