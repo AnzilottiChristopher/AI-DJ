@@ -243,10 +243,10 @@ async def process_upload_background(audio_path: Path, normalized_name: str, arti
         
        # print(f"[BACKGROUND] ✓ COMPLETE: {normalized_name}\n")
         
-    #except Exception as e:
-     #   print(f"[BACKGROUND ERROR] {e}")
-      #  import traceback
-       # traceback.print_exc()
+    except Exception as e:
+        print(f"[BACKGROUND ERROR] {e}")
+        import traceback
+        traceback.print_exc()
 
 
 @router.post("/song")
