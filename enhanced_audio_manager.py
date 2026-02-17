@@ -198,9 +198,8 @@ class EnhancedAudioManager:
         )
         
         self.queue.append(track_info)
-        self._push_queue_update("auto_queued")
         print(f"[AUTO-PLAY] Queued: {title} by {artist}")
-        self._push_queue_update("user_queued")
+        self._push_queue_update("auto_queued")
         
         return True
     
@@ -233,24 +232,30 @@ class EnhancedAudioManager:
             is_auto_queued=False  # User requested
         )
         
-        # If there's an auto-queued song in the queue, replace it
-        if self.queue and self.queue[0].is_auto_queued:
+        # If the only item in the queue is an auto-queued song, replace it
+        # (the queue is effectively empty of user picks).
+        # Otherwise just append to the back so user songs play in order.
+        is_next = False
+        if len(self.queue) == 1 and self.queue[0].is_auto_queued:
             old_track = self.queue[0]
             print(f"[QUEUE] Replacing auto-queued '{old_track.title}' with user request '{title}'")
             self.queue[0] = track_info
             # Clear any pending transition since we're changing the next song
             self.pending_transition = None
             self.transition_audio = None
-        else:
-            # Queue is empty or has user-requested songs, just append
+            is_next = True
+        elif not self.queue:
             self.queue.append(track_info)
-        
+            is_next = True
+        else:
+            self.queue.append(track_info)
+
         print(f"[QUEUE] Added: {title}" + (f" by {artist}" if artist else ""))
-        
-        # If we're playing and have a mixer, prepare the transition
-        if self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
-            asyncio.create_task(self._prepare_transition(track_info))
-        
+
+        # Only prepare a transition if this song is actually next to play
+        if is_next and self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
+            asyncio.create_task(self._prepare_transition(self.queue[0]))
+
         return True
 
     def reorder_queue(self, new_order: list) -> bool:
