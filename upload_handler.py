@@ -213,17 +213,35 @@ async def process_upload_background(audio_path: Path, normalized_name: str, arti
         save_segmented_songs(segmented_data)
         
         print(f"[BACKGROUND] Saved to database")
-        
-        # Trigger library reload (now safe during playback)
+
         try:
             import httpx
             async with httpx.AsyncClient() as client:
-                await client.post("http://localhost:8000/api/library/reload", timeout=5.0)
-                print(f"[BACKGROUND] Library reloaded - '{title}' by {artist} is now available!")
+                response = await client.post(
+                    "http://localhost:8000/api/library/add-song",
+                    json=new_song,
+                    timeout=5.0
+                )
+                result = response.json()
+
+                if result.get("success"):
+                    print(f"[BACKGROUND] '{title}' by {artist} is now fully available")
+                    print(f"[BACKGROUND] Library now has {result.get('song_count')} songs")
+                else:
+                    print(f"[BACKGROUND] Add failed: {result.get('message')}")
         except Exception as e:
-            print(f"[BACKGROUND] Warning: Could not trigger library reload: {e}")
+            print(f"[BACKGROUND] Warning: Could not add to library: {e}")
         
-        print(f"[BACKGROUND] ✓ COMPLETE: {normalized_name}\n")
+        # Trigger library reload (now safe during playback)
+        #try:
+         #   import httpx
+          #  async with httpx.AsyncClient() as client:
+           #     await client.post("http://localhost:8000/api/library/reload", timeout=5.0)
+           #     print(f"[BACKGROUND] Library reloaded - '{title}' by {artist} is now available!")
+       # except Exception as e:
+        #    print(f"[BACKGROUND] Warning: Could not trigger library reload: {e}")
+        
+       # print(f"[BACKGROUND] ✓ COMPLETE: {normalized_name}\n")
         
     except Exception as e:
         print(f"[BACKGROUND ERROR] {e}")
