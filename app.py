@@ -517,14 +517,9 @@ async def get_auto_play_status():
 @app.post("/api/library/add-song")
 async def add_song(song_data: dict):
     try:
-        song_name = song_data['song_name']
-        print(f"[ADD SONG] Adding: {song_name}")
+        print(f"[ADD SONG] Adding: {song_data['song_name']}")
 
-        music_library.index[song_name] = {
-            'filename': song_data['song_name'],
-            'features': song_data['features'],
-            'segments': song_data['segments']
-        }
+        normalized_key = music_library.add_song_hot(song_data)
         print(f"[ADD SONG] Added to library index")
 
         if audio_manager.similarity_service:
@@ -533,7 +528,7 @@ async def add_song(song_data: dict):
             await loop.run_in_executor(
                 None,
                 audio_manager.similarity_service.add_song_embedding,
-                song_name,
+                normalized_key,
                 {
                     'filename': song_data['song_name'],
                     'features': song_data['features'],
@@ -546,11 +541,19 @@ async def add_song(song_data: dict):
 
         return {
             "success": True,
-            "message": f"'{song_name}' is now fully available",
+            "message": f"'{normalized_key}' is now fully available",
             "song_count": total_songs,
             "similarity_updated": audio_manager.similarity_service is not None
         }
     except KeyError as e: 
+        print(f"[ADD SONG ERROR] {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            "success": False,
+            "message": f"Failed to add song: {str(e)}"
+        }
+    except Exception as e:
         print(f"[ADD SONG ERROR] {e}")
         import traceback
         traceback.print_exc()
