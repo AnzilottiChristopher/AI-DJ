@@ -252,7 +252,32 @@ class EnhancedAudioManager:
             asyncio.create_task(self._prepare_transition(track_info))
         
         return True
-    
+
+    def reorder_queue(self, new_order: list) -> bool:
+        """
+        Reorder the queue based on a list of indices representing the new order.
+        If position 0 changes, invalidate the pending transition and re-prepare.
+        """
+        if not self.queue or len(new_order) != len(self.queue):
+            return False
+        if sorted(new_order) != list(range(len(self.queue))):
+            return False
+
+        old_first = self.queue[0]
+        self.queue = [self.queue[i] for i in new_order]
+        new_first = self.queue[0]
+
+        # If the next-up song changed, invalidate transition and re-plan
+        if old_first is not new_first:
+            self.pending_transition = None
+            self.transition_audio = None
+            print(f"[QUEUE] Next song changed: {old_first.title} → {new_first.title}, re-planning transition")
+            if self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
+                asyncio.create_task(self._prepare_transition(new_first))
+
+        self._push_queue_update("reordered")
+        return True
+
     async def _prepare_transition(self, next_track: TrackInfo, force_quick: bool = False):
         """
         Prepare transition to the next track asynchronously.
