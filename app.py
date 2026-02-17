@@ -266,6 +266,24 @@ async def audio_stream(websocket: WebSocket):
                 print(f"[WS] receive_json failed / disconnected: {e}")
                 break
 
+            # Direct actions (no LLM needed)
+            msg_type = data.get('type')
+            if msg_type == 'reorder_queue':
+                new_order = data.get('order', [])
+                success = audio_manager.reorder_queue(new_order)
+                if success:
+                    await locked_websocket.send_json(_queue_payload({
+                        "type": "queue_update",
+                        "action": "reordered",
+                        "message": "Queue reordered",
+                    }))
+                    if audio_manager.pending_transition:
+                        await locked_websocket.send_json({
+                            "type": "transition_planned",
+                            "transition": audio_manager.pending_transition.to_dict()
+                        })
+                continue
+
             prompt = data.get('data', '')
             print(f"[WS] Received prompt: {prompt}")
 
