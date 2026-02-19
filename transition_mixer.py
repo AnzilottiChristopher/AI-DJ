@@ -41,11 +41,13 @@ class TransitionPlan:
     entry_segment: Segment
     predicted_score: float
     crossfade_duration: float  # seconds
-    
     # Timing info
     transition_start_time: float  # when to start the crossfade (seconds into song A) 
     song_b_start_offset: float    # where to start song B (seconds)
-    
+    # NEW: BPMs for both songs
+    song_a_bpm: float = 120.0
+    song_b_bpm: float = 120.0
+
     def to_dict(self) -> Dict:
         return {
             'song_a': self.song_a_title,
@@ -56,9 +58,11 @@ class TransitionPlan:
             'crossfade_duration': self.crossfade_duration,
             'transition_start_time': round(self.transition_start_time, 2),
             'song_b_start_offset': round(self.song_b_start_offset, 2),
-        "start_time": self.transition_start_time,
-        "transition_start_time": self.transition_start_time,
-    }
+            'song_a_bpm': self.song_a_bpm,
+            'song_b_bpm': self.song_b_bpm,
+            "start_time": self.transition_start_time,
+            "transition_start_time": self.transition_start_time,
+        }
 
 class TransitionMixer:
     """
@@ -231,6 +235,9 @@ class TransitionMixer:
         # Song B starts at the beginning of entry segment
         song_b_start_offset = entry_segment.start
         
+        # Extract BPMs from features if available
+        song_a_bpm = song_a_data.get('features', {}).get('bpm', 120.0)
+        song_b_bpm = song_b_data.get('features', {}).get('bpm', 120.0)
         plan = TransitionPlan(
             song_a_title=song_a_data.get('title', 'Unknown'),
             song_b_title=song_b_data.get('title', 'Unknown'),
@@ -239,7 +246,9 @@ class TransitionMixer:
             predicted_score=best.score,
             crossfade_duration=crossfade_duration,
             transition_start_time=transition_start,
-            song_b_start_offset=song_b_start_offset
+            song_b_start_offset=song_b_start_offset,
+            song_a_bpm=song_a_bpm,
+            song_b_bpm=song_b_bpm
         )
         
         print(f"[MIXER] Computed transition: {exit_segment.name} → {entry_segment.name} "
@@ -259,6 +268,9 @@ class TransitionMixer:
         # Transition in the last 30 seconds of the song
         transition_start = max(current_position + 10, song_a_duration - 30)
         
+        # Extract BPMs from features if available
+        song_a_bpm = song_a_data.get('features', {}).get('bpm', 120.0)
+        song_b_bpm = song_b_data.get('features', {}).get('bpm', 120.0)
         return TransitionPlan(
             song_a_title=song_a_data.get('title', 'Unknown'),
             song_b_title=song_b_data.get('title', 'Unknown'),
@@ -267,7 +279,9 @@ class TransitionMixer:
             predicted_score=5.0,  # Neutral score for fallback
             crossfade_duration=8.0,
             transition_start_time=transition_start,
-            song_b_start_offset=0.0
+            song_b_start_offset=0.0,
+            song_a_bpm=song_a_bpm,
+            song_b_bpm=song_b_bpm
         )
     
     def _soft_clip(self, audio: np.ndarray, threshold: float = 0.95) -> np.ndarray:
@@ -373,6 +387,31 @@ class TransitionMixer:
         segment_a = segment_a[:min_len]
         segment_b = segment_b[:min_len]
         
+        # === AI DJ: Tempo match and filtering ===
+        try:
+            print(f"[DEBUG] segment_a shape: {segment_a.shape}, dtype: {segment_a.dtype}")
+            print(f"[DEBUG] segment_b shape: {segment_b.shape}, dtype: {segment_b.dtype}")
+            from audio_processor import AudioProcessor
+            processor = AudioProcessor(sr)
+            # Get BPMs from plan or fallback to 120
+            bpm_a = getattr(plan, 'song_a_bpm', 120)
+            bpm_b = getattr(plan, 'song_b_bpm', 120)
+            # 1. Match outgoing segment's tempo to next track
+            if bpm_a != bpm_b:
+                segment_a = processor.adjust_bpm(segment_a, bpm_a, bpm_b)
+                print(f"[DEBUG] segment_a shape after adjust_bpm: {segment_a.shape}, dtype: {segment_a.dtype}")
+                # Re-trim to min_len if length changed
+                min_len = min(len(segment_a), len(segment_b))
+                segment_a = segment_a[:min_len]
+                segment_b = segment_b[:min_len]
+            # 2. Apply lowpass to outgoing, highpass to incoming
+            segment_a = processor.apply_lowpass_filter(segment_a, 5000)
+            print(f"[DEBUG] segment_a shape after lowpass: {segment_a.shape}, dtype: {segment_a.dtype}")
+            segment_b = processor.apply_highpass_filter(segment_b, 100)
+            print(f"[DEBUG] segment_b shape after highpass: {segment_b.shape}, dtype: {segment_b.dtype}")
+        except Exception as e:
+            print(f"[AI DJ] Could not apply tempo/filtering: {e}")
+
         # Create crossfade curves (equal-power crossfade)
         t = np.linspace(0, 1, min_len)
         
