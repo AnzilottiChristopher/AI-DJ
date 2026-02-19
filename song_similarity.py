@@ -197,6 +197,25 @@ class SongSimilarityService:
         
         print(f"[SIMILARITY] Built embeddings for {len(self.embeddings)} songs")
     
+    def add_song_embedding(self, song_key: str, song_data: Dict):
+        print(f"[SIMILARITY] Adding embedding for: {song_key}")
+        
+        features = song_data.get('features', {})
+        embedding = self._extract_embedding(features)
+
+        filename = song_data.get('filename', '')
+        title, artist = parse_title_artist_from_filename(filename)
+
+        self.embeddings[song_key] = SongEmbedding(
+                song_key=song_key,
+                title=title,
+                artist=artist,
+                features=features,
+                embedding=embedding
+                )
+        print(f"[SIMILARITY] Added '{title}' by {artist} to similarity index")
+        print(f"[SIMILARITY] Total songs in index: {len(self.embeddings)}")
+
     def _cosine_similarity(self, vec_a: np.ndarray, vec_b: np.ndarray) -> float:
         """Compute cosine similarity between two vectors."""
         norm_a = np.linalg.norm(vec_a)
