@@ -6,6 +6,7 @@ from typing import Optional, Tuple
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 import shutil
+import sys
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
@@ -76,7 +77,7 @@ def run_segmentation(audio_path: Path) -> Optional[dict]:
         audio_path_abs = Path(audio_path).resolve()
         
         result = subprocess.run(
-            ["python", script_name, str(audio_path_abs)],
+            [sys.executable, script_name, str(audio_path_abs)],
             capture_output=True,
             text=True,
             timeout=300,
@@ -212,17 +213,35 @@ async def process_upload_background(audio_path: Path, normalized_name: str, arti
         save_segmented_songs(segmented_data)
         
         print(f"[BACKGROUND] Saved to database")
-        
-        # Trigger library reload (now safe during playback)
+
         try:
             import httpx
             async with httpx.AsyncClient() as client:
-                await client.post("http://localhost:8000/api/library/reload", timeout=5.0)
-                print(f"[BACKGROUND] Library reloaded - '{title}' by {artist} is now available!")
+                response = await client.post(
+                    "http://localhost:8000/api/library/add-song",
+                    json=new_song,
+                    timeout=5.0
+                )
+                result = response.json()
+
+                if result.get("success"):
+                    print(f"[BACKGROUND] '{title}' by {artist} is now fully available")
+                    print(f"[BACKGROUND] Library now has {result.get('song_count')} songs")
+                else:
+                    print(f"[BACKGROUND] Add failed: {result.get('message')}")
         except Exception as e:
-            print(f"[BACKGROUND] Warning: Could not trigger library reload: {e}")
+            print(f"[BACKGROUND] Warning: Could not add to library: {e}")
         
-        print(f"[BACKGROUND] ✓ COMPLETE: {normalized_name}\n")
+        # Trigger library reload (now safe during playback)
+        #try:
+         #   import httpx
+          #  async with httpx.AsyncClient() as client:
+           #     await client.post("http://localhost:8000/api/library/reload", timeout=5.0)
+           #     print(f"[BACKGROUND] Library reloaded - '{title}' by {artist} is now available!")
+       # except Exception as e:
+        #    print(f"[BACKGROUND] Warning: Could not trigger library reload: {e}")
+        
+       # print(f"[BACKGROUND] ✓ COMPLETE: {normalized_name}\n")
         
     except Exception as e:
         print(f"[BACKGROUND ERROR] {e}")

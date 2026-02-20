@@ -198,9 +198,8 @@ class EnhancedAudioManager:
         )
         
         self.queue.append(track_info)
-        self._push_queue_update("auto_queued")
         print(f"[AUTO-PLAY] Queued: {title} by {artist}")
-        self._push_queue_update("user_queued")
+        self._push_queue_update("auto_queued")
         
         return True
     
@@ -233,26 +232,57 @@ class EnhancedAudioManager:
             is_auto_queued=False  # User requested
         )
         
-        # If there's an auto-queued song in the queue, replace it
-        if self.queue and self.queue[0].is_auto_queued:
+        # If the only item in the queue is an auto-queued song, replace it
+        # (the queue is effectively empty of user picks).
+        # Otherwise just append to the back so user songs play in order.
+        is_next = False
+        if len(self.queue) == 1 and self.queue[0].is_auto_queued:
             old_track = self.queue[0]
             print(f"[QUEUE] Replacing auto-queued '{old_track.title}' with user request '{title}'")
             self.queue[0] = track_info
             # Clear any pending transition since we're changing the next song
             self.pending_transition = None
             self.transition_audio = None
-        else:
-            # Queue is empty or has user-requested songs, just append
+            is_next = True
+        elif not self.queue:
             self.queue.append(track_info)
-        
+            is_next = True
+        else:
+            self.queue.append(track_info)
+
         print(f"[QUEUE] Added: {title}" + (f" by {artist}" if artist else ""))
-        
-        # If we're playing and have a mixer, prepare the transition
-        if self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
-            asyncio.create_task(self._prepare_transition(track_info))
-        
+
+        # Only prepare a transition if this song is actually next to play
+        if is_next and self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
+            asyncio.create_task(self._prepare_transition(self.queue[0]))
+
         return True
-    
+
+    def reorder_queue(self, new_order: list) -> bool:
+        """
+        Reorder the queue based on a list of indices representing the new order.
+        If position 0 changes, invalidate the pending transition and re-prepare.
+        """
+        if not self.queue or len(new_order) != len(self.queue):
+            return False
+        if sorted(new_order) != list(range(len(self.queue))):
+            return False
+
+        old_first = self.queue[0]
+        self.queue = [self.queue[i] for i in new_order]
+        new_first = self.queue[0]
+
+        # If the next-up song changed, invalidate transition and re-plan
+        if old_first is not new_first:
+            self.pending_transition = None
+            self.transition_audio = None
+            print(f"[QUEUE] Next song changed: {old_first.title} → {new_first.title}, re-planning transition")
+            if self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
+                asyncio.create_task(self._prepare_transition(new_first))
+
+        self._push_queue_update("reordered")
+        return True
+
     async def _prepare_transition(self, next_track: TrackInfo, force_quick: bool = False):
         """
         Prepare transition to the next track asynchronously.
