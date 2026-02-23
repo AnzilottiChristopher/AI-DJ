@@ -13,6 +13,8 @@ Usage:
 """
 
 import os
+import sys
+import io
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
@@ -23,6 +25,8 @@ from llm.new_llm import LlamaLLM
 from music_library import MusicLibrary
 from enhanced_audio_manager import AudioManager
 from upload_handler import router as upload_router
+from database import init_db
+from auth import router as auth_router
 
 import uvicorn
 
@@ -72,6 +76,10 @@ app.add_middleware(
 )
 
 app.include_router(upload_router)
+app.include_router(auth_router)
+
+# Initialize database on startup
+init_db()
 
 # ---------------------------------------------------------------------------
 # Ollama lifecycle (dev only — in prod, Ollama runs as its own service)
@@ -167,6 +175,7 @@ async def audio_stream(websocket: WebSocket):
         def __init__(self, ws):
             self._ws = ws
             self._send_lock = asyncio.Lock()
+            self._log_buffer = []
 
         async def send_json(self, data):
             async with self._send_lock:
@@ -176,6 +185,25 @@ async def audio_stream(websocket: WebSocket):
             async with self._send_lock:
                 await self._ws.send_bytes(data)
 
+        def buffer_log(self, line: str):
+            """Buffer a log line for later sending."""
+            self._log_buffer.append(line)
+
+        async def flush_logs(self):
+            """Send buffered logs to the frontend."""
+            if not self._log_buffer:
+                return
+            lines = self._log_buffer[:]
+            self._log_buffer.clear()
+            try:
+                async with self._send_lock:
+                    await self._ws.send_json({
+                        "type": "backend_log",
+                        "lines": lines,
+                    })
+            except Exception:
+                pass
+
         async def receive_json(self):
             return await self._ws.receive_json()
 
@@ -183,6 +211,30 @@ async def audio_stream(websocket: WebSocket):
             return getattr(self._ws, name)
 
     locked_websocket = LockedWebSocket(websocket)
+
+    # Intercept stdout to capture print() output and forward to frontend
+    _original_stdout = sys.stdout
+
+    class LogTee(io.TextIOBase):
+        """Write to original stdout AND buffer for WebSocket forwarding."""
+        def write(self, s):
+            _original_stdout.write(s)
+            if s.strip():
+                locked_websocket.buffer_log(s.rstrip('\n'))
+            return len(s)
+
+        def flush(self):
+            _original_stdout.flush()
+
+    sys.stdout = LogTee()
+
+    # Periodically flush logs to the frontend
+    async def log_flusher():
+        while True:
+            await asyncio.sleep(0.5)
+            await locked_websocket.flush_logs()
+
+    log_flush_task = asyncio.create_task(log_flusher())
 
     def _serialize_track(item):
         """Best-effort conversion of whatever the queue stores into a UI-friendly object."""
@@ -467,6 +519,15 @@ async def audio_stream(websocket: WebSocket):
                 print("[CLEANUP] Message handler task cancelled")
             except Exception as e:
                 print(f"[CLEANUP] Error cancelling message handler: {e}")
+
+        # Restore original stdout and cancel log flusher
+        sys.stdout = _original_stdout
+        if log_flush_task and not log_flush_task.done():
+            log_flush_task.cancel()
+            try:
+                await log_flush_task
+            except asyncio.CancelledError:
+                pass
 
         print("[WS] Cleanup complete")
 
