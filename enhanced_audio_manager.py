@@ -66,6 +66,8 @@ class EnhancedAudioManager:
         self.queue: List[TrackInfo] = []
         self.current_track: Optional[TrackInfo] = None
         self.state = PlaybackState.STOPPED
+
+        self._pending_transition_for: Optional[TrackInfo] = None
         
         # Audio settings
         self.sample_rate = 44100
@@ -265,6 +267,7 @@ class EnhancedAudioManager:
 
         # If the next-up song changed, invalidate transition and re-plan
         if old_first is not new_first:
+            self._pending_transition_for = None
             self.pending_transition = None
             self.transition_audio = None
             print(f"[QUEUE] Next song changed: {old_first.title} → {new_first.title}, re-planning transition")
@@ -312,6 +315,8 @@ class EnhancedAudioManager:
                 force_next_segment=force_quick
             )
             
+            self._pending_transition_for = next_track
+
             if plan:
                 self.pending_transition = plan
                 
@@ -350,6 +355,12 @@ class EnhancedAudioManager:
             import traceback
             traceback.print_exc()
             self.pending_transition = None
+
+            if next_track in self.queue:
+                self.queue.remove(next_track)
+                print(f"[MIXER] Removed unplayable track from queue: {next_track.title}")
+                if self.queue and self.mixer:
+                    asyncio.create_task(self._prepare_transition(self.queue[0]))
 
     def force_quick_transition(self) -> bool:
         """ 
@@ -603,6 +614,8 @@ class EnhancedAudioManager:
                 print(f"[DEBUG]   Post-transition duration: {post_duration:.1f}s")
                 print(f"[DEBUG]   Current position starts at: {self.current_position:.1f}s")
                 print(f"[DEBUG]   Next transition at: {next_transition_time}s")
+
+                self.state = PlaybackState.PLAYING
 
                 for i in range(0, len(post_int16), self.chunk_size):
                     if self.state == PlaybackState.STOPPED:
