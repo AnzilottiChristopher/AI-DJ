@@ -356,6 +356,12 @@ class EnhancedAudioManager:
             traceback.print_exc()
             self.pending_transition = None
 
+            if next_track in self.queue:
+                self.queue.remove(next_track)
+                print(f"[MIXER] Removed unplayable track from queue: {next_track.title}")
+                if self.queue and self.mixer:
+                    asyncio.create_task(self._prepare_transition(self.queue[0]))
+
     def force_quick_transition(self) -> bool:
         """ 
         Force a quick transition at the next available segments
