@@ -1,5 +1,5 @@
 """
-Authentication router — register, login, me, stats.
+Authentication router - register, login, me, stats.
 Uses JWT tokens and bcrypt password hashing.
 """
 
@@ -70,7 +70,7 @@ def decode_token(token: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Dependency — get current user from Authorization header
+# Dependency - get current user from Authorization header
 # ---------------------------------------------------------------------------
 def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> dict:
     if credentials is None:

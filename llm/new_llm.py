@@ -37,11 +37,11 @@ Rules:
 - For queue_song, always fill song.title; for other intents, set both to null
 
 Examples:
-"play stargazing by kygo" → {{"intent":"queue_song", "reason":"specific song request", "song":{{"title":"Stargazing", "artist":"Kygo"}}}}
-"transition to next song now" → {{"intent":"quick_transition", "reason":"user wants immediate transition", "song":{{"title":null, "artist":null}}}}
-"give me some high energy songs" → {{"intent":"generate_playlist", "reason":"mood-based playlist request", "song":{{"title":null, "artist":null}}}}
-"play something danceable" → {{"intent":"generate_playlist", "reason":"vibe-based request", "song":{{"title":null, "artist":null}}}}
-"start the music" → {{"intent":"start_dj", "reason":"generic start request", "song":{{"title":null, "artist":null}}}}
+"play stargazing by kygo" -> {{"intent":"queue_song", "reason":"specific song request", "song":{{"title":"Stargazing", "artist":"Kygo"}}}}
+"transition to next song now" -> {{"intent":"quick_transition", "reason":"user wants immediate transition", "song":{{"title":null, "artist":null}}}}
+"give me some high energy songs" -> {{"intent":"generate_playlist", "reason":"mood-based playlist request", "song":{{"title":null, "artist":null}}}}
+"play something danceable" -> {{"intent":"generate_playlist", "reason":"vibe-based request", "song":{{"title":null, "artist":null}}}}
+"start the music" -> {{"intent":"start_dj", "reason":"generic start request", "song":{{"title":null, "artist":null}}}}
 
 Return ONLY the JSON, nothing else."""
         )
@@ -109,7 +109,7 @@ Return ONLY the JSON array, nothing else."""
     def cmd_queue_song(self, *, title, artist):
         ok = self.queue_track(title, artist)
         if ok:
-            print(f"[CMD] Queued: {title}" + (f" — {artist}" if artist else ""))
+            print(f"[CMD] Queued: {title}" + (f" - {artist}" if artist else ""))
         self.print_queue()
     
     def cmd_generate_playlist(self, *, playlist: List[Dict]):
@@ -127,7 +127,7 @@ Return ONLY the JSON array, nothing else."""
         for i, song in enumerate(self._queue, start=1):
             title = song.get("title") or "Unknown"
             artist = song.get("artist")
-            print(f"  {i}. {title}" + (f" — {artist}" if artist else ""))
+            print(f"  {i}. {title}" + (f" - {artist}" if artist else ""))
 
     def extract_json(self, s: str) -> dict:
         if not s or not s.strip():
@@ -301,6 +301,6 @@ Return ONLY the JSON array, nothing else."""
         if res["intent"] == "queue_song":
             t = res["song"].get("title") or "Unknown title"
             a = res["song"].get("artist")
-            detail = f" — {a}" if a else ""
-            return f"[INTENT] queue_song → {t}{detail}"
-        return f"[INTENT] {res['intent']} — {res['reason']}"
+            detail = f" - {a}" if a else ""
+            return f"[INTENT] queue_song -> {t}{detail}"
+        return f"[INTENT] {res['intent']} - {res['reason']}"

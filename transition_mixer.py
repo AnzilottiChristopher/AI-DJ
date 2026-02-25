@@ -242,7 +242,7 @@ class TransitionMixer:
             song_b_start_offset=song_b_start_offset
         )
         
-        print(f"[MIXER] Computed transition: {exit_segment.name} → {entry_segment.name} "
+        print(f"[MIXER] Computed transition: {exit_segment.name} -> {entry_segment.name} "
               f"(score: {best.score:.1f}, starts at {transition_start:.1f}s)")
         
         return plan
