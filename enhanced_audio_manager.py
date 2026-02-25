@@ -68,6 +68,8 @@ class EnhancedAudioManager:
         self.queue: List[TrackInfo] = []
         self.current_track: Optional[TrackInfo] = None
         self.state = PlaybackState.STOPPED
+
+        self._pending_transition_for: Optional[TrackInfo] = None
         
         # Audio settings
         self.sample_rate = 44100
@@ -369,19 +371,10 @@ class EnhancedAudioManager:
             effects_config=effects or {}
         )
         
-        # If the only item in the queue is an auto-queued song, replace it
-        # (the queue is effectively empty of user picks).
-        # Otherwise just append to the back so user songs play in order.
+        # Append to the back so user songs play in order after any existing
+        # queued songs (including auto-queued ones).
         is_next = False
-        if len(self.queue) == 1 and self.queue[0].is_auto_queued:
-            old_track = self.queue[0]
-            print(f"[QUEUE] Replacing auto-queued '{old_track.title}' with user request '{title}'")
-            self.queue[0] = track_info
-            # Clear any pending transition since we're changing the next song
-            self.pending_transition = None
-            self.transition_audio = None
-            is_next = True
-        elif not self.queue:
+        if not self.queue:
             self.queue.append(track_info)
             is_next = True
         else:
@@ -411,6 +404,7 @@ class EnhancedAudioManager:
 
         # If the next-up song changed, invalidate transition and re-plan
         if old_first is not new_first:
+            self._pending_transition_for = None
             self.pending_transition = None
             self.transition_audio = None
             print(f"[QUEUE] Next song changed: {old_first.title} → {new_first.title}, re-planning transition")
@@ -458,6 +452,8 @@ class EnhancedAudioManager:
                 force_next_segment=force_quick
             )
             
+            self._pending_transition_for = next_track
+
             if plan:
                 self.pending_transition = plan
                 
@@ -497,6 +493,12 @@ class EnhancedAudioManager:
             import traceback
             traceback.print_exc()
             self.pending_transition = None
+
+            if next_track in self.queue:
+                self.queue.remove(next_track)
+                print(f"[MIXER] Removed unplayable track from queue: {next_track.title}")
+                if self.queue and self.mixer:
+                    asyncio.create_task(self._prepare_transition(self.queue[0]))
 
     def force_quick_transition(self) -> bool:
         """ 
@@ -717,11 +719,15 @@ class EnhancedAudioManager:
                     if self.queue:
                         await self._notify_auto_queue(self.queue[0])
 
-                # Prepare transition to the next song in queue (whether user-queued or auto-queued)
-                if self.queue and self.mixer:
-                    await self._prepare_transition(self.queue[0])
+                # CRITICAL FIX: Clip audio before int16 conversion
+                post_clipped = np.clip(post_audio, -1.0, 1.0)
+                post_int16 = (post_clipped * 32767).astype(np.int16)
 
-                # Send new track info
+                self.samples_sent = 0
+                self.current_position = song_b_continue_sample / self.sample_rate
+
+                # Send track_start BEFORE preparing next transition, so the frontend
+                # clears the old transition info before receiving the new one.
                 await websocket.send_json({
                     "type": "track_start",
                     "track": {
@@ -731,17 +737,16 @@ class EnhancedAudioManager:
                         "key": next_track.track_data['features'].get('key', 'C'),
                         "duration": next_track.duration,
                         "sample_rate": self.sample_rate,
-                        "is_continuation": True,  # Frontend knows we're mid-song
-                        "is_auto_queued": next_track.is_auto_queued
+                        "is_continuation": True,
+                        "is_auto_queued": next_track.is_auto_queued,
+                        "start_offset": round(self.current_position, 2)
                     }
                 })
 
-                # CRITICAL FIX: Clip audio before int16 conversion
-                post_clipped = np.clip(post_audio, -1.0, 1.0)
-                post_int16 = (post_clipped * 32767).astype(np.int16)
-
-                self.samples_sent = 0
-                self.current_position = song_b_continue_sample / self.sample_rate
+                # Now prepare the next transition — its transition_planned message
+                # will arrive after track_start, so the frontend won't clear it.
+                if self.queue and self.mixer:
+                    await self._prepare_transition(self.queue[0])
 
                 # Debug: Log post-transition streaming info
                 post_duration = len(post_int16) / self.sample_rate
@@ -750,6 +755,8 @@ class EnhancedAudioManager:
                 print(f"[DEBUG]   Post-transition duration: {post_duration:.1f}s")
                 print(f"[DEBUG]   Current position starts at: {self.current_position:.1f}s")
                 print(f"[DEBUG]   Next transition at: {next_transition_time}s")
+
+                self.state = PlaybackState.PLAYING
 
                 for i in range(0, len(post_int16), self.chunk_size):
                     if self.state == PlaybackState.STOPPED:
