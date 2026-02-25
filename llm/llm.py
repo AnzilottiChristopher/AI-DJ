@@ -101,7 +101,7 @@ class LlamaLLM():
             return "Couldn't process response"
         res = self.classify(response)
         self.dispatch(res["intent"])
-        return f"[INTENT] {res['intent']} — {res['reason']}"
+        return f"[INTENT] {res['intent']} - {res['reason']}"
         
         
 
@@ -211,7 +211,7 @@ if __name__ == "__main__":
 #             print("\nbye!")
 #             break
 #         res = classify(user)
-#         print(f"[INTENT] {res['intent']} — {res['reason']}")
+#         print(f"[INTENT] {res['intent']} - {res['reason']}")
 #         dispatch(res["intent"])
 #         #end_time = time.time()
 #         #elapsed_time = end_time - start_time

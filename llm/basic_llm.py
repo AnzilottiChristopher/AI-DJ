@@ -112,7 +112,7 @@ if __name__ == "__main__":
             print("\nbye!")
             break
         res = classify(user)
-        print(f"[INTENT] {res['intent']} — {res['reason']}")
+        print(f"[INTENT] {res['intent']} - {res['reason']}")
         dispatch(res["intent"])
         #end_time = time.time()
         #elapsed_time = end_time - start_time
