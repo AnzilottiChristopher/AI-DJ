@@ -5,3 +5,4 @@ music_data/audio/*
 .DS_Store
 user_songs/user_uploaded_songs/*
 transition_testing/*
+__pycache__/*
