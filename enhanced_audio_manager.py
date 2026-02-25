@@ -407,7 +407,7 @@ class EnhancedAudioManager:
             self._pending_transition_for = None
             self.pending_transition = None
             self.transition_audio = None
-            print(f"[QUEUE] Next song changed: {old_first.title} → {new_first.title}, re-planning transition")
+            print(f"[QUEUE] Next song changed: {old_first.title} -> {new_first.title}, re-planning transition")
             if self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
                 asyncio.create_task(self._prepare_transition(new_first))
 
@@ -422,7 +422,7 @@ class EnhancedAudioManager:
             return
         
         transition_type = "QUICK" if force_quick else "NORMAL"
-        print(f"[MIXER] Preparing transition: {self.current_track.title} → {next_track.title}")
+        print(f"[MIXER] Preparing transition: {self.current_track.title} -> {next_track.title}")
         
         try:
             # Load next track audio with its effects config
@@ -743,7 +743,7 @@ class EnhancedAudioManager:
                     }
                 })
 
-                # Now prepare the next transition — its transition_planned message
+                # Now prepare the next transition - its transition_planned message
                 # will arrive after track_start, so the frontend won't clear it.
                 if self.queue and self.mixer:
                     await self._prepare_transition(self.queue[0])

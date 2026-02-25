@@ -1,5 +1,5 @@
 """
-AI DJ Backend — Production-ready FastAPI server.
+AI DJ Backend - Production-ready FastAPI server.
 
 Environment variables:
     AIDJ_ENV      "development" or "production" (default: development)
@@ -54,7 +54,7 @@ audio_manager = AudioManager(
 )
 
 # ---------------------------------------------------------------------------
-# CORS — automatic based on environment
+# CORS - automatic based on environment
 # ---------------------------------------------------------------------------
 if ENVIRONMENT == "production":
     CORS_ORIGINS = [
@@ -82,7 +82,7 @@ app.include_router(auth_router)
 init_db()
 
 # ---------------------------------------------------------------------------
-# Ollama lifecycle (dev only — in prod, Ollama runs as its own service)
+# Ollama lifecycle (dev only - in prod, Ollama runs as its own service)
 # ---------------------------------------------------------------------------
 ollama_process = None
 
@@ -154,7 +154,7 @@ async def health_check():
 
 
 # ---------------------------------------------------------------------------
-# WebSocket — audio streaming
+# WebSocket - audio streaming
 # ---------------------------------------------------------------------------
 @app.websocket("/api/ws/audio")
 async def audio_stream(websocket: WebSocket):
