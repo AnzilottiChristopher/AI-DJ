@@ -1,0 +1,3972 @@
+{
+  "transitions": [
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse",
+      "entry_segment": "chorus",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 8,
+      "comment": "On beat"
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 7,
+      "comment": "On beat"
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "it-aint-me_kygo-selena-gomez.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 7,
+      "comment": "Slightly better timing and it could work really well"
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 6,
+      "comment": "Good wordplay"
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 7,
+      "comment": "Beats sync well"
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "build-up",
+      "entry_segment": "beat-drop",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "build-up",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "levels-radio-edit_avicii.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 8,
+      "comment": "Smooth"
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "lights_ellie-goulding.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "memories_david-guetta-kid-cudi.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "build-up2",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "my-way_calvin-harris.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "build-up",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus2",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "one-kiss_calvin-harris-dua-lipa.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse2",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "build-up",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "chorus1",
+      "entry_segment": "verse",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "cool-down1",
+      "entry_segment": "verse",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "paradise_coldplay.wav",
+      "song_b": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "it-aint-me_kygo-selena-gomez.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 7,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "lean-on_major-lazer-dj-snake-m\u00d8.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "let-me-hold-you_cheat-codes-dante-klein.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 3,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "let-me-love-you_dj-snake-justin-bieber.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "levels-radio-edit_avicii.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "lights_ellie-goulding.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "memories_david-guetta-kid-cudi.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "my-way_calvin-harris.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 5,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "build-up1",
+      "entry_segment": "beat-drop",
+      "rating": 2,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 4,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "one-kiss_calvin-harris-dua-lipa.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 1,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "outro",
+      "entry_segment": "intro",
+      "rating": 6,
+      "comment": ""
+    },
+    {
+      "song_a": "where-are-u-now_jack-u-skrillex-diplo-justin-bieber.wav",
+      "song_b": "paradise_coldplay.wav",
+      "exit_segment": "verse1",
+      "entry_segment": "chorus",
+      "rating": 4,
+      "comment": ""
+    }
+  ]
+}

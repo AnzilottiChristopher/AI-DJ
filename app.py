@@ -336,6 +336,22 @@ async def audio_stream(websocket: WebSocket):
                         })
                 continue
 
+            if msg_type == 'set_transition_mode':
+                requested_mode = data.get('mode', '')
+                success = audio_manager.set_transition_mode(requested_mode)
+                if success:
+                    await locked_websocket.send_json(_queue_payload({
+                        "type": "transition_mode_updated",
+                        "message": f"Transition mode set to {audio_manager.get_transition_mode()}",
+                        "transition_mode": audio_manager.get_transition_mode(),
+                    }))
+                else:
+                    await locked_websocket.send_json({
+                        "type": "error",
+                        "message": "Invalid transition mode. Use 'dynamic' or 'classic'."
+                    })
+                continue
+
             prompt = data.get('data', '')
             print(f"[WS] Received prompt: {prompt}")
 
@@ -452,6 +468,28 @@ async def audio_stream(websocket: WebSocket):
                         await locked_websocket.send_json({
                             "type": "error",
                             "message": f"Could not schedule quick transition: {str(e)}"
+                        })
+
+                elif intent == 'set_transition_mode':
+                    prompt_lower = (prompt or "").lower()
+                    if any(keyword in prompt_lower for keyword in ["classic", "crossfade", "standard"]):
+                        requested_mode = "classic"
+                    elif any(keyword in prompt_lower for keyword in ["dynamic", "warp"]):
+                        requested_mode = "dynamic"
+                    else:
+                        requested_mode = "dynamic"
+
+                    success = audio_manager.set_transition_mode(requested_mode)
+                    if success:
+                        await locked_websocket.send_json(_queue_payload({
+                            "type": "transition_mode_updated",
+                            "message": f"Transition mode set to {audio_manager.get_transition_mode()}",
+                            "transition_mode": audio_manager.get_transition_mode(),
+                        }))
+                    else:
+                        await locked_websocket.send_json({
+                            "type": "error",
+                            "message": "Could not update transition mode. Use dynamic or classic."
                         })
 
                 elif intent == 'stop_dj':
