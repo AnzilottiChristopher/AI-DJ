@@ -7,6 +7,7 @@ creates smooth audio crossfades between tracks.
 
 import numpy as np
 import soundfile as sf
+from scipy.signal import butter, sosfilt, sosfilt_zi
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
@@ -387,30 +388,6 @@ class TransitionMixer:
         segment_a = segment_a[:min_len]
         segment_b = segment_b[:min_len]
         
-        # === AI DJ: Tempo match and filtering ===
-        try:
-            print(f"[DEBUG] segment_a shape: {segment_a.shape}, dtype: {segment_a.dtype}")
-            print(f"[DEBUG] segment_b shape: {segment_b.shape}, dtype: {segment_b.dtype}")
-            from audio_processor import AudioProcessor
-            processor = AudioProcessor(sr)
-            # Get BPMs from plan or fallback to 120
-            bpm_a = getattr(plan, 'song_a_bpm', 120)
-            bpm_b = getattr(plan, 'song_b_bpm', 120)
-            # 1. Match outgoing segment's tempo to next track
-            if bpm_a != bpm_b:
-                segment_a = processor.adjust_bpm(segment_a, bpm_a, bpm_b)
-                print(f"[DEBUG] segment_a shape after adjust_bpm: {segment_a.shape}, dtype: {segment_a.dtype}")
-                # Re-trim to min_len if length changed
-                min_len = min(len(segment_a), len(segment_b))
-                segment_a = segment_a[:min_len]
-                segment_b = segment_b[:min_len]
-            # 2. Apply lowpass to outgoing, highpass to incoming
-            segment_a = processor.apply_lowpass_filter(segment_a, 5000)
-            print(f"[DEBUG] segment_a shape after lowpass: {segment_a.shape}, dtype: {segment_a.dtype}")
-            segment_b = processor.apply_highpass_filter(segment_b, 100)
-            print(f"[DEBUG] segment_b shape after highpass: {segment_b.shape}, dtype: {segment_b.dtype}")
-        except Exception as e:
-            print(f"[AI DJ] Could not apply tempo/filtering: {e}")
 
         # Create crossfade curves (equal-power crossfade)
         t = np.linspace(0, 1, min_len)
@@ -444,10 +421,224 @@ class TransitionMixer:
         
         return crossfade_audio, transition_start_sample, song_b_continue_sample
     
+    def create_dynamic_transition(self, audio_a: np.ndarray,
+                         audio_b: np.ndarray,
+                         plan: TransitionPlan) -> Tuple[np.ndarray, int, int]:
+        """
+        Create the dynamic transition audio between two tracks.
+        
+        Args:
+            audio_a: Full audio array for song A
+            audio_b: Full audio array for song B
+            plan: TransitionPlan with timing details
+            
+        Returns:
+            Tuple of:
+            - crossfade_audio: The mixed dynamic transition segment
+            - crossfade_start_sample: Where in song A the dynamic transition begins
+            - song_b_continue_sample: Where in song B to continue after dynamic transition
+        """
+
+        sr = self.sample_rate
+        crossfade_samples = int(plan.crossfade_duration * sr)
+        transition_start_sample = int(plan.transition_start_time * sr)
+        song_b_start_sample = int(plan.song_b_start_offset * sr)
+        
+        transition_start_sample = min(transition_start_sample, len(audio_a) - crossfade_samples)
+        transition_start_sample = max(0, transition_start_sample)
+
+        segment_a = audio_a[transition_start_sample:transition_start_sample + crossfade_samples].astype(np.float32)
+
+        song_b_end_sample = min(song_b_start_sample + crossfade_samples, len(audio_b))
+        segment_b = audio_b[song_b_start_sample:song_b_end_sample].astype(np.float32)
+
+        min_len = min(len(segment_a), len(segment_b))
+        segment_a = segment_a[:min_len]
+        segment_b = segment_b[:min_len]
+
+        if min_len <= 0:
+            return np.array([], dtype=np.float32), transition_start_sample, song_b_start_sample
+
+        def _time_stretch_linear(x: np.ndarray, speed: float) -> np.ndarray:
+            """Fallback stretch using linear interpolation."""
+            if speed <= 0:
+                return x
+            if abs(speed - 1.0) < 1e-3:
+                return x
+
+            x_2d = x[:, np.newaxis] if x.ndim == 1 else x
+            in_len = x_2d.shape[0]
+            if in_len < 2:
+                return x
+
+            out_len = max(1, int(round(in_len / speed)))
+            old_idx = np.arange(in_len, dtype=np.float32)
+            new_idx = np.linspace(0.0, float(in_len - 1), out_len, dtype=np.float32)
+
+            out = np.zeros((out_len, x_2d.shape[1]), dtype=np.float32)
+            for ch in range(x_2d.shape[1]):
+                out[:, ch] = np.interp(new_idx, old_idx, x_2d[:, ch]).astype(np.float32)
+
+            if x.ndim == 1:
+                return out[:, 0]
+            return out
+
+        def _time_stretch_phase_vocoder(x: np.ndarray, speed: float) -> np.ndarray:
+            """
+            Higher-quality stretch using audiotsm phase vocoder.
+            Falls back to linear interpolation if audiotsm is unavailable or fails.
+            """
+            if speed <= 0:
+                return x
+            if abs(speed - 1.0) < 1e-3:
+                return x
+
+            try:
+                from audiotsm import phasevocoder
+                from audiotsm.io.array import ArrayReader, ArrayWriter
+
+                x_2d = x[:, np.newaxis] if x.ndim == 1 else x
+                x_2d = x_2d.astype(np.float32)
+
+                channels = x_2d.shape[1]
+                x_cs = x_2d.T  # (channels, samples)
+
+                reader = ArrayReader(x_cs)
+                writer = ArrayWriter(channels)
+
+                tsm = phasevocoder(channels=channels, speed=float(speed))
+                tsm.run(reader, writer)
+
+                out_cs = np.asarray(writer.data, dtype=np.float32)
+                out = out_cs.T  # (samples, channels)
+
+                if x.ndim == 1:
+                    return out[:, 0]
+                return out
+            except Exception:
+                return _time_stretch_linear(x, speed)
+
+        bpm_a = float(plan.song_a_bpm or 0.0)
+        bpm_b = float(plan.song_b_bpm or 0.0)
+        if bpm_a > 0.0 and bpm_b > 0.0:
+            target_bpm = (bpm_a + bpm_b) / 2.0
+
+            # Clamp stretch speeds to prevent extreme artifacts in realtime transitions.
+            speed_a = float(np.clip(target_bpm / bpm_a, 0.85, 1.15))
+            speed_b = float(np.clip(target_bpm / bpm_b, 0.85, 1.15))
+
+            segment_a = _time_stretch_phase_vocoder(segment_a, speed_a)
+            segment_b = _time_stretch_phase_vocoder(segment_b, speed_b)
+
+            min_len = min(len(segment_a), len(segment_b))
+            segment_a = segment_a[:min_len]
+            segment_b = segment_b[:min_len]
+            if min_len <= 0:
+                return np.array([], dtype=np.float32), transition_start_sample, song_b_start_sample
+
+        is_mono_output = (segment_a.ndim == 1 and segment_b.ndim == 1)
+
+        def _ensure_2d(x: np.ndarray) -> np.ndarray:
+            if x.ndim == 1:
+                return x[:, np.newaxis]
+            return x
+
+        def _match_channels(a: np.ndarray, b: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+            a_2d = _ensure_2d(a)
+            b_2d = _ensure_2d(b)
+            target_channels = max(a_2d.shape[1], b_2d.shape[1])
+
+            if a_2d.shape[1] != target_channels:
+                if a_2d.shape[1] == 1:
+                    a_2d = np.repeat(a_2d, target_channels, axis=1)
+                else:
+                    a_2d = a_2d[:, :target_channels]
+
+            if b_2d.shape[1] != target_channels:
+                if b_2d.shape[1] == 1:
+                    b_2d = np.repeat(b_2d, target_channels, axis=1)
+                else:
+                    b_2d = b_2d[:, :target_channels]
+
+            return a_2d.astype(np.float32), b_2d.astype(np.float32)
+
+        def _apply_time_varying_filter(
+            x: np.ndarray,
+            kind: str,
+            start: float,
+            end: float,
+            order: int = 4,
+            block_size: int = 2048,
+        ) -> np.ndarray:
+            x_2d = _ensure_2d(x).astype(np.float32)
+            n = x_2d.shape[0]
+            n_blocks = int(np.ceil(n / block_size))
+
+            start_c = float(np.clip(start, 5.0, sr * 0.49))
+            sos0 = butter(order, start_c, btype=kind, fs=sr, output="sos")
+            zi0 = sosfilt_zi(sos0).astype(np.float32)
+            zis = np.stack([zi0.copy() for _ in range(x_2d.shape[1])], axis=0)
+
+            out = np.zeros_like(x_2d)
+
+            for bi in range(n_blocks):
+                i0 = bi * block_size
+                i1 = min(n, (bi + 1) * block_size)
+                chunk = x_2d[i0:i1, :]
+
+                u = bi / max(1, n_blocks - 1)
+                cutoff = float((1.0 - u) * start + u * end)
+                cutoff = float(np.clip(cutoff, 5.0, sr * 0.49))
+                sos = butter(order, cutoff, btype=kind, fs=sr, output="sos")
+
+                for ch in range(x_2d.shape[1]):
+                    y_ch, zis[ch] = sosfilt(sos, chunk[:, ch], zi=zis[ch])
+                    out[i0:i1, ch] = y_ch.astype(np.float32)
+
+            return out
+
+        segment_a_2d, segment_b_2d = _match_channels(segment_a, segment_b)
+
+        hp_start, hp_end = 20.0, 950.0
+        lp_start, lp_end = 950.0, 18000.0
+
+        segment_a_f = _apply_time_varying_filter(segment_a_2d, "high", hp_start, hp_end, order=4)
+        segment_b_f = _apply_time_varying_filter(segment_b_2d, "low", lp_start, lp_end, order=4)
+
+        t = np.linspace(0.0, 1.0, min_len, dtype=np.float32)
+        smooth = t * t * (3.0 - 2.0 * t)
+        fade_in = np.power(smooth, 1.8).astype(np.float32)
+        fade_out = 1.0 - fade_in
+
+        fi = np.sqrt(np.clip(fade_in, 0.0, 1.0)).astype(np.float32)
+        fo = np.sqrt(np.clip(fade_out, 0.0, 1.0)).astype(np.float32)
+
+        drop_boost_db = 1.5
+        boost_gain = float(10.0 ** (drop_boost_db / 20.0))
+        boost = 1.0 + (boost_gain - 1.0) * fade_in
+
+        crossfade_audio = (segment_a_f * fo[:, np.newaxis]) + (segment_b_f * fi[:, np.newaxis] * boost[:, np.newaxis])
+
+        crossfade_audio = self._soft_clip(crossfade_audio, threshold=0.95)
+        crossfade_audio = self._apply_micro_fade(crossfade_audio, fade_samples=128)
+        crossfade_audio = np.clip(crossfade_audio, -1.0, 1.0)
+
+        if is_mono_output and crossfade_audio.ndim == 2:
+            crossfade_audio = crossfade_audio[:, 0]
+
+        song_b_continue_sample = song_b_start_sample + min_len
+        return crossfade_audio, transition_start_sample, song_b_continue_sample
+
+        
+
+
+
+    
     def prepare_mixed_audio(self,
                             audio_a: np.ndarray,
                             audio_b: np.ndarray,
-                            plan: TransitionPlan) -> Dict[str, Any]:
+                            plan: TransitionPlan,
+                            use_dynamic: bool = True) -> Dict[str, Any]:
         """
         Prepare all audio segments needed for streaming with transition.
         
@@ -456,10 +647,19 @@ class TransitionMixer:
         - 'crossfade': The mixed crossfade audio
         - 'post_transition': Remaining audio from song B
         - 'timing': Timing information
+        
+        Args:
+            use_dynamic: If True, uses create_dynamic_transition. If False,
+                uses the standard equal-power create_crossfade.
         """
-        crossfade, start_sample, continue_sample = self.create_crossfade(
-            audio_a, audio_b, plan
-        )
+        if use_dynamic:
+            crossfade, start_sample, continue_sample = self.create_dynamic_transition(
+                audio_a, audio_b, plan
+            )
+        else:
+            crossfade, start_sample, continue_sample = self.create_crossfade(
+                audio_a, audio_b, plan
+            )
         
         # Pre-transition: everything in song A before the crossfade
         pre_transition = audio_a[:start_sample]

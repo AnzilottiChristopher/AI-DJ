@@ -81,6 +81,7 @@ class EnhancedAudioManager:
         self.mixer: Optional[TransitionMixer] = None
         self.pending_transition: Optional[TransitionPlan] = None
         self.transition_audio: Optional[Dict] = None
+        self.use_dynamic_transitions: bool = True
         
         # Audio processing (tempo adjustment, filtering)
         self.processor = AudioProcessor(self.sample_rate)
@@ -216,6 +217,33 @@ class EnhancedAudioManager:
         """Clear all global effects."""
         self.global_effects = {}
         print(f"[EFFECTS] Global effects cleared")
+
+    def set_transition_mode(self, mode: str) -> bool:
+        """
+        Set transition mode at runtime.
+
+        Args:
+            mode: 'dynamic' (warp-style) or 'classic' (equal-power crossfade)
+
+        Returns:
+            True if mode was applied, False if invalid
+        """
+        normalized = str(mode).strip().lower()
+        if normalized in ("dynamic", "warp"):
+            self.use_dynamic_transitions = True
+            print("[MIXER] Transition mode set to dynamic")
+            self._push_queue_update("transition_mode_changed")
+            return True
+        if normalized in ("classic", "crossfade", "standard"):
+            self.use_dynamic_transitions = False
+            print("[MIXER] Transition mode set to classic")
+            self._push_queue_update("transition_mode_changed")
+            return True
+        return False
+
+    def get_transition_mode(self) -> str:
+        """Get current transition mode ('dynamic' or 'classic')."""
+        return "dynamic" if self.use_dynamic_transitions else "classic"
     
     def _get_song_key(self, track_data: Dict) -> str:
         """Get the song key from track data for similarity lookups."""
@@ -437,7 +465,8 @@ class EnhancedAudioManager:
                 self.transition_audio = self.mixer.prepare_mixed_audio(
                     self.current_track.audio,
                     next_audio,
-                    plan
+                    plan,
+                    use_dynamic=self.use_dynamic_transitions
                 )
                 
                 transition_timing = "SOON (next segment)" if force_quick else "at end of song"
@@ -812,6 +841,7 @@ class EnhancedAudioManager:
                 for t in self.queue
             ],
             "auto_play_enabled": self.enable_auto_play,
+            "transition_mode": self.get_transition_mode(),
             "recently_played": self.recently_played[-5:]  # Last 5 songs
         }
     
