@@ -21,6 +21,7 @@ from enum import Enum
 
 from transition_mixer import TransitionMixer, TransitionPlan, generate_placeholder_segments
 from song_similarity import SongSimilarityService
+from audio_processor import AudioProcessor
 
 
 class PlaybackState(Enum):
@@ -39,6 +40,7 @@ class TrackInfo:
     audio: Optional[np.ndarray] = None
     duration: float = 0.0
     is_auto_queued: bool = False  # True if auto-queued by similarity
+    effects_config: Dict[str, Any] = field(default_factory=dict)  # Audio effects to apply
 
 
 class EnhancedAudioManager:
@@ -66,6 +68,8 @@ class EnhancedAudioManager:
         self.queue: List[TrackInfo] = []
         self.current_track: Optional[TrackInfo] = None
         self.state = PlaybackState.STOPPED
+
+        self._pending_transition_for: Optional[TrackInfo] = None
         
         # Audio settings
         self.sample_rate = 44100
@@ -79,6 +83,13 @@ class EnhancedAudioManager:
         self.mixer: Optional[TransitionMixer] = None
         self.pending_transition: Optional[TransitionPlan] = None
         self.transition_audio: Optional[Dict] = None
+        self.use_dynamic_transitions: bool = True
+        
+        # Audio processing (tempo adjustment, filtering)
+        self.processor = AudioProcessor(self.sample_rate)
+        
+        # Global effect settings (applied to all incoming tracks)
+        self.global_effects: Dict[str, Any] = {}  # e.g., {'tempo_factor': 0.9, 'filter': 'lowpass', 'filter_freq': 5000}
         
         # Auto-play / similarity
         self.enable_auto_play = enable_auto_play
@@ -107,19 +118,28 @@ class EnhancedAudioManager:
                 print(f"[AUDIO] Could not initialize similarity service: {e}")
                 self.similarity_service = None
     
-    def _load_audio(self, track_data: Dict) -> tuple[np.ndarray, float]:
-        """Load audio file and return (audio_array, duration)."""
+    def _load_audio(self, track_data: Dict, effects_config: Optional[Dict] = None) -> tuple[np.ndarray, float]:
+        """Load audio file, apply effects, and return (audio_array, duration)."""
         audio, sr = sf.read(str(track_data['path']))
         
         # Convert mono to stereo
         if len(audio.shape) == 1:
             audio = np.stack([audio, audio], axis=1)
+            # Normalize shape (N,2) or (N,) for all cases
+            from audio_processor import AudioProcessor
+            audio = AudioProcessor(self.sample_rate)._normalize_audio_shape(audio)
         
         # Resample if needed (basic - for production use librosa)
         if sr != self.sample_rate:
             print(f"[AUDIO] Warning: Sample rate mismatch {sr} vs {self.sample_rate}")
         
         duration = len(audio) / sr
+        
+        # Apply effects (from track config or global settings)
+        effects = effects_config or self.global_effects
+        if effects:
+            audio = self._apply_effects_to_audio(audio, effects)
+        
         return audio, duration
     
     def _ensure_segments(self, track_data: Dict, duration: float) -> Dict:
@@ -129,6 +149,103 @@ class EnhancedAudioManager:
             track_data['segments'] = generate_placeholder_segments(duration, bpm)
             print(f"[AUDIO] Generated placeholder segments for track")
         return track_data
+    
+    def _apply_effects_to_audio(self, audio: np.ndarray, effects: Dict[str, Any]) -> np.ndarray:
+        """Apply audio effects based on configuration dict."""
+        processed = audio.copy()
+        
+        # Tempo adjustment
+        if 'tempo_factor' in effects:
+            factor = effects['tempo_factor']
+            print(f"[EFFECTS] Adjusting tempo to {factor*100:.0f}%")
+            processed = self.processor.slow_down_tempo(processed, factor)
+        
+        # BPM matching
+        if 'match_bpm' in effects:
+            current_bpm, target_bpm = effects['match_bpm']
+            print(f"[EFFECTS] Matching BPM: {current_bpm} → {target_bpm}")
+            processed = self.processor.adjust_bpm(processed, current_bpm, target_bpm)
+        
+        # Low-pass filter
+        if 'lowpass_freq' in effects:
+            freq = effects['lowpass_freq']
+            print(f"[EFFECTS] Applying low-pass filter at {freq}Hz")
+            processed = self.processor.apply_lowpass_filter(processed, freq)
+        
+        # High-pass filter
+        if 'highpass_freq' in effects:
+            freq = effects['highpass_freq']
+            print(f"[EFFECTS] Applying high-pass filter at {freq}Hz")
+            processed = self.processor.apply_highpass_filter(processed, freq)
+        
+        # Band-pass filter
+        if 'bandpass' in effects:
+            low, high = effects['bandpass']
+            print(f"[EFFECTS] Applying band-pass filter {low}Hz - {high}Hz")
+            processed = self.processor.apply_bandpass_filter(processed, low, high)
+        
+        # Notch filter (hum removal)
+        if 'notch_freq' in effects:
+            freq = effects['notch_freq']
+            q = effects.get('notch_q', 30)
+            print(f"[EFFECTS] Applying notch filter at {freq}Hz")
+            processed = self.processor.apply_notch_filter(processed, freq, q)
+        
+        # Bass boost
+        if 'bass_boost_db' in effects:
+            db = effects['bass_boost_db']
+            print(f"[EFFECTS] Boosting bass by {db}dB")
+            processed = self.processor.bass_boost(processed, db)
+        
+        # Vocal enhancement
+        if 'vocal_enhancement' in effects and effects['vocal_enhancement']:
+            print(f"[EFFECTS] Enhancing vocals")
+            processed = self.processor.vocal_enhancement(processed)
+        
+        # Normalize
+        if 'normalize_db' in effects:
+            db = effects['normalize_db']
+            print(f"[EFFECTS] Normalizing to {db}dB")
+            processed = self.processor.normalize(processed, db)
+        
+        return processed
+    
+    def set_global_effects(self, effects: Dict[str, Any]):
+        """Set global effects to apply to all incoming tracks."""
+        self.global_effects = effects
+        print(f"[EFFECTS] Global effects updated: {effects}")
+    
+    def clear_global_effects(self):
+        """Clear all global effects."""
+        self.global_effects = {}
+        print(f"[EFFECTS] Global effects cleared")
+
+    def set_transition_mode(self, mode: str) -> bool:
+        """
+        Set transition mode at runtime.
+
+        Args:
+            mode: 'dynamic' (warp-style) or 'classic' (equal-power crossfade)
+
+        Returns:
+            True if mode was applied, False if invalid
+        """
+        normalized = str(mode).strip().lower()
+        if normalized in ("dynamic", "warp"):
+            self.use_dynamic_transitions = True
+            print("[MIXER] Transition mode set to dynamic")
+            self._push_queue_update("transition_mode_changed")
+            return True
+        if normalized in ("classic", "crossfade", "standard"):
+            self.use_dynamic_transitions = False
+            print("[MIXER] Transition mode set to classic")
+            self._push_queue_update("transition_mode_changed")
+            return True
+        return False
+
+    def get_transition_mode(self) -> str:
+        """Get current transition mode ('dynamic' or 'classic')."""
+        return "dynamic" if self.use_dynamic_transitions else "classic"
     
     def _get_song_key(self, track_data: Dict) -> str:
         """Get the song key from track data for similarity lookups."""
@@ -204,16 +321,37 @@ class EnhancedAudioManager:
         return True
     
     
-    def add_to_queue(self, title: str, artist: str) -> bool:
+    def add_to_queue(
+        self, 
+        title: str, 
+        artist: str,
+        effects: Optional[Dict[str, Any]] = None
+    ) -> bool:
         """
-        Add a song to the queue.
+        Add a song to the queue with optional effects.
         
         If a song is currently playing and mixer is available,
         this will trigger transition computation.
         
         User-requested songs always override auto-queued songs.
         
+        Args:
+            title: Song title
+            artist: Artist name
+            effects: Optional dict of audio effects to apply:
+                    - 'tempo_factor': float (0.5 = half speed, 2.0 = double)
+                    - 'match_bpm': (current_bpm, target_bpm)
+                    - 'lowpass_freq': float (Hz)
+                    - 'highpass_freq': float (Hz)
+                    - 'bandpass': (low_freq, high_freq)
+                    - 'vocal_enhancement': bool
+                    - 'bass_boost_db': float
+                    - 'normalize_db': float
+        
         Returns True if song was found and added.
+        
+        Example:
+            manager.add_to_queue("Song", "Artist", effects={'tempo_factor': 0.9})
         """
         track_data = self.music_library.search(title, artist)
         
@@ -229,22 +367,14 @@ class EnhancedAudioManager:
             artist=artist or "Unknown Artist",
             track_data=track_data,
             song_key=song_key,
-            is_auto_queued=False  # User requested
+            is_auto_queued=False,  # User requested
+            effects_config=effects or {}
         )
         
-        # If the only item in the queue is an auto-queued song, replace it
-        # (the queue is effectively empty of user picks).
-        # Otherwise just append to the back so user songs play in order.
+        # Append to the back so user songs play in order after any existing
+        # queued songs (including auto-queued ones).
         is_next = False
-        if len(self.queue) == 1 and self.queue[0].is_auto_queued:
-            old_track = self.queue[0]
-            print(f"[QUEUE] Replacing auto-queued '{old_track.title}' with user request '{title}'")
-            self.queue[0] = track_info
-            # Clear any pending transition since we're changing the next song
-            self.pending_transition = None
-            self.transition_audio = None
-            is_next = True
-        elif not self.queue:
+        if not self.queue:
             self.queue.append(track_info)
             is_next = True
         else:
@@ -274,9 +404,10 @@ class EnhancedAudioManager:
 
         # If the next-up song changed, invalidate transition and re-plan
         if old_first is not new_first:
+            self._pending_transition_for = None
             self.pending_transition = None
             self.transition_audio = None
-            print(f"[QUEUE] Next song changed: {old_first.title} → {new_first.title}, re-planning transition")
+            print(f"[QUEUE] Next song changed: {old_first.title} -> {new_first.title}, re-planning transition")
             if self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
                 asyncio.create_task(self._prepare_transition(new_first))
 
@@ -291,11 +422,11 @@ class EnhancedAudioManager:
             return
         
         transition_type = "QUICK" if force_quick else "NORMAL"
-        print(f"[MIXER] Preparing transition: {self.current_track.title} → {next_track.title}")
+        print(f"[MIXER] Preparing transition: {self.current_track.title} -> {next_track.title}")
         
         try:
-            # Load next track audio
-            next_audio, next_duration = self._load_audio(next_track.track_data)
+            # Load next track audio with its effects config
+            next_audio, next_duration = self._load_audio(next_track.track_data, next_track.effects_config)
             next_track.audio = next_audio
             next_track.duration = next_duration
             
@@ -321,6 +452,8 @@ class EnhancedAudioManager:
                 force_next_segment=force_quick
             )
             
+            self._pending_transition_for = next_track
+
             if plan:
                 self.pending_transition = plan
                 
@@ -328,7 +461,8 @@ class EnhancedAudioManager:
                 self.transition_audio = self.mixer.prepare_mixed_audio(
                     self.current_track.audio,
                     next_audio,
-                    plan
+                    plan,
+                    use_dynamic=self.use_dynamic_transitions
                 )
                 
                 transition_timing = "SOON (next segment)" if force_quick else "at end of song"
@@ -359,6 +493,12 @@ class EnhancedAudioManager:
             import traceback
             traceback.print_exc()
             self.pending_transition = None
+
+            if next_track in self.queue:
+                self.queue.remove(next_track)
+                print(f"[MIXER] Removed unplayable track from queue: {next_track.title}")
+                if self.queue and self.mixer:
+                    asyncio.create_task(self._prepare_transition(self.queue[0]))
 
     def force_quick_transition(self) -> bool:
         """ 
@@ -426,9 +566,12 @@ class EnhancedAudioManager:
         self._websocket = websocket
         
         try:
-            # Load audio if not already loaded
+            # Load audio if not already loaded (with effects applied automatically)
             if track_info.audio is None:
-                track_info.audio, track_info.duration = self._load_audio(track_info.track_data)
+                track_info.audio, track_info.duration = self._load_audio(
+                    track_info.track_data, 
+                    track_info.effects_config
+                )
             
             # Ensure segments exist
             self._ensure_segments(track_info.track_data, track_info.duration)
@@ -576,11 +719,15 @@ class EnhancedAudioManager:
                     if self.queue:
                         await self._notify_auto_queue(self.queue[0])
 
-                # Prepare transition to the next song in queue (whether user-queued or auto-queued)
-                if self.queue and self.mixer:
-                    await self._prepare_transition(self.queue[0])
+                # CRITICAL FIX: Clip audio before int16 conversion
+                post_clipped = np.clip(post_audio, -1.0, 1.0)
+                post_int16 = (post_clipped * 32767).astype(np.int16)
 
-                # Send new track info
+                self.samples_sent = 0
+                self.current_position = song_b_continue_sample / self.sample_rate
+
+                # Send track_start BEFORE preparing next transition, so the frontend
+                # clears the old transition info before receiving the new one.
                 await websocket.send_json({
                     "type": "track_start",
                     "track": {
@@ -590,17 +737,16 @@ class EnhancedAudioManager:
                         "key": next_track.track_data['features'].get('key', 'C'),
                         "duration": next_track.duration,
                         "sample_rate": self.sample_rate,
-                        "is_continuation": True,  # Frontend knows we're mid-song
-                        "is_auto_queued": next_track.is_auto_queued
+                        "is_continuation": True,
+                        "is_auto_queued": next_track.is_auto_queued,
+                        "start_offset": round(self.current_position, 2)
                     }
                 })
 
-                # CRITICAL FIX: Clip audio before int16 conversion
-                post_clipped = np.clip(post_audio, -1.0, 1.0)
-                post_int16 = (post_clipped * 32767).astype(np.int16)
-
-                self.samples_sent = 0
-                self.current_position = song_b_continue_sample / self.sample_rate
+                # Now prepare the next transition - its transition_planned message
+                # will arrive after track_start, so the frontend won't clear it.
+                if self.queue and self.mixer:
+                    await self._prepare_transition(self.queue[0])
 
                 # Debug: Log post-transition streaming info
                 post_duration = len(post_int16) / self.sample_rate
@@ -609,6 +755,8 @@ class EnhancedAudioManager:
                 print(f"[DEBUG]   Post-transition duration: {post_duration:.1f}s")
                 print(f"[DEBUG]   Current position starts at: {self.current_position:.1f}s")
                 print(f"[DEBUG]   Next transition at: {next_transition_time}s")
+
+                self.state = PlaybackState.PLAYING
 
                 for i in range(0, len(post_int16), self.chunk_size):
                     if self.state == PlaybackState.STOPPED:
@@ -700,6 +848,7 @@ class EnhancedAudioManager:
                 for t in self.queue
             ],
             "auto_play_enabled": self.enable_auto_play,
+            "transition_mode": self.get_transition_mode(),
             "recently_played": self.recently_played[-5:]  # Last 5 songs
         }
     
@@ -729,6 +878,139 @@ class EnhancedAudioManager:
         except RuntimeError:
             # No running event loop (rare in your app); ignore
             pass
+    
+    # ==================== AUDIO PROCESSING METHODS ====================
+    
+    def slow_down_track(self, track_data: Dict, speed_factor: float) -> np.ndarray:
+        """
+        Slow down a track's tempo using TSMD time-stretching.
+        
+        Args:
+            track_data: Track data dict with 'path' key
+            speed_factor: Speed multiplier (0.5 = half speed, 0.8 = 80% speed)
+        
+        Returns:
+            Slowed audio array
+        
+        Example:
+            audio = manager.slow_down_track(track_data, 0.8)
+        """
+        audio, sr = sf.read(str(track_data['path']))
+        if len(audio.shape) == 1:
+            audio = np.stack([audio, audio], axis=1)
+        return self.processor.slow_down_tempo(audio, speed_factor)
+    
+    def adjust_track_bpm(self, track_data: Dict, current_bpm: float, target_bpm: float) -> np.ndarray:
+        """
+        Adjust a track to match target BPM.
+        
+        Args:
+            track_data: Track data dict
+            current_bpm: Current tempo
+            target_bpm: Target tempo
+        
+        Returns:
+            Tempo-adjusted audio
+        
+        Example:
+            # Slow from 120 BPM to 100 BPM
+            audio = manager.adjust_track_bpm(track_data, 120, 100)
+        """
+        audio, sr = sf.read(str(track_data['path']))
+        if len(audio.shape) == 1:
+            audio = np.stack([audio, audio], axis=1)
+        return self.processor.adjust_bpm(audio, current_bpm, target_bpm)
+    
+    def apply_filter_to_track(
+        self, 
+        track_data: Dict, 
+        filter_type: str, 
+        **kwargs
+    ) -> np.ndarray:
+        """
+        Apply audio filter to a track.
+        
+        Args:
+            track_data: Track data dict
+            filter_type: Type of filter ('lowpass', 'highpass', 'bandpass', 'notch')
+            **kwargs: Filter parameters
+                - lowpass: cutoff_freq, order
+                - highpass: cutoff_freq, order
+                - bandpass: low_freq, high_freq, order
+                - notch: freq, Q
+        
+        Returns:
+            Filtered audio
+        
+        Examples:
+            # Low-pass filter (remove highs)
+            audio = manager.apply_filter_to_track(track, 'lowpass', cutoff_freq=5000)
+            
+            # Band-pass filter (keep vocals)
+            audio = manager.apply_filter_to_track(track, 'bandpass', low_freq=100, high_freq=8000)
+            
+            # Remove 60Hz hum
+            audio = manager.apply_filter_to_track(track, 'notch', freq=60)
+        """
+        audio, sr = sf.read(str(track_data['path']))
+        if len(audio.shape) == 1:
+            audio = np.stack([audio, audio], axis=1)
+        
+        filter_methods = {
+            'lowpass': self.processor.apply_lowpass_filter,
+            'highpass': self.processor.apply_highpass_filter,
+            'bandpass': self.processor.apply_bandpass_filter,
+            'notch': self.processor.apply_notch_filter,
+        }
+        
+        if filter_type not in filter_methods:
+            raise ValueError(f"Unknown filter type: {filter_type}")
+        
+        return filter_methods[filter_type](audio, **kwargs)
+    
+    def apply_vocal_enhancement(self, track_data: Dict) -> np.ndarray:
+        """
+        Enhance vocals in a track using band-pass filter (100Hz - 8kHz).
+        
+        Returns:
+            Enhanced audio
+        """
+        audio, sr = sf.read(str(track_data['path']))
+        if len(audio.shape) == 1:
+            audio = np.stack([audio, audio], axis=1)
+        return self.processor.vocal_enhancement(audio)
+    
+    def apply_bass_boost(self, track_data: Dict, boost_db: float = 6) -> np.ndarray:
+        """
+        Boost bass frequencies in a track.
+        
+        Args:
+            track_data: Track data dict
+            boost_db: Boost amount in dB (default 6dB)
+        
+        Returns:
+            Bass-boosted audio
+        """
+        audio, sr = sf.read(str(track_data['path']))
+        if len(audio.shape) == 1:
+            audio = np.stack([audio, audio], axis=1)
+        return self.processor.bass_boost(audio, boost_db)
+    
+    def normalize_audio(self, track_data: Dict, target_db: float = -3.0) -> np.ndarray:
+        """
+        Normalize audio to target loudness level.
+        
+        Args:
+            track_data: Track data dict
+            target_db: Target level in dB (default -3dB for headroom)
+        
+        Returns:
+            Normalized audio
+        """
+        audio, sr = sf.read(str(track_data['path']))
+        if len(audio.shape) == 1:
+            audio = np.stack([audio, audio], axis=1)
+        return self.processor.normalize(audio, target_db)
 
 # Backwards compatibility - original AudioManager interface
 class AudioManager(EnhancedAudioManager):

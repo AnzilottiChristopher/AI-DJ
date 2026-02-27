@@ -24,6 +24,7 @@ Intent types:
 - "queue_song": User wants to play/queue/add a SPECIFIC song (e.g., "play waiting for love", "add levels by avicii")
 - "generate_playlist": User wants multiple songs based on a mood/vibe/criteria (e.g., "give me upbeat songs", "play something danceable", "make me a playlist for a party")
 - "quick_transition": User wants to transition to next song immediately/soon (e.g., "transition now", "switch songs", "next song now", "skip to next within a minute")
+- "set_transition_mode": User wants to change transition style between dynamic/warp and classic/crossfade (e.g., "use classic transitions", "switch to dynamic mode", "turn on warp transitions")
 - "start_dj": User wants to start DJ/music with NO specific song (e.g., "start the dj", "play some music")
 - "stop_dj": User wants to stop the music (e.g., "stop", "end the music")
 - "hello": User is greeting (e.g., "hi", "hello")
@@ -37,11 +38,12 @@ Rules:
 - For queue_song, always fill song.title; for other intents, set both to null
 
 Examples:
-"play stargazing by kygo" → {{"intent":"queue_song", "reason":"specific song request", "song":{{"title":"Stargazing", "artist":"Kygo"}}}}
-"transition to next song now" → {{"intent":"quick_transition", "reason":"user wants immediate transition", "song":{{"title":null, "artist":null}}}}
-"give me some high energy songs" → {{"intent":"generate_playlist", "reason":"mood-based playlist request", "song":{{"title":null, "artist":null}}}}
-"play something danceable" → {{"intent":"generate_playlist", "reason":"vibe-based request", "song":{{"title":null, "artist":null}}}}
-"start the music" → {{"intent":"start_dj", "reason":"generic start request", "song":{{"title":null, "artist":null}}}}
+"play stargazing by kygo" -> {{"intent":"queue_song", "reason":"specific song request", "song":{{"title":"Stargazing", "artist":"Kygo"}}}}
+"transition to next song now" -> {{"intent":"quick_transition", "reason":"user wants immediate transition", "song":{{"title":null, "artist":null}}}}
+"switch to classic transitions" → {{"intent":"set_transition_mode", "reason":"user wants classic transition mode", "song":{{"title":null, "artist":null}}}}
+"give me some high energy songs" -> {{"intent":"generate_playlist", "reason":"mood-based playlist request", "song":{{"title":null, "artist":null}}}}
+"play something danceable" -> {{"intent":"generate_playlist", "reason":"vibe-based request", "song":{{"title":null, "artist":null}}}}
+"start the music" -> {{"intent":"start_dj", "reason":"generic start request", "song":{{"title":null, "artist":null}}}}
 
 Return ONLY the JSON, nothing else."""
         )
@@ -82,6 +84,7 @@ Return ONLY the JSON array, nothing else."""
             "start_dj": self.cmd_start_dj,
             "stop_dj": self.cmd_stop_dj,
             "quick_transition": self.cmd_quick_transition,
+            "set_transition_mode": self.cmd_set_transition_mode,
             "help": self.cmd_help,
             "queue_song": self.cmd_queue_song,
             "generate_playlist": self.cmd_generate_playlist,
@@ -98,6 +101,9 @@ Return ONLY the JSON array, nothing else."""
     def cmd_quick_transition(self):
         print("[CMD] Quick Transition Requested...")
 
+    def cmd_set_transition_mode(self):
+        print("[CMD] Transition mode change requested...")
+
     def queue_track(self, title: Optional[str], artist: Optional[str]):
         if not title: 
             print("[WARN] No title extracted; ignoring.")
@@ -109,7 +115,7 @@ Return ONLY the JSON array, nothing else."""
     def cmd_queue_song(self, *, title, artist):
         ok = self.queue_track(title, artist)
         if ok:
-            print(f"[CMD] Queued: {title}" + (f" — {artist}" if artist else ""))
+            print(f"[CMD] Queued: {title}" + (f" - {artist}" if artist else ""))
         self.print_queue()
     
     def cmd_generate_playlist(self, *, playlist: List[Dict]):
@@ -127,7 +133,7 @@ Return ONLY the JSON array, nothing else."""
         for i, song in enumerate(self._queue, start=1):
             title = song.get("title") or "Unknown"
             artist = song.get("artist")
-            print(f"  {i}. {title}" + (f" — {artist}" if artist else ""))
+            print(f"  {i}. {title}" + (f" - {artist}" if artist else ""))
 
     def extract_json(self, s: str) -> dict:
         if not s or not s.strip():
@@ -301,6 +307,6 @@ Return ONLY the JSON array, nothing else."""
         if res["intent"] == "queue_song":
             t = res["song"].get("title") or "Unknown title"
             a = res["song"].get("artist")
-            detail = f" — {a}" if a else ""
-            return f"[INTENT] queue_song → {t}{detail}"
-        return f"[INTENT] {res['intent']} — {res['reason']}"
+            detail = f" - {a}" if a else ""
+            return f"[INTENT] queue_song -> {t}{detail}"
+        return f"[INTENT] {res['intent']} - {res['reason']}"

@@ -1,5 +1,5 @@
 """
-AI DJ Backend — Production-ready FastAPI server.
+AI DJ Backend - Production-ready FastAPI server.
 
 Environment variables:
     AIDJ_ENV      "development" or "production" (default: development)
@@ -13,6 +13,8 @@ Usage:
 """
 
 import os
+import sys
+import io
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
@@ -23,6 +25,8 @@ from llm.new_llm import LlamaLLM
 from music_library import MusicLibrary
 from enhanced_audio_manager import AudioManager
 from upload_handler import router as upload_router
+from database import init_db
+from auth import router as auth_router
 
 import uvicorn
 
@@ -50,7 +54,7 @@ audio_manager = AudioManager(
 )
 
 # ---------------------------------------------------------------------------
-# CORS — automatic based on environment
+# CORS - automatic based on environment
 # ---------------------------------------------------------------------------
 if ENVIRONMENT == "production":
     CORS_ORIGINS = [
@@ -72,9 +76,13 @@ app.add_middleware(
 )
 
 app.include_router(upload_router)
+app.include_router(auth_router)
+
+# Initialize database on startup
+init_db()
 
 # ---------------------------------------------------------------------------
-# Ollama lifecycle (dev only — in prod, Ollama runs as its own service)
+# Ollama lifecycle (dev only - in prod, Ollama runs as its own service)
 # ---------------------------------------------------------------------------
 ollama_process = None
 
@@ -146,7 +154,7 @@ async def health_check():
 
 
 # ---------------------------------------------------------------------------
-# WebSocket — audio streaming
+# WebSocket - audio streaming
 # ---------------------------------------------------------------------------
 @app.websocket("/api/ws/audio")
 async def audio_stream(websocket: WebSocket):
@@ -167,6 +175,7 @@ async def audio_stream(websocket: WebSocket):
         def __init__(self, ws):
             self._ws = ws
             self._send_lock = asyncio.Lock()
+            self._log_buffer = []
 
         async def send_json(self, data):
             async with self._send_lock:
@@ -176,6 +185,25 @@ async def audio_stream(websocket: WebSocket):
             async with self._send_lock:
                 await self._ws.send_bytes(data)
 
+        def buffer_log(self, line: str):
+            """Buffer a log line for later sending."""
+            self._log_buffer.append(line)
+
+        async def flush_logs(self):
+            """Send buffered logs to the frontend."""
+            if not self._log_buffer:
+                return
+            lines = self._log_buffer[:]
+            self._log_buffer.clear()
+            try:
+                async with self._send_lock:
+                    await self._ws.send_json({
+                        "type": "backend_log",
+                        "lines": lines,
+                    })
+            except Exception:
+                pass
+
         async def receive_json(self):
             return await self._ws.receive_json()
 
@@ -183,6 +211,30 @@ async def audio_stream(websocket: WebSocket):
             return getattr(self._ws, name)
 
     locked_websocket = LockedWebSocket(websocket)
+
+    # Intercept stdout to capture print() output and forward to frontend
+    _original_stdout = sys.stdout
+
+    class LogTee(io.TextIOBase):
+        """Write to original stdout AND buffer for WebSocket forwarding."""
+        def write(self, s):
+            _original_stdout.write(s)
+            if s.strip():
+                locked_websocket.buffer_log(s.rstrip('\n'))
+            return len(s)
+
+        def flush(self):
+            _original_stdout.flush()
+
+    sys.stdout = LogTee()
+
+    # Periodically flush logs to the frontend
+    async def log_flusher():
+        while True:
+            await asyncio.sleep(0.5)
+            await locked_websocket.flush_logs()
+
+    log_flush_task = asyncio.create_task(log_flusher())
 
     def _serialize_track(item):
         """Best-effort conversion of whatever the queue stores into a UI-friendly object."""
@@ -282,6 +334,22 @@ async def audio_stream(websocket: WebSocket):
                             "type": "transition_planned",
                             "transition": audio_manager.pending_transition.to_dict()
                         })
+                continue
+
+            if msg_type == 'set_transition_mode':
+                requested_mode = data.get('mode', '')
+                success = audio_manager.set_transition_mode(requested_mode)
+                if success:
+                    await locked_websocket.send_json(_queue_payload({
+                        "type": "transition_mode_updated",
+                        "message": f"Transition mode set to {audio_manager.get_transition_mode()}",
+                        "transition_mode": audio_manager.get_transition_mode(),
+                    }))
+                else:
+                    await locked_websocket.send_json({
+                        "type": "error",
+                        "message": "Invalid transition mode. Use 'dynamic' or 'classic'."
+                    })
                 continue
 
             prompt = data.get('data', '')
@@ -402,6 +470,28 @@ async def audio_stream(websocket: WebSocket):
                             "message": f"Could not schedule quick transition: {str(e)}"
                         })
 
+                elif intent == 'set_transition_mode':
+                    prompt_lower = (prompt or "").lower()
+                    if any(keyword in prompt_lower for keyword in ["classic", "crossfade", "standard"]):
+                        requested_mode = "classic"
+                    elif any(keyword in prompt_lower for keyword in ["dynamic", "warp"]):
+                        requested_mode = "dynamic"
+                    else:
+                        requested_mode = "dynamic"
+
+                    success = audio_manager.set_transition_mode(requested_mode)
+                    if success:
+                        await locked_websocket.send_json(_queue_payload({
+                            "type": "transition_mode_updated",
+                            "message": f"Transition mode set to {audio_manager.get_transition_mode()}",
+                            "transition_mode": audio_manager.get_transition_mode(),
+                        }))
+                    else:
+                        await locked_websocket.send_json({
+                            "type": "error",
+                            "message": "Could not update transition mode. Use dynamic or classic."
+                        })
+
                 elif intent == 'stop_dj':
                     audio_manager.stop()
                     await locked_websocket.send_json({
@@ -467,6 +557,15 @@ async def audio_stream(websocket: WebSocket):
                 print("[CLEANUP] Message handler task cancelled")
             except Exception as e:
                 print(f"[CLEANUP] Error cancelling message handler: {e}")
+
+        # Restore original stdout and cancel log flusher
+        sys.stdout = _original_stdout
+        if log_flush_task and not log_flush_task.done():
+            log_flush_task.cancel()
+            try:
+                await log_flush_task
+            except asyncio.CancelledError:
+                pass
 
         print("[WS] Cleanup complete")
 
