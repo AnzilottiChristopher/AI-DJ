@@ -7,3 +7,5 @@ __pycache__/
 user_songs/user_uploaded_songs/*
 transition_testing/*
 __pycache__/*
+*/__pycache__
+*/__pycache__/*

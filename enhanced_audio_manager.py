@@ -12,8 +12,10 @@ Features:
 """
 
 import asyncio
+from datetime import time
 import soundfile as sf
 import numpy as np
+import time
 from pathlib import Path
 from typing import Optional, List, Dict, Any, Set
 from dataclasses import dataclass, field
@@ -73,7 +75,8 @@ class EnhancedAudioManager:
         
         # Audio settings
         self.sample_rate = 44100
-        self.chunk_size = 4096  # samples per chunk
+        #self.chunk_size = 4096  # samples per chunk
+        self.chunk_size = 16384
         
         # Playback tracking
         self.current_position = 0.0  # seconds into current track
@@ -99,6 +102,9 @@ class EnhancedAudioManager:
         
         # WebSocket reference for sending transition notifications
         self._websocket = None
+
+        # Skip tracking: count how many times skip has been pressed for the current song
+        self._skip_count = 0
         
         # Initialize transition mixer
         if model_path:
@@ -425,45 +431,59 @@ class EnhancedAudioManager:
         print(f"[MIXER] Preparing transition: {self.current_track.title} -> {next_track.title}")
         
         try:
-            # Load next track audio with its effects config
-            next_audio, next_duration = self._load_audio(next_track.track_data, next_track.effects_config)
-            next_track.audio = next_audio
-            next_track.duration = next_duration
+            def compute():
+                # Load next track audio with its effects config
+                next_audio, next_duration = self._load_audio(next_track.track_data, next_track.effects_config)
+                next_track.audio = next_audio
+                next_track.duration = next_duration
+                
+                # Ensure both tracks have segment data
+                current_data = self._ensure_segments(
+                    self.current_track.track_data.copy(),
+                    self.current_track.duration
+                )
+                current_data['title'] = self.current_track.title
+                
+                next_data = self._ensure_segments(
+                    next_track.track_data.copy(),
+                    next_duration
+                )
+                next_data['title'] = next_track.title
+                
+                # Compute optimal transition
+                # Pass force_quick parameter to compute_transition
+                plan = self.mixer.compute_transition(
+                    song_a_data=current_data,
+                    song_b_data=next_data,
+                    current_position=self.current_position,
+                    force_next_segment=force_quick
+                )
+                
+                if plan: 
+                    transition_audio = self.mixer.prepare_mixed_audio(
+                            self.current_track.audio,
+                            next_audio,
+                            plan,
+                            use_dynamic=self.use_dynamic_transitions
+                            )
+                    return plan, transition_audio
+                return None, None
             
-            # Ensure both tracks have segment data
-            current_data = self._ensure_segments(
-                self.current_track.track_data.copy(),
-                self.current_track.duration
-            )
-            current_data['title'] = self.current_track.title
-            
-            next_data = self._ensure_segments(
-                next_track.track_data.copy(),
-                next_duration
-            )
-            next_data['title'] = next_track.title
-            
-            # Compute optimal transition
-            # Pass force_quick parameter to compute_transition
-            plan = self.mixer.compute_transition(
-                song_a_data=current_data,
-                song_b_data=next_data,
-                current_position=self.current_position,
-                force_next_segment=force_quick
-            )
-            
+            plan, transition_audio = await asyncio.to_thread(compute)
+
             self._pending_transition_for = next_track
 
             if plan:
                 self.pending_transition = plan
+                self.transition_audio = transition_audio
                 
                 # Pre-compute the mixed audio
-                self.transition_audio = self.mixer.prepare_mixed_audio(
-                    self.current_track.audio,
-                    next_audio,
-                    plan,
-                    use_dynamic=self.use_dynamic_transitions
-                )
+                # self.transition_audio = self.mixer.prepare_mixed_audio(
+                #     self.current_track.audio,
+                #     next_audio,
+                #     plan,
+                #     use_dynamic=self.use_dynamic_transitions
+                # )
                 
                 transition_timing = "SOON (next segment)" if force_quick else "at end of song"
                 print(f"[MIXER] Transition ready ({transition_timing}): will start at {plan.transition_start_time:.1f}s")
@@ -500,35 +520,128 @@ class EnhancedAudioManager:
                 if self.queue and self.mixer:
                     asyncio.create_task(self._prepare_transition(self.queue[0]))
 
-    def force_quick_transition(self) -> bool:
-        """ 
-        Force a quick transition at the next available segments
-        
-        This recomputes the transition to happen at the next up coming segment 
-        instead of waiting until the end of song. 
+    def force_quick_transition(self) -> str:
+        """
+        Force a quick transition at the next available segments.
+        On the first skip, finds a nearby segment to transition at.
+        On a second skip for the same song, triggers an immediate crossfade.
 
-        Returns: 
-            bool: True if transition was scheduled, False if not 
+        Returns:
+            str: "quick" if first skip scheduled, "immediate" if force-skip initiated,
+                 "" (empty) if cannot skip
         """
 
-        # Only force transition if: 
-        # 1. Currently playing song 
-        # 2. Have a mixer 
-        # 3. Have a next track in queue 
-        if(self.state != PlaybackState.PLAYING or 
-           not self.mixer or 
-           not self.current_track or 
-           not self.queue):
-            print("[Quick Transition] Cannot force transition - requirements not met")
-            return False;
+        # Must be playing with a mixer to transition
+        if self.state != PlaybackState.PLAYING or not self.mixer or not self.current_track:
+            print("[SKIP] Cannot force transition - not playing or no mixer")
+            return ""
 
-        print(f"[QUICK TRANSITION] Forcinng quick transition from {self.current_track.title}")
-        
-        asyncio.create_task(self._prepare_transition(
-            self.queue[0],
-            force_quick=True
+        # If queue is empty, try to auto-queue a similar song first
+        if not self.queue:
+            if self._auto_queue_next_song():
+                print("[SKIP] Auto-queued a song for skip")
+                if self._websocket:
+                    asyncio.create_task(self._notify_auto_queue(self.queue[0]))
+            else:
+                print("[SKIP] Cannot skip - no songs in queue and auto-queue failed")
+                return ""
+
+        self._skip_count += 1
+
+        if self._skip_count >= 2:
+            # Double-skip: immediate crossfade from current position
+            print(f"[FORCE SKIP] Immediate crossfade from {self.current_track.title}")
+            asyncio.create_task(self._prepare_immediate_skip())
+            return "immediate"
+        else:
+            # First skip: find nearby segment
+            print(f"[QUICK TRANSITION] Forcing quick transition from {self.current_track.title}")
+            asyncio.create_task(self._prepare_transition(
+                self.queue[0],
+                force_quick=True
             ))
-        return True
+            return "quick"
+
+    async def _prepare_immediate_skip(self):
+        """
+        Prepare an immediate crossfade from the current playback position.
+        Uses a simple 5-second equal-power crossfade, bypassing segment analysis.
+        """
+        if not self.current_track or not self.queue or not self.mixer:
+            return
+
+        next_track = self.queue[0]
+
+        try:
+            def compute():
+                # Load next track audio if needed
+                if next_track.audio is None:
+                    next_audio, next_duration = self._load_audio(
+                        next_track.track_data, next_track.effects_config
+                    )
+                    next_track.audio = next_audio
+                    next_track.duration = next_duration
+
+                # Determine song B start point:
+                # Use planned entry point if a transition was already computed
+                song_b_start_sample = 0
+                if (self.pending_transition and
+                    self.pending_transition.song_b_title == next_track.title):
+                    song_b_start_sample = int(
+                        self.pending_transition.song_b_start_offset * self.sample_rate
+                    )
+                    print(f"[FORCE SKIP] Using planned entry point at "
+                          f"{self.pending_transition.song_b_start_offset:.1f}s in {next_track.title}")
+
+                current_sample = int(self.current_position * self.sample_rate)
+
+                # Use the mixer's immediate crossfade (always classic, 5s)
+                return self.mixer.create_immediate_crossfade(
+                    audio_a=self.current_track.audio,
+                    audio_b=next_track.audio,
+                    current_sample=current_sample,
+                    song_b_start_sample=song_b_start_sample,
+                    crossfade_duration=5.0,
+                )
+
+            transition_audio = await asyncio.to_thread(compute)
+
+            # Build a minimal TransitionPlan for the streaming machinery
+            current_sample = int(self.current_position * self.sample_rate)
+            song_b_offset = transition_audio['timing']['song_b_continue_sample'] / self.sample_rate
+            crossfade_dur = transition_audio['timing']['crossfade_duration']
+
+            plan = TransitionPlan(
+                song_a_title=self.current_track.title,
+                song_b_title=next_track.title,
+                exit_segment=None,
+                entry_segment=None,
+                predicted_score=0.0,
+                crossfade_duration=crossfade_dur,
+                transition_start_time=self.current_position,  # NOW
+                song_b_start_offset=song_b_offset - crossfade_dur,
+                song_a_bpm=self.current_track.track_data['features'].get('bpm', 120),
+                song_b_bpm=next_track.track_data['features'].get('bpm', 120),
+            )
+
+            self.pending_transition = plan
+            self.transition_audio = transition_audio
+
+            print(f"[FORCE SKIP] Immediate crossfade ready - "
+                  f"{crossfade_dur:.1f}s crossfade starting NOW")
+
+            # Notify frontend
+            if self._websocket:
+                await self._websocket.send_json({
+                    "type": "force_skip_initiated",
+                    "message": f"Skipping to {next_track.title} immediately...",
+                    "transition": plan.to_dict(),
+                })
+
+        except Exception as e:
+            print(f"[FORCE SKIP ERROR] {e}")
+            import traceback
+            traceback.print_exc()
 
     
     def get_next_track(self) -> Optional[TrackInfo]:
@@ -610,12 +723,14 @@ class EnhancedAudioManager:
             if self.queue and self.mixer:
                 await self._prepare_transition(self.queue[0])
 
-            # Reset position tracking
+            # Reset position tracking and skip count for new song
             self.samples_sent = 0
             self.current_position = 0.0
+            self._skip_count = 0
             
             total_samples = len(audio_int16)
             i = 0
+            stream_start_time = time.monotonic()
             
             while i < total_samples and self.state != PlaybackState.STOPPED:
                 # Update position
@@ -635,7 +750,11 @@ class EnhancedAudioManager:
                 self.samples_sent += len(chunk)
                 
                 # Pace the streaming
-                await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
+                # await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
+                expected_time = stream_start_time + (self.samples_sent / self.sample_rate) * 0.990
+                sleep_time = expected_time - time.monotonic()
+                if sleep_time > 0:
+                    await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
             
             # Track ended naturally
             await websocket.send_json({"type": "track_end"})
@@ -683,6 +802,9 @@ class EnhancedAudioManager:
             # CRITICAL FIX: Clip audio before int16 conversion to prevent overflow
             crossfade_clipped = np.clip(crossfade, -1.0, 1.0)
             crossfade_int16 = (crossfade_clipped * 32767).astype(np.int16)
+
+            crossfade_start_time = time.monotonic()
+            crossfade_samples_sent = 0
             
             for i in range(0, len(crossfade_int16), self.chunk_size):
                 if self.state == PlaybackState.STOPPED:
@@ -690,7 +812,12 @@ class EnhancedAudioManager:
                     
                 chunk = crossfade_int16[i:i + self.chunk_size]
                 await websocket.send_bytes(chunk.tobytes())
-                await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
+                # await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
+                crossfade_samples_sent += len(chunk)
+                expected_time = crossfade_start_time + (crossfade_samples_sent / self.sample_rate) * 0.990
+                sleep_time = expected_time - time.monotonic()
+                if sleep_time > 0:
+                    await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
             
             # Transition complete - now stream the rest of song B
             await websocket.send_json({
@@ -725,6 +852,7 @@ class EnhancedAudioManager:
 
                 self.samples_sent = 0
                 self.current_position = song_b_continue_sample / self.sample_rate
+                self._skip_count = 0  # Reset skip count for new song
 
                 # Send track_start BEFORE preparing next transition, so the frontend
                 # clears the old transition info before receiving the new one.
@@ -757,6 +885,8 @@ class EnhancedAudioManager:
                 print(f"[DEBUG]   Next transition at: {next_transition_time}s")
 
                 self.state = PlaybackState.PLAYING
+                
+                post_start_time = time.monotonic()
 
                 for i in range(0, len(post_int16), self.chunk_size):
                     if self.state == PlaybackState.STOPPED:
@@ -773,7 +903,11 @@ class EnhancedAudioManager:
                     chunk = post_int16[i:i + self.chunk_size]
                     await websocket.send_bytes(chunk.tobytes())
                     self.samples_sent += len(chunk)
-                    await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
+                    
+                    expected_time = post_start_time + (self.samples_sent / self.sample_rate) * 0.990 
+                    sleep_time = expected_time - time.monotonic()
+                    if sleep_time > 0:
+                        await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
                 
                 print(f"[DEBUG] Post-transition complete for {self.current_track.title}, position: {self.current_position:.1f}s")
                 await websocket.send_json({"type": "track_end"})

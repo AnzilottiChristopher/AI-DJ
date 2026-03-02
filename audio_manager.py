@@ -12,7 +12,8 @@ class AudioManager:
         self.current_track: Optional[dict] = None
         self.is_playing = False
         self.sample_rate = 44100
-        self.chunk_size = 4096  # samples per chunk
+        # self.chunk_size = 4096  # samples per chunk
+        self.chunk_size = 16384
         
     def add_to_queue(self, title, artist) -> bool:
         """Add song to queue, return True if found"""

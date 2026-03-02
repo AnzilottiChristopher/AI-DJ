@@ -53,8 +53,8 @@ class TransitionPlan:
         return {
             'song_a': self.song_a_title,
             'song_b': self.song_b_title,
-            'exit_segment': self.exit_segment.name,
-            'entry_segment': self.entry_segment.name,
+            'exit_segment': self.exit_segment.name if self.exit_segment else "immediate",
+            'entry_segment': self.entry_segment.name if self.entry_segment else "immediate",
             'score': round(self.predicted_score, 2),
             'crossfade_duration': self.crossfade_duration,
             'transition_start_time': round(self.transition_start_time, 2),
@@ -629,11 +629,89 @@ class TransitionMixer:
         song_b_continue_sample = song_b_start_sample + min_len
         return crossfade_audio, transition_start_sample, song_b_continue_sample
 
-        
+    def create_immediate_crossfade(self,
+                                   audio_a: np.ndarray,
+                                   audio_b: np.ndarray,
+                                   current_sample: int,
+                                   song_b_start_sample: int = 0,
+                                   crossfade_duration: float = 5.0) -> Dict[str, Any]:
+        """
+        Create an immediate equal-power crossfade from the current playback position.
 
+        Used for "force skip" (double-skip) where the user wants to jump to the
+        next song right now with a short crossfade, bypassing segment analysis.
 
+        Args:
+            audio_a: Full audio array for current song
+            audio_b: Full audio array for next song
+            current_sample: Current playback position in samples
+            song_b_start_sample: Where to start in song B (0 = beginning)
+            crossfade_duration: Duration of crossfade in seconds
 
-    
+        Returns:
+            Dict with 'crossfade', 'post_transition', and 'timing' keys
+            (same structure as prepare_mixed_audio, but no pre_transition)
+        """
+        sr = self.sample_rate
+        crossfade_samples = int(crossfade_duration * sr)
+
+        # Clamp to available audio
+        remaining_a = len(audio_a) - current_sample
+        available_b = len(audio_b) - song_b_start_sample
+        crossfade_samples = min(crossfade_samples, remaining_a, available_b)
+
+        if crossfade_samples < sr:  # Less than 1 second available
+            crossfade_samples = min(remaining_a, available_b)
+
+        # Extract segments
+        segment_a = audio_a[current_sample:current_sample + crossfade_samples].astype(np.float64)
+        segment_b = audio_b[song_b_start_sample:song_b_start_sample + crossfade_samples].astype(np.float64)
+
+        # Match lengths
+        min_len = min(len(segment_a), len(segment_b))
+        segment_a = segment_a[:min_len]
+        segment_b = segment_b[:min_len]
+
+        # Equal-power crossfade
+        t = np.linspace(0, 1, min_len)
+        fade_out = np.cos(t * np.pi / 2)
+        fade_in = np.sin(t * np.pi / 2)
+
+        if len(segment_a.shape) == 2:
+            fade_out = fade_out[:, np.newaxis]
+            fade_in = fade_in[:, np.newaxis]
+
+        crossfade_audio = (segment_a * fade_out) + (segment_b * fade_in)
+        crossfade_audio = self._soft_clip(crossfade_audio, threshold=0.95)
+        crossfade_audio = self._apply_micro_fade(crossfade_audio, fade_samples=128)
+        crossfade_audio = np.clip(crossfade_audio, -1.0, 1.0)
+
+        song_b_continue_sample = song_b_start_sample + min_len
+
+        # Post-transition: remainder of song B
+        post_transition = audio_b[song_b_continue_sample:]
+
+        # Micro-fade at boundary
+        fade_samples = 128
+        if len(post_transition) > fade_samples:
+            post_transition = post_transition.astype(np.float64)
+            fade_in_curve = np.linspace(0, 1, fade_samples) ** 2
+            if len(post_transition.shape) == 2:
+                fade_in_curve = fade_in_curve[:, np.newaxis]
+            post_transition[:fade_samples] *= fade_in_curve
+
+        return {
+            'crossfade': crossfade_audio,
+            'post_transition': post_transition,
+            'timing': {
+                'pre_duration': 0.0,
+                'crossfade_duration': min_len / sr,
+                'post_duration': len(post_transition) / sr,
+                'transition_start_sample': current_sample,
+                'song_b_continue_sample': song_b_continue_sample,
+            },
+        }
+
     def prepare_mixed_audio(self,
                             audio_a: np.ndarray,
                             audio_b: np.ndarray,
