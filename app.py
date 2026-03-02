@@ -23,7 +23,7 @@ import atexit
 
 from llm.new_llm import LlamaLLM
 from music_library import MusicLibrary
-from enhanced_audio_manager import AudioManager
+from enhanced_audio_manager import AudioManager, PlaybackState
 from upload_handler import router as upload_router
 from database import init_db
 from auth import router as auth_router
@@ -352,6 +352,23 @@ async def audio_stream(websocket: WebSocket):
                     })
                 continue
 
+            if msg_type == 'reset':
+                print("[WS] Client reset - clearing all state")
+                audio_manager.stop()
+                audio_manager.queue.clear()
+                audio_manager.current_track = None
+                audio_manager.pending_transition = None
+                audio_manager.transition_audio = None
+                audio_manager._pending_transition_for = None
+                audio_manager.samples_sent = 0
+                audio_manager.current_position = 0.0
+                audio_manager.state = PlaybackState.STOPPED
+                if playback_task and not playback_task.done():
+                    playback_task.cancel()
+                    playback_task = None
+                has_started_playback = False
+                await locked_websocket.send_json({"type": "reset_complete"})
+                continue
             prompt = data.get('data', '')
             print(f"[WS] Received prompt: {prompt}")
 
