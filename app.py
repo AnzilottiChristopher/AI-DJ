@@ -470,11 +470,16 @@ async def audio_stream(websocket: WebSocket):
 
                 elif intent == 'quick_transition':
                     try:
-                        success = audio_manager.force_quick_transition()
-                        if success:
+                        result = audio_manager.force_quick_transition()
+                        if result == "quick":
                             await locked_websocket.send_json({
                                 "type": "quick_transition_scheduled",
                                 "message": "Transitioning at next segment boundary..."
+                            })
+                        elif result == "immediate":
+                            await locked_websocket.send_json({
+                                "type": "quick_transition_scheduled",
+                                "message": "Skipping immediately..."
                             })
                         else:
                             await locked_websocket.send_json({
