@@ -12,8 +12,10 @@ Features:
 """
 
 import asyncio
+from datetime import time
 import soundfile as sf
 import numpy as np
+import time
 from pathlib import Path
 from typing import Optional, List, Dict, Any, Set
 from dataclasses import dataclass, field
@@ -631,6 +633,7 @@ class EnhancedAudioManager:
             
             total_samples = len(audio_int16)
             i = 0
+            stream_start_time = time.monotonic()
             
             while i < total_samples and self.state != PlaybackState.STOPPED:
                 # Update position
@@ -651,7 +654,10 @@ class EnhancedAudioManager:
                 
                 # Pace the streaming
                 # await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
-                await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
+                expected_time = stream_start_time + (self.samples_sent / self.sample_rate) * 0.990
+                sleep_time = expected_time - time.monotonic()
+                if sleep_time > 0:
+                    await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
             
             # Track ended naturally
             await websocket.send_json({"type": "track_end"})
@@ -699,6 +705,9 @@ class EnhancedAudioManager:
             # CRITICAL FIX: Clip audio before int16 conversion to prevent overflow
             crossfade_clipped = np.clip(crossfade, -1.0, 1.0)
             crossfade_int16 = (crossfade_clipped * 32767).astype(np.int16)
+
+            crossfade_start_time = time.monotonic()
+            crossfade_samples_sent = 0
             
             for i in range(0, len(crossfade_int16), self.chunk_size):
                 if self.state == PlaybackState.STOPPED:
@@ -707,7 +716,11 @@ class EnhancedAudioManager:
                 chunk = crossfade_int16[i:i + self.chunk_size]
                 await websocket.send_bytes(chunk.tobytes())
                 # await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
-                await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
+                crossfade_samples_sent += len(chunk)
+                expected_time = crossfade_start_time + (crossfade_samples_sent / self.sample_rate) * 0.990
+                sleep_time = expected_time - time.monotonic()
+                if sleep_time > 0:
+                    await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
             
             # Transition complete - now stream the rest of song B
             await websocket.send_json({
@@ -774,6 +787,8 @@ class EnhancedAudioManager:
                 print(f"[DEBUG]   Next transition at: {next_transition_time}s")
 
                 self.state = PlaybackState.PLAYING
+                
+                post_start_time = time.monotonic()
 
                 for i in range(0, len(post_int16), self.chunk_size):
                     if self.state == PlaybackState.STOPPED:
@@ -790,7 +805,11 @@ class EnhancedAudioManager:
                     chunk = post_int16[i:i + self.chunk_size]
                     await websocket.send_bytes(chunk.tobytes())
                     self.samples_sent += len(chunk)
-                    await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
+                    
+                    expected_time = post_start_time + (self.samples_sent / self.sample_rate) * 0.990 
+                    sleep_time = expected_time - time.monotonic()
+                    if sleep_time > 0:
+                        await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
                 
                 print(f"[DEBUG] Post-transition complete for {self.current_track.title}, position: {self.current_position:.1f}s")
                 await websocket.send_json({"type": "track_end"})
