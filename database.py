@@ -44,8 +44,21 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_songs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            song_name TEXT NOT NULL,
+            song_data TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            UNIQUE(user_id, song_name)
+        )
+    """)
+
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_activity_user ON activity(user_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_activity_type ON activity(event_type)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_songs_user ON user_songs(user_id)")
 
     conn.commit()
     conn.close()

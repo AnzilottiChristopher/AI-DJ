@@ -15,7 +15,8 @@ Usage:
 import os
 import sys
 import io
-from fastapi import FastAPI, WebSocket
+import json
+from fastapi import FastAPI, WebSocket, Query
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import subprocess
@@ -25,8 +26,9 @@ from llm.new_llm import LlamaLLM
 from music_library import MusicLibrary
 from enhanced_audio_manager import AudioManager, PlaybackState
 from upload_handler import router as upload_router
-from database import init_db
-from auth import router as auth_router
+from database import init_db, get_connection
+from auth import router as auth_router, decode_token
+from typing import Optional
 
 import uvicorn
 
@@ -87,9 +89,30 @@ init_db()
 ollama_process = None
 
 
+def _load_user_songs_into_library():
+    """Load all user-uploaded songs from DB into the in-memory library at startup."""
+    conn = get_connection()
+    rows = conn.execute("SELECT user_id, song_data FROM user_songs").fetchall()
+    conn.close()
+    count = 0
+    for row in rows:
+        try:
+            song_data = json.loads(row["song_data"])
+            music_library.add_user_song_hot(song_data, row["user_id"])
+            count += 1
+        except Exception as e:
+            print(f"[STARTUP] Failed to load user song: {e}")
+    if count:
+        print(f"[STARTUP] Loaded {count} user song(s) into library")
+
+
 @app.on_event("startup")
 async def startup_event():
     global ollama_process
+
+    # Load user songs from DB into the in-memory library
+    _load_user_songs_into_library()
+
     if ENVIRONMENT == "development":
         print("Starting Ollama server...")
         try:
@@ -157,7 +180,7 @@ async def health_check():
 # WebSocket - audio streaming
 # ---------------------------------------------------------------------------
 @app.websocket("/api/ws/audio")
-async def audio_stream(websocket: WebSocket):
+async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None)):
     """
     Main WebSocket endpoint for audio streaming.
 
@@ -168,6 +191,16 @@ async def audio_stream(websocket: WebSocket):
     - Playback status updates
     """
     await websocket.accept()
+
+    # Resolve user identity from the optional JWT token query param
+    session_user_id: Optional[int] = None
+    if token:
+        try:
+            payload = decode_token(token)
+            session_user_id = int(payload["sub"])
+            print(f"[WS] Authenticated user {session_user_id}")
+        except Exception:
+            print("[WS] Invalid token provided; treating as guest")
 
     # FIX FOR AUDIO CUTOUTS: Create a WebSocket wrapper with send locking
     class LockedWebSocket:
@@ -352,6 +385,33 @@ async def audio_stream(websocket: WebSocket):
                     })
                 continue
 
+            if msg_type == 'remove_from_queue':
+                index = data.get('index')
+                if isinstance(index, int):
+                    success = audio_manager.remove_from_queue(index)
+                    if success:
+                        await locked_websocket.send_json(_queue_payload({
+                            "type": "queue_update",
+                            "action": "removed",
+                            "message": "Song removed from queue",
+                        }))
+                        if audio_manager.pending_transition:
+                            await locked_websocket.send_json({
+                                "type": "transition_planned",
+                                "transition": audio_manager.pending_transition.to_dict()
+                            })
+                continue
+
+            if msg_type == 'pause':
+                audio_manager.pause()
+                await locked_websocket.send_json({"type": "paused"})
+                continue
+
+            if msg_type == 'resume':
+                audio_manager.resume()
+                await locked_websocket.send_json({"type": "resumed"})
+                continue
+
             if msg_type == 'reset':
                 print("[WS] Client reset - clearing all state")
                 audio_manager.stop()
@@ -422,7 +482,7 @@ async def audio_stream(websocket: WebSocket):
                         })
 
                 elif intent == 'generate_playlist':
-                    playlist = await loop.run_in_executor(None, llm.generate_playlist, prompt)
+                    playlist = await loop.run_in_executor(None, llm.generate_playlist, prompt, session_user_id)
 
                     if not playlist:
                         await locked_websocket.send_json({
@@ -602,15 +662,27 @@ async def get_status():
 
 
 @app.get("/api/library")
-async def get_library():
-    """Get list of available songs."""
+async def get_library(token: Optional[str] = Query(None)):
+    """Get available songs. Authenticated users also see their own uploads."""
+    user_id = None
+    if token:
+        try:
+            payload = decode_token(token)
+            user_id = int(payload["sub"])
+        except Exception:
+            pass
+
     songs = []
     for key, data in music_library.index.items():
+        owner = music_library._user_song_owner.get(key)
+        if owner is not None and owner != user_id:
+            continue  # skip other users' songs
         songs.append({
             "title": key,
             "filename": data['filename'],
             "bpm": data['features'].get('bpm'),
             "key": data['features'].get('key'),
+            "is_user_song": owner == user_id,
         })
     return {"songs": songs}
 
@@ -633,6 +705,39 @@ async def get_auto_play_status():
         "recently_played": audio_manager.recently_played,
         "similarity_service_ready": audio_manager.similarity_service is not None
     }
+
+
+@app.post("/api/library/add-user-song")
+async def add_user_song(payload: dict):
+    """Hot-add a user-owned song into the in-memory library."""
+    try:
+        song_data = payload["song_data"]
+        user_id = int(payload["user_id"])
+        print(f"[ADD USER SONG] Adding: {song_data['song_name']} for user {user_id}")
+
+        normalized_key = music_library.add_user_song_hot(song_data, user_id)
+
+        if audio_manager.similarity_service:
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(
+                None,
+                audio_manager.similarity_service.add_song_embedding,
+                normalized_key,
+                {
+                    'filename': song_data['song_name'],
+                    'features': song_data['features'],
+                    'segments': song_data['segments']
+                }
+            )
+
+        return {
+            "success": True,
+            "message": f"'{normalized_key}' added for user {user_id}",
+            "song_count": len(music_library.index),
+        }
+    except Exception as e:
+        print(f"[ADD USER SONG ERROR] {e}")
+        return {"success": False, "message": str(e)}
 
 
 @app.post("/api/library/add-song")

@@ -3,10 +3,13 @@ import json
 import subprocess
 from pathlib import Path
 from typing import Optional, Tuple
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import JSONResponse
 import shutil
 import sys
+
+from auth import get_current_user
+from database import get_connection
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
@@ -168,64 +171,66 @@ def convert_segment_names(segments: list) -> list:
 
 
 
-async def process_upload_background(audio_path: Path, normalized_name: str, artist: str, title: str):
+async def process_upload_background(audio_path: Path, normalized_name: str, artist: str, title: str, user_id: int):
     """
     Background task to process uploaded song without blocking.
-    
-    Runs segmentation, feature extraction, and library reload.
+
+    Runs segmentation, feature extraction, and adds the song to the user's library.
     """
     import asyncio
-    
+
     try:
-        print(f"\n[BACKGROUND] Processing: {normalized_name}")
-        
+        print(f"\n[BACKGROUND] Processing: {normalized_name} (user {user_id})")
+
         # Run segmentation in executor (CPU-intensive, runs in thread pool)
         loop = asyncio.get_event_loop()
         segments_result = await loop.run_in_executor(
-            None,  # Use default executor
+            None,
             run_segmentation,
             audio_path
         )
-        
+
         if not segments_result:
             print(f"[BACKGROUND] Segmentation failed for {normalized_name}")
             if audio_path.exists():
                 audio_path.unlink()
             return
-        
+
         print(f"[BACKGROUND] Segmentation complete: {len(segments_result['segments'])} segments")
-        
-        # Convert AI segments to original naming convention
+
         converted_segments = convert_segment_names(segments_result['segments'])
-        
-        # Use extracted features from segmentation
         extracted_features = segments_result.get('features', {})
-        
-        # Add to segmented_songs.json
+
         new_song = {
             "song_name": normalized_name,
             "features": extracted_features,
             "segments": converted_segments
         }
-        
-        segmented_data = load_segmented_songs()
-        segmented_data['songs'].append(new_song)
-        save_segmented_songs(segmented_data)
-        
-        print(f"[BACKGROUND] Saved to database")
 
+        # Persist to user_songs DB table (NOT segmented_songs.json)
+        conn = get_connection()
+        try:
+            conn.execute(
+                "INSERT OR REPLACE INTO user_songs (user_id, song_name, song_data) VALUES (?, ?, ?)",
+                (user_id, normalized_name, json.dumps(new_song))
+            )
+            conn.commit()
+            print(f"[BACKGROUND] Saved to user_songs DB for user {user_id}")
+        finally:
+            conn.close()
+
+        # Hot-add to the in-memory library as a user song
         try:
             import httpx
             async with httpx.AsyncClient() as client:
                 response = await client.post(
-                    "http://localhost:8000/api/library/add-song",
-                    json=new_song,
+                    "http://localhost:8000/api/library/add-user-song",
+                    json={"song_data": new_song, "user_id": user_id},
                     timeout=5.0
                 )
                 result = response.json()
-
                 if result.get("success"):
-                    print(f"[BACKGROUND] '{title}' by {artist} is now fully available")
+                    print(f"[BACKGROUND] '{title}' by {artist} is now available for user {user_id}")
                     print(f"[BACKGROUND] Library now has {result.get('song_count')} songs")
                 else:
                     print(f"[BACKGROUND] Add failed: {result.get('message')}")
@@ -250,47 +255,51 @@ async def process_upload_background(audio_path: Path, normalized_name: str, arti
 
 
 @router.post("/song")
-async def upload_song(file: UploadFile = File(...)):
-    """Upload song - returns immediately, processes in background."""
+async def upload_song(
+    file: UploadFile = File(...),
+    user: dict = Depends(get_current_user),
+):
+    """Upload a song for the authenticated user. Processes in background."""
     try:
         if not file.filename.endswith(('.wav', '.mp3')):
             raise HTTPException(400, "Only .wav and .mp3 files supported")
-        
+
         artist, title = extract_artist_title_from_filename(file.filename)
-        
+
         if not artist or not title:
             raise HTTPException(400, 'Invalid filename. Use: "Artist - Song Title.wav"')
-        
+
         ensure_directories()
-        
+
         normalized_name = normalize_filename(artist, title)
         audio_path = AUDIO_DIR / normalized_name
-        
-        # Check if song already exists
-        segmented_data = load_segmented_songs()
-        if any(s['song_name'] == normalized_name for s in segmented_data.get('songs', [])):
-            raise HTTPException(409, f"Song already exists: '{title}' by {artist}")
-        
-        if audio_path.exists():
-            raise HTTPException(409, f"Audio file already exists: {normalized_name}")
-        
+
+        # Check if this user already owns this song
+        conn = get_connection()
+        existing = conn.execute(
+            "SELECT id FROM user_songs WHERE user_id = ? AND song_name = ?",
+            (user["id"], normalized_name)
+        ).fetchone()
+        conn.close()
+        if existing:
+            raise HTTPException(409, f"You've already uploaded '{title}' by {artist}")
+
         # Save uploaded file (fast, ~1 second)
         with open(audio_path, 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
-        
-        print(f"[UPLOAD] File saved: {normalized_name}")
+
+        print(f"[UPLOAD] File saved: {normalized_name} (user {user['id']})")
         print(f"[UPLOAD] Starting background processing...")
-        
-        # Process in background (don't wait!)
+
         import asyncio
         asyncio.create_task(process_upload_background(
             audio_path=audio_path,
             normalized_name=normalized_name,
             artist=artist,
-            title=title
+            title=title,
+            user_id=user["id"],
         ))
-        
-        # Return immediately - processing continues in background
+
         return JSONResponse({
             "success": True,
             "filename": normalized_name,
@@ -299,7 +308,7 @@ async def upload_song(file: UploadFile = File(...)):
             "message": f"Upload started! Processing in background (~60 seconds)...",
             "processing": True
         })
-        
+
     except HTTPException:
         raise
     except Exception as e:

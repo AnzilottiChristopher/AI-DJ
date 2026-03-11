@@ -210,22 +210,24 @@ Return ONLY the JSON array, nothing else."""
         print(f"[DEBUG] Classified intent: {intent}")
         return result
     
-    def generate_playlist(self, user_request: str) -> List[Dict]:
+    def generate_playlist(self, user_request: str, user_id: Optional[int] = None) -> List[Dict]:
         """
         Generate a playlist based on the user's request.
-        
+
         Args:
             user_request: The user's natural language request
-            
+            user_id: Authenticated user ID — includes their personal uploads in the library.
+                     None (guest) means base library only.
+
         Returns:
             List of dicts with 'title' and 'artist' keys
         """
         if not self.music_library:
             print("[ERROR] No music library available for playlist generation")
             return []
-        
-        # Get the library in LLM-friendly format
-        song_library = self.music_library.get_library_for_llm()
+
+        # Get the library filtered to what this user can access
+        song_library = self.music_library.get_library_for_llm(user_id=user_id)
         
         print(f"[PLAYLIST] Generating playlist for: '{user_request}'")
         print(f"[PLAYLIST] Library has {len(self.music_library.index)} songs")
