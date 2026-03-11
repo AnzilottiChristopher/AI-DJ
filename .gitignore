@@ -8,3 +8,5 @@ transition_testing/*
 __pycache__/*
 */__pycache__
 */__pycache__/*
+ecosystem.config.js
+logs/
