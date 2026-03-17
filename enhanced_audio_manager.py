@@ -29,6 +29,7 @@ from audio_processor import AudioProcessor
 class PlaybackState(Enum):
     STOPPED = "stopped"
     PLAYING = "playing"
+    PAUSED = "paused"
     TRANSITIONING = "transitioning"
 
 
@@ -105,6 +106,10 @@ class EnhancedAudioManager:
 
         # Skip tracking: count how many times skip has been pressed for the current song
         self._skip_count = 0
+
+        # Pause tracking
+        self._paused = False
+        self._pre_pause_state = PlaybackState.PLAYING
         
         # Initialize transition mixer
         if model_path:
@@ -420,6 +425,24 @@ class EnhancedAudioManager:
         self._push_queue_update("reordered")
         return True
 
+    def remove_from_queue(self, index: int) -> bool:
+        """Remove a song from the queue by index. Invalidates the transition if position 0 changes."""
+        if index < 0 or index >= len(self.queue):
+            return False
+
+        removing_first = index == 0
+        self.queue.pop(index)
+
+        if removing_first:
+            self._pending_transition_for = None
+            self.pending_transition = None
+            self.transition_audio = None
+            if self.state == PlaybackState.PLAYING and self.mixer and self.current_track and self.queue:
+                asyncio.create_task(self._prepare_transition(self.queue[0]))
+
+        self._push_queue_update("removed")
+        return True
+
     async def _prepare_transition(self, next_track: TrackInfo, force_quick: bool = False):
         """
         Prepare transition to the next track asynchronously.
@@ -733,22 +756,31 @@ class EnhancedAudioManager:
             stream_start_time = time.monotonic()
             
             while i < total_samples and self.state != PlaybackState.STOPPED:
+                # Handle pause - busy-wait and adjust stream_start_time so pacing stays correct
+                if self._paused:
+                    pause_start = time.monotonic()
+                    while self._paused and self.state != PlaybackState.STOPPED:
+                        await asyncio.sleep(0.05)
+                    stream_start_time += time.monotonic() - pause_start
+                    if self.state == PlaybackState.STOPPED:
+                        break
+
                 # Update position
                 self.current_position = self.samples_sent / self.sample_rate
-                
+
                 # Check if we should start a transition
                 if self._should_start_transition():
                     # Transition to the mixed audio
                     await self._stream_transition(websocket)
                     return  # _stream_transition handles the rest
-                
+
                 # Normal chunk streaming
                 chunk = audio_int16[i:i + self.chunk_size]
                 await websocket.send_bytes(chunk.tobytes())
-                
+
                 i += self.chunk_size
                 self.samples_sent += len(chunk)
-                
+
                 # Pace the streaming
                 # await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
                 expected_time = stream_start_time + (self.samples_sent / self.sample_rate) * 0.990
@@ -805,11 +837,19 @@ class EnhancedAudioManager:
 
             crossfade_start_time = time.monotonic()
             crossfade_samples_sent = 0
-            
+
             for i in range(0, len(crossfade_int16), self.chunk_size):
                 if self.state == PlaybackState.STOPPED:
                     break
-                    
+
+                if self._paused:
+                    pause_start = time.monotonic()
+                    while self._paused and self.state != PlaybackState.STOPPED:
+                        await asyncio.sleep(0.05)
+                    crossfade_start_time += time.monotonic() - pause_start
+                    if self.state == PlaybackState.STOPPED:
+                        break
+
                 chunk = crossfade_int16[i:i + self.chunk_size]
                 await websocket.send_bytes(chunk.tobytes())
                 # await asyncio.sleep(self.chunk_size / self.sample_rate * 0.98)
@@ -892,6 +932,14 @@ class EnhancedAudioManager:
                     if self.state == PlaybackState.STOPPED:
                         break
 
+                    if self._paused:
+                        pause_start = time.monotonic()
+                        while self._paused and self.state != PlaybackState.STOPPED:
+                            await asyncio.sleep(0.05)
+                        post_start_time += time.monotonic() - pause_start
+                        if self.state == PlaybackState.STOPPED:
+                            break
+
                     self.current_position = (song_b_continue_sample + self.samples_sent) / self.sample_rate
 
                     # Check if we should start the next transition (for chained playlist songs)
@@ -903,8 +951,8 @@ class EnhancedAudioManager:
                     chunk = post_int16[i:i + self.chunk_size]
                     await websocket.send_bytes(chunk.tobytes())
                     self.samples_sent += len(chunk)
-                    
-                    expected_time = post_start_time + (self.samples_sent / self.sample_rate) * 0.990 
+
+                    expected_time = post_start_time + (self.samples_sent / self.sample_rate) * 0.990
                     sleep_time = expected_time - time.monotonic()
                     if sleep_time > 0:
                         await asyncio.sleep(self.chunk_size / self.sample_rate * 0.985)
@@ -952,14 +1000,31 @@ class EnhancedAudioManager:
     
     def start(self):
         """Start playback."""
+        self._paused = False
         self.state = PlaybackState.PLAYING
-    
+
     def stop(self):
         """Stop playback."""
+        self._paused = False
         self.state = PlaybackState.STOPPED
         self.pending_transition = None
         self.transition_audio = None
         self._push_queue_update("stopped")
+
+    def pause(self):
+        """Pause streaming - freezes position tracking until resumed."""
+        if self.state in (PlaybackState.PLAYING, PlaybackState.TRANSITIONING):
+            self._pre_pause_state = self.state
+            self._paused = True
+            self.state = PlaybackState.PAUSED
+            print("[AUDIO] Paused")
+
+    def resume(self):
+        """Resume streaming after a pause."""
+        if self.state == PlaybackState.PAUSED:
+            self._paused = False
+            self.state = getattr(self, '_pre_pause_state', PlaybackState.PLAYING)
+            print("[AUDIO] Resumed")
     
     def get_queue_status(self) -> Dict:
         """Get current queue and playback status."""

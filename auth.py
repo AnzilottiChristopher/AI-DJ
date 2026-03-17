@@ -79,6 +79,17 @@ def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depen
     return {"id": int(payload["sub"]), "username": payload["username"]}
 
 
+def get_optional_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> Optional[dict]:
+    """Like get_current_user but returns None instead of raising when no/invalid token."""
+    if credentials is None:
+        return None
+    try:
+        payload = decode_token(credentials.credentials)
+        return {"id": int(payload["sub"]), "username": payload["username"]}
+    except HTTPException:
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
