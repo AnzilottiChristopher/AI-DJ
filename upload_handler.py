@@ -21,31 +21,30 @@ SEGMENT_SCRIPT = Path("user_songs/segment_new_song.py")
 
 
 def extract_artist_title_from_filename(filename: str) -> Tuple[Optional[str], Optional[str]]:
-    """Extract artist and title from "Artist - Song Title.wav" format."""
+    """Extract title and artist from "Song-Title_Artist-Name.wav" format."""
     name_without_ext = filename.rsplit('.', 1)[0]
-    
-    if ' - ' not in name_without_ext:
+
+    if '_' not in name_without_ext:
         return (None, None)
-    
-    parts = name_without_ext.split(' - ', 1)
-    if len(parts) != 2:
-        return (None, None)
-    
-    artist = parts[0].strip()
-    title = parts[1].strip()
-    
+
+    last_underscore = name_without_ext.rfind('_')
+    title_part = name_without_ext[:last_underscore]
+    artist_part = name_without_ext[last_underscore + 1:]
+
+    title = title_part.replace('-', ' ').strip()
+    artist = artist_part.replace('-', ' ').strip()
+
     return (artist, title) if artist and title else (None, None)
 
 
 def normalize_filename(artist: str, title: str) -> str:
     """Convert to "Song-Title_Artist.wav" format."""
-    # Remove apostrophes and other special characters that cause search issues
-    title_clean = re.sub(r'[^\w\s-]', '', title)  # Removes apostrophes, quotes, etc.
+    title_clean = re.sub(r'[^\w\s-]', '', title)
     title_clean = re.sub(r'\s+', '-', title_clean.strip())
-    
+
     artist_clean = re.sub(r'[^\w\s-]', '', artist)
     artist_clean = re.sub(r'\s+', '-', artist_clean.strip())
-    
+
     return f"{title_clean}_{artist_clean}.wav"
 
 
@@ -267,11 +266,12 @@ async def upload_song(
         artist, title = extract_artist_title_from_filename(file.filename)
 
         if not artist or not title:
-            raise HTTPException(400, 'Invalid filename. Use: "Artist - Song Title.wav"')
+            raise HTTPException(400, 'Invalid filename format.')
 
         ensure_directories()
 
-        normalized_name = normalize_filename(artist, title)
+        # Use the filename exactly as sent by the frontend — it's already correctly formatted
+        normalized_name = file.filename
         audio_path = AUDIO_DIR / normalized_name
 
         # Check if this user already owns this song
