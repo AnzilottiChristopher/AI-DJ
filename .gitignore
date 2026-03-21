@@ -10,3 +10,7 @@ __pycache__/*
 */__pycache__/*
 ecosystem.config.js
 logs/
+.claude/
+.idea/
+.vscode/
+~/
