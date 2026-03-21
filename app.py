@@ -16,7 +16,7 @@ import os
 import sys
 import io
 import json
-from fastapi import FastAPI, WebSocket, Query
+from fastapi import FastAPI, WebSocket, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import subprocess
@@ -28,6 +28,8 @@ from enhanced_audio_manager import AudioManager, PlaybackState
 from upload_handler import router as upload_router
 from database import init_db, get_connection
 from auth import router as auth_router, decode_token
+from setlists import router as setlists_router
+from song_similarity import parse_title_artist_from_filename
 from typing import Optional
 
 import uvicorn
@@ -79,6 +81,7 @@ app.add_middleware(
 
 app.include_router(upload_router)
 app.include_router(auth_router)
+app.include_router(setlists_router)
 
 # Initialize database on startup
 init_db()
@@ -429,6 +432,86 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
                 has_started_playback = False
                 await locked_websocket.send_json({"type": "reset_complete"})
                 continue
+
+            if msg_type == 'load_setlist':
+                setlist_id = data.get('setlist_id')
+                if not session_user_id:
+                    await locked_websocket.send_json({
+                        "type": "error",
+                        "message": "Authentication required to load setlists"
+                    })
+                    continue
+
+                conn = get_connection()
+                setlist_row = conn.execute(
+                    "SELECT id, name FROM setlists WHERE id = ? AND user_id = ?",
+                    (setlist_id, session_user_id),
+                ).fetchone()
+
+                if not setlist_row:
+                    conn.close()
+                    await locked_websocket.send_json({
+                        "type": "error",
+                        "message": "Setlist not found"
+                    })
+                    continue
+
+                items = conn.execute(
+                    "SELECT song_key, song_title, song_artist FROM setlist_items "
+                    "WHERE setlist_id = ? ORDER BY position",
+                    (setlist_id,),
+                ).fetchall()
+                conn.close()
+
+                if not items:
+                    await locked_websocket.send_json({
+                        "type": "error",
+                        "message": "Setlist is empty"
+                    })
+                    continue
+
+
+                queued_songs = []
+                failed_songs = []
+                for item in items:
+                    # Resolve proper title/artist from the library via song_key
+                    title = item["song_title"]
+                    artist = item["song_artist"]
+                    song_key = item["song_key"]
+                    lib_entry = music_library.index.get(song_key)
+                    if lib_entry:
+                        title, artist = parse_title_artist_from_filename(lib_entry['filename'])
+
+                    found = audio_manager.add_to_queue(title, artist)
+                    if found:
+                        queued_songs.append(title)
+                    else:
+                        failed_songs.append(title)
+
+                await locked_websocket.send_json(_queue_payload({
+                    "type": "queue_update",
+                    "action": "setlist_loaded",
+                    "message": f"Loaded setlist '{setlist_row['name']}': {len(queued_songs)} songs queued",
+                    "queued": queued_songs,
+                    "failed": failed_songs,
+                }))
+
+                if (not audio_manager.is_playing or not has_started_playback) and queued_songs:
+                    if audio_manager.is_playing and not has_started_playback:
+                        audio_manager.stop()
+                        audio_manager.current_track = None
+                        audio_manager.start()
+                    elif not audio_manager.is_playing:
+                        if not has_started_playback and audio_manager.current_track:
+                            audio_manager.current_track = None
+                        audio_manager.start()
+
+                    playback_task = asyncio.create_task(
+                        audio_manager.play_queue(locked_websocket)
+                    )
+                    has_started_playback = True
+                continue
+
             prompt = data.get('data', '')
             print(f"[WS] Received prompt: {prompt}")
 
@@ -527,6 +610,84 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
                                 audio_manager.play_queue(locked_websocket)
                             )
                             has_started_playback = True
+
+                elif intent == 'play_setlist':
+                    setlist_name = (song_info.get('title') or '').strip()
+                    if not session_user_id:
+                        await locked_websocket.send_json({
+                            "type": "error",
+                            "message": "You need to be logged in to load setlists"
+                        })
+                    elif not setlist_name:
+                        await locked_websocket.send_json({
+                            "type": "error",
+                            "message": "I couldn't determine which setlist you want. Try saying 'play setlist <name>'"
+                        })
+                    else:
+                        conn = get_connection()
+                        setlist_row = conn.execute(
+                            "SELECT id, name FROM setlists WHERE user_id = ? AND LOWER(name) = LOWER(?)",
+                            (session_user_id, setlist_name),
+                        ).fetchone()
+
+                        if not setlist_row:
+                            conn.close()
+                            await locked_websocket.send_json({
+                                "type": "error",
+                                "message": f"Setlist '{setlist_name}' not found"
+                            })
+                        else:
+                            items = conn.execute(
+                                "SELECT song_key, song_title, song_artist FROM setlist_items "
+                                "WHERE setlist_id = ? ORDER BY position",
+                                (setlist_row['id'],),
+                            ).fetchall()
+                            conn.close()
+
+                            if not items:
+                                await locked_websocket.send_json({
+                                    "type": "error",
+                                    "message": f"Setlist '{setlist_row['name']}' is empty"
+                                })
+                            else:
+                                queued_songs = []
+                                failed_songs = []
+                                for item in items:
+                                    title = item["song_title"]
+                                    artist = item["song_artist"]
+                                    song_key = item["song_key"]
+                                    lib_entry = music_library.index.get(song_key)
+                                    if lib_entry:
+                                        title, artist = parse_title_artist_from_filename(lib_entry['filename'])
+
+                                    found = audio_manager.add_to_queue(title, artist)
+                                    if found:
+                                        queued_songs.append(title)
+                                    else:
+                                        failed_songs.append(title)
+
+                                await locked_websocket.send_json(_queue_payload({
+                                    "type": "queue_update",
+                                    "action": "setlist_loaded",
+                                    "message": f"Loaded setlist '{setlist_row['name']}': {len(queued_songs)} songs queued",
+                                    "queued": queued_songs,
+                                    "failed": failed_songs,
+                                }))
+
+                                if (not audio_manager.is_playing or not has_started_playback) and queued_songs:
+                                    if audio_manager.is_playing and not has_started_playback:
+                                        audio_manager.stop()
+                                        audio_manager.current_track = None
+                                        audio_manager.start()
+                                    elif not audio_manager.is_playing:
+                                        if not has_started_playback and audio_manager.current_track:
+                                            audio_manager.current_track = None
+                                        audio_manager.start()
+
+                                    playback_task = asyncio.create_task(
+                                        audio_manager.play_queue(locked_websocket)
+                                    )
+                                    has_started_playback = True
 
                 elif intent == 'quick_transition':
                     try:
@@ -677,14 +838,288 @@ async def get_library(token: Optional[str] = Query(None)):
         owner = music_library._user_song_owner.get(key)
         if owner is not None and owner != user_id:
             continue  # skip other users' songs
+        title, artist = parse_title_artist_from_filename(data['filename'])
         songs.append({
-            "title": key,
+            "song_key": key,
+            "title": title,
+            "artist": artist,
             "filename": data['filename'],
             "bpm": data['features'].get('bpm'),
             "key": data['features'].get('key'),
             "is_user_song": owner == user_id,
+            "segments": data.get('segments', []),
+            "features": data.get('features', {}),
         })
     return {"songs": songs}
+
+
+# ---------------------------------------------------------------------------
+# Setlist helper endpoints (need access to music_library / audio_manager)
+# ---------------------------------------------------------------------------
+from pydantic import BaseModel as _BaseModel
+from fastapi import Depends as _Depends
+from auth import get_current_user as _get_current_user
+from fastapi.responses import Response
+import numpy as np
+
+
+class _BestTransitionRequest(_BaseModel):
+    song_a_key: str
+    song_b_key: str
+
+
+class _BestTransitionBulkRequest(_BaseModel):
+    song_keys: list[str]  # ordered list of song keys in the setlist
+
+
+class _PreviewTransitionRequest(_BaseModel):
+    song_a_key: str
+    song_b_key: str
+    exit_segment: str | None = None
+    entry_segment: str | None = None
+
+
+def _filter_exit_segments(segments_raw: list) -> list[str]:
+    """Filter exit segments to the latter portion of the song.
+
+    Mirrors the live DJ behaviour where transitions are computed after
+    playback has passed the early segments.  We keep only segments whose
+    start time is in the second half of the song (by time), which naturally
+    excludes intro / early verse while keeping cool-down, outro, later
+    choruses, etc.  Falls back to the last two segments if the filter would
+    leave nothing.
+    """
+    if not segments_raw:
+        return []
+    last_end = max(s.get('end', s.get('start', 0)) for s in segments_raw)
+    if last_end <= 0:
+        return [s['name'] for s in segments_raw]
+    midpoint = last_end / 2.0
+    later = [s['name'] for s in segments_raw if s.get('start', 0) >= midpoint]
+    if not later:
+        # Fallback: use last two segments
+        later = [s['name'] for s in segments_raw[-2:]]
+    return later
+
+
+@app.post("/api/setlists/best-transition")
+async def best_transition(req: _BestTransitionRequest, user: dict = _Depends(_get_current_user)):
+    """Use the ML model to find the best exit/entry segments for a song pair."""
+    song_a = music_library.index.get(req.song_a_key)
+    song_b = music_library.index.get(req.song_b_key)
+
+    if not song_a or not song_b:
+        raise HTTPException(status_code=404, detail="One or both songs not found in library")
+
+    segments_a_raw = song_a.get('segments', [])
+    segments_b = [s['name'] for s in song_b.get('segments', [])]
+
+    # Filter exit segments to the latter half of song A, matching the live
+    # DJ's position-based filtering that naturally skips intro/early verse.
+    exit_segments = _filter_exit_segments(segments_a_raw)
+
+    if not exit_segments or not segments_b:
+        raise HTTPException(status_code=400, detail="One or both songs have no segment data")
+
+    if not audio_manager.mixer:
+        raise HTTPException(status_code=503, detail="Transition model not loaded")
+
+    rankings = audio_manager.mixer.ranking_service.get_transition_rankings(
+        song_a_features=song_a['features'],
+        song_b_features=song_b['features'],
+        song_a_segments=exit_segments,
+        song_b_segments=segments_b,
+        top_n=5,
+    )
+
+    if not rankings:
+        raise HTTPException(status_code=400, detail="No valid transitions found")
+
+    return {
+        "best": rankings[0].to_dict(),
+        "alternatives": [r.to_dict() for r in rankings[1:]],
+    }
+
+
+@app.post("/api/setlists/best-transitions-bulk")
+async def best_transitions_bulk(req: _BestTransitionBulkRequest, user: dict = _Depends(_get_current_user)):
+    """Get best transitions for every adjacent pair in a setlist."""
+    if len(req.song_keys) < 2:
+        return {"transitions": []}
+
+    if not audio_manager.mixer:
+        raise HTTPException(status_code=503, detail="Transition model not loaded")
+
+    results = []
+    for i in range(len(req.song_keys) - 1):
+        key_a = req.song_keys[i]
+        key_b = req.song_keys[i + 1]
+        song_a = music_library.index.get(key_a)
+        song_b = music_library.index.get(key_b)
+
+        if not song_a or not song_b:
+            results.append({"song_a_key": key_a, "song_b_key": key_b, "error": "Song not found"})
+            continue
+
+        segments_a_raw = song_a.get('segments', [])
+        segments_b = [s['name'] for s in song_b.get('segments', [])]
+        exit_segments = _filter_exit_segments(segments_a_raw)
+
+        if not exit_segments or not segments_b:
+            results.append({"song_a_key": key_a, "song_b_key": key_b, "error": "No segment data"})
+            continue
+
+        rankings = audio_manager.mixer.ranking_service.get_transition_rankings(
+            song_a_features=song_a['features'],
+            song_b_features=song_b['features'],
+            song_a_segments=exit_segments,
+            song_b_segments=segments_b,
+            top_n=1,
+        )
+
+        if rankings:
+            results.append({
+                "song_a_key": key_a,
+                "song_b_key": key_b,
+                "best": rankings[0].to_dict(),
+            })
+        else:
+            results.append({"song_a_key": key_a, "song_b_key": key_b, "error": "No valid transition"})
+
+    return {"transitions": results}
+
+
+@app.post("/api/setlists/preview-transition")
+async def preview_transition(req: _PreviewTransitionRequest, user: dict = _Depends(_get_current_user)):
+    """Generate an ~8 second audio preview of a transition between two songs."""
+    import soundfile as sf
+    from transition_mixer import TransitionPlan, Segment
+
+    song_a = music_library.index.get(req.song_a_key)
+    song_b = music_library.index.get(req.song_b_key)
+
+    if not song_a or not song_b:
+        raise HTTPException(status_code=404, detail="One or both songs not found in library")
+
+    if not audio_manager.mixer:
+        raise HTTPException(status_code=503, detail="Transition model not loaded")
+
+    segments_a = song_a.get('segments', [])
+    segments_b = song_b.get('segments', [])
+
+    if not segments_a or not segments_b:
+        raise HTTPException(status_code=400, detail="One or both songs have no segment data")
+
+    # Resolve the exit and entry segments
+    # If user specified segments, use those; otherwise use the model to pick
+    exit_seg_dict = None
+    entry_seg_dict = None
+
+    if req.exit_segment:
+        exit_seg_dict = next((s for s in segments_a if s['name'] == req.exit_segment), None)
+    if req.entry_segment:
+        entry_seg_dict = next((s for s in segments_b if s['name'] == req.entry_segment), None)
+
+    # If either is missing, use the model to find the best pair
+    if not exit_seg_dict or not entry_seg_dict:
+        seg_names_a = [s['name'] for s in segments_a]
+        seg_names_b = [s['name'] for s in segments_b]
+
+        # If one was specified, constrain to only that side
+        if req.exit_segment and exit_seg_dict:
+            seg_names_a = [req.exit_segment]
+        if req.entry_segment and entry_seg_dict:
+            seg_names_b = [req.entry_segment]
+
+        rankings = audio_manager.mixer.ranking_service.get_transition_rankings(
+            song_a_features=song_a['features'],
+            song_b_features=song_b['features'],
+            song_a_segments=seg_names_a,
+            song_b_segments=seg_names_b,
+            top_n=1,
+        )
+        if not rankings:
+            raise HTTPException(status_code=400, detail="No valid transition found for this song pair")
+
+        best = rankings[0]
+        if not exit_seg_dict:
+            exit_seg_dict = next((s for s in segments_a if s['name'] == best.exit_segment), segments_a[-1])
+        if not entry_seg_dict:
+            entry_seg_dict = next((s for s in segments_b if s['name'] == best.entry_segment), segments_b[0])
+
+    exit_segment = Segment(name=exit_seg_dict['name'], start=exit_seg_dict['start'], end=exit_seg_dict['end'])
+    entry_segment = Segment(name=entry_seg_dict['name'], start=entry_seg_dict['start'], end=entry_seg_dict['end'])
+
+    # Calculate crossfade duration
+    crossfade_duration = audio_manager.mixer._calculate_crossfade_duration(
+        song_a['features'], song_b['features'], exit_segment, entry_segment
+    )
+
+    # Build the transition plan directly (bypassing compute_transition which
+    # filters by current_position — not relevant for a preview)
+    transition_start = max(0.0, exit_segment.end - crossfade_duration)
+    song_a_bpm = song_a['features'].get('bpm', 120.0)
+    song_b_bpm = song_b['features'].get('bpm', 120.0)
+
+    plan = TransitionPlan(
+        song_a_title=req.song_a_key,
+        song_b_title=req.song_b_key,
+        exit_segment=exit_segment,
+        entry_segment=entry_segment,
+        predicted_score=0.0,
+        crossfade_duration=crossfade_duration,
+        transition_start_time=transition_start,
+        song_b_start_offset=entry_segment.start,
+        song_a_bpm=song_a_bpm,
+        song_b_bpm=song_b_bpm,
+    )
+
+    # Load audio and generate preview
+    loop = asyncio.get_event_loop()
+
+    def _generate_preview():
+        sr = audio_manager.mixer.sample_rate
+        audio_a, _ = sf.read(str(song_a['path']), dtype='float32', always_2d=False)
+        audio_b, _ = sf.read(str(song_b['path']), dtype='float32', always_2d=False)
+
+        # Convert stereo to mono if needed
+        if audio_a.ndim > 1:
+            audio_a = audio_a.mean(axis=1)
+        if audio_b.ndim > 1:
+            audio_b = audio_b.mean(axis=1)
+
+        # Create the crossfade
+        mixed = audio_manager.mixer.prepare_mixed_audio(audio_a, audio_b, plan, use_dynamic=False)
+
+        # Build ~8 second preview: 2s pre + crossfade + 2s post
+        pre = mixed['pre_transition']
+        crossfade = mixed['crossfade']
+        post = mixed['post_transition']
+
+        pre_samples = min(2 * sr, len(pre))
+        post_samples = min(2 * sr, len(post))
+
+        preview = np.concatenate([
+            pre[-pre_samples:] if pre_samples > 0 else np.array([], dtype=np.float32),
+            crossfade,
+            post[:post_samples] if post_samples > 0 else np.array([], dtype=np.float32),
+        ])
+
+        # Convert to int16 PCM bytes
+        preview_int16 = np.clip(preview * 32767, -32768, 32767).astype(np.int16)
+        return preview_int16.tobytes(), sr
+
+    audio_bytes, sr = await loop.run_in_executor(None, _generate_preview)
+
+    return Response(
+        content=audio_bytes,
+        media_type="audio/pcm",
+        headers={
+            "X-Sample-Rate": str(sr),
+            "X-Channels": "1",
+            "X-Bit-Depth": "16",
+        },
+    )
 
 
 @app.post("/api/auto-play/toggle")

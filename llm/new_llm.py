@@ -22,6 +22,7 @@ Return ONLY this JSON format:
 
 Intent types:
 - "queue_song": User wants to play/queue/add a SPECIFIC song (e.g., "play waiting for love", "add levels by avicii")
+- "play_setlist": User wants to load/play a saved setlist by name (e.g., "play my setlist party mix", "load setlist chill vibes", "play the setlist called house bangers")
 - "generate_playlist": User wants multiple songs based on a mood/vibe/criteria (e.g., "give me upbeat songs", "play something danceable", "make me a playlist for a party")
 - "quick_transition": User wants to transition to next song immediately/soon (e.g., "transition now", "switch songs", "next song now", "skip to next within a minute")
 - "set_transition_mode": User wants to change transition style between dynamic/warp and classic/crossfade (e.g., "use classic transitions", "switch to dynamic mode", "turn on warp transitions")
@@ -33,12 +34,15 @@ Intent types:
 
 Rules:
 - If user mentions a SPECIFIC song name, intent is "queue_song"
+- If user mentions a "setlist" by name, intent is "play_setlist" — put the setlist name in song.title
 - If user asks for songs based on mood, vibe, energy, or style WITHOUT naming a specific song, intent is "generate_playlist"
 - Use EXACT song name from user's input (capitalize properly)
-- For queue_song, always fill song.title; for other intents, set both to null
+- For queue_song, always fill song.title; for play_setlist, put the setlist name in song.title; for other intents, set both to null
 
 Examples:
 "play stargazing by kygo" -> {{"intent":"queue_song", "reason":"specific song request", "song":{{"title":"Stargazing", "artist":"Kygo"}}}}
+"play my setlist party mix" -> {{"intent":"play_setlist", "reason":"user wants to load a saved setlist", "song":{{"title":"party mix", "artist":null}}}}
+"load setlist chill vibes" -> {{"intent":"play_setlist", "reason":"user wants to load a saved setlist", "song":{{"title":"chill vibes", "artist":null}}}}
 "transition to next song now" -> {{"intent":"quick_transition", "reason":"user wants immediate transition", "song":{{"title":null, "artist":null}}}}
 "switch to classic transitions" → {{"intent":"set_transition_mode", "reason":"user wants classic transition mode", "song":{{"title":null, "artist":null}}}}
 "give me some high energy songs" -> {{"intent":"generate_playlist", "reason":"mood-based playlist request", "song":{{"title":null, "artist":null}}}}
@@ -87,6 +91,7 @@ Return ONLY the JSON array, nothing else."""
             "set_transition_mode": self.cmd_set_transition_mode,
             "help": self.cmd_help,
             "queue_song": self.cmd_queue_song,
+            "play_setlist": self.cmd_play_setlist,
             "generate_playlist": self.cmd_generate_playlist,
             "none": self.cmd_none,
         }
@@ -103,6 +108,9 @@ Return ONLY the JSON array, nothing else."""
 
     def cmd_set_transition_mode(self):
         print("[CMD] Transition mode change requested...")
+
+    def cmd_play_setlist(self, *, title):
+        print(f"[CMD] Play setlist requested: {title}")
 
     def queue_track(self, title: Optional[str], artist: Optional[str]):
         if not title: 

@@ -56,9 +56,38 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS setlists (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            UNIQUE(user_id, name)
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS setlist_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            setlist_id INTEGER NOT NULL,
+            position INTEGER NOT NULL,
+            song_key TEXT NOT NULL,
+            song_title TEXT NOT NULL,
+            song_artist TEXT DEFAULT '',
+            transition_exit_segment TEXT,
+            transition_entry_segment TEXT,
+            FOREIGN KEY (setlist_id) REFERENCES setlists(id) ON DELETE CASCADE,
+            UNIQUE(setlist_id, position)
+        )
+    """)
+
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_activity_user ON activity(user_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_activity_type ON activity(event_type)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_songs_user ON user_songs(user_id)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_setlists_user ON setlists(user_id)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_setlist_items_setlist ON setlist_items(setlist_id)")
 
     conn.commit()
     conn.close()
