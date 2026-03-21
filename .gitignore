@@ -10,3 +10,5 @@ __pycache__/*
 */__pycache__/*
 ecosystem.config.js
 logs/
+llm/__pycache__/*
+aidj.db
