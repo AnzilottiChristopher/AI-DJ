@@ -25,6 +25,7 @@ import atexit
 from llm.new_llm import LlamaLLM
 from music_library import MusicLibrary
 from enhanced_audio_manager import AudioManager, PlaybackState
+import music_library
 from upload_handler import router as upload_router
 from database import init_db, get_connection
 from auth import router as auth_router, decode_token
@@ -47,15 +48,49 @@ app = FastAPI(title="AI DJ Backend")
 # ---------------------------------------------------------------------------
 # Core services
 # ---------------------------------------------------------------------------
-music_library = MusicLibrary('music_data/audio', 'music_data/segmented_songs.json')
+# music_library = MusicLibrary('music_data/audio', 'music_data/segmented_songs.json')
+# llm = LlamaLLM(music_library=music_library)
+#
+# MODEL_PATH = 'models/dj_transition_model'
+# audio_manager = AudioManager(
+#     music_library,
+#     model_path=MODEL_PATH,
+#     enable_auto_play=True
+# )
+
 llm = LlamaLLM(music_library=music_library)
+llm_semaphore = asyncio.Semaphore(1)
 
 MODEL_PATH = 'models/dj_transition_model'
-audio_manager = AudioManager(
-    music_library,
-    model_path=MODEL_PATH,
-    enable_auto_play=True
-)
+
+_sessions: dict = {}
+_sessions_lock = asyncio.Semaphore(1)
+
+def _make_audio_manager():
+    return AudioManager(
+            music_library,
+            model_path=MODEL_PATH,
+            enable_auto_play=True,
+            )
+    
+async def _get_session(session_id: str):
+    async with _sessions_lock:
+        if session_id not in _sessions:
+            _sessions[session_id] = _make_audio_manager()
+            print(f"[SESSION] Created: {session_id} ({len(_sessions)} active)")
+        return _sessions[session_id]
+
+async def _destroy_session(session_id: str): 
+    async with _sessions_lock:
+        mgr = _sessions.pop(session_id, None)
+    if mgr: 
+        try:
+            mgr.stop()
+        except Exception:
+            pass
+        print(f"[SESSION] Destroyed: {session_id} ({len(_sessions)} active)")
+
+_shared_manager = _make_audio_manager()
 
 # ---------------------------------------------------------------------------
 # CORS - automatic based on environment
@@ -174,7 +209,8 @@ async def health_check():
         "status": "ok",
         "environment": ENVIRONMENT,
         "ollama": "connected" if ollama_ok else "disconnected",
-        "audio_manager": "playing" if audio_manager.is_playing else "idle",
+        # "audio_manager": "playing" if audio_manager.is_playing else "idle",
+        "audio_manager": f"{len(_sessions)} active sessions",
         "library_size": len(music_library.index),
     }
 
@@ -204,6 +240,11 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
             print(f"[WS] Authenticated user {session_user_id}")
         except Exception:
             print("[WS] Invalid token provided; treating as guest")
+
+    import uuid 
+    session_id = f"{session_user_id or 'guest'}_{uuid.uuid4().hex[:8]}"
+    audio_manager = await _get_session(session_id)
+    print(f"[WS] Session: {session_id}")
 
     # FIX FOR AUDIO CUTOUTS: Create a WebSocket wrapper with send locking
     class LockedWebSocket:
@@ -518,7 +559,7 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
             try:
                 # Run LLM in thread pool to prevent blocking event loop
                 loop = asyncio.get_event_loop()
-                result = await loop.run_in_executor(None, llm.classify, prompt)
+                # result = await loop.run_in_executor(None, llm.classify, prompt)
                 intent = result['intent']
                 song_info = result['song']
 
