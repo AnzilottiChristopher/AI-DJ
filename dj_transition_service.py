@@ -144,10 +144,10 @@ class TransitionRankingService:
             )
             for i, r in enumerate(raw_rankings)
         ]
-        
+
         if top_n is not None:
             recommendations = recommendations[:top_n]
-        
+
         return recommendations
     
     def get_best_transition(
