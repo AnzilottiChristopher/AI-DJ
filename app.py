@@ -243,7 +243,7 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
 
     # Each WebSocket connection gets its own AudioManager session
     import uuid
-    session_id = f"{session_user_id or 'guest'}_{uuid.uuid4().hex[:8]}"
+    session_id = f"session_{uuid.uuid4().hex[:8]}"
     audio_manager = await _get_session(session_id)
     print(f"[WS] Session: {session_id}")
 
