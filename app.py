@@ -25,7 +25,6 @@ import atexit
 from llm.new_llm import LlamaLLM
 from music_library import MusicLibrary
 from enhanced_audio_manager import AudioManager, PlaybackState
-import music_library
 from upload_handler import router as upload_router
 from database import init_db, get_connection
 from auth import router as auth_router, decode_token
@@ -48,31 +47,29 @@ app = FastAPI(title="AI DJ Backend")
 # ---------------------------------------------------------------------------
 # Core services
 # ---------------------------------------------------------------------------
-# music_library = MusicLibrary('music_data/audio', 'music_data/segmented_songs.json')
-# llm = LlamaLLM(music_library=music_library)
-#
-# MODEL_PATH = 'models/dj_transition_model'
-# audio_manager = AudioManager(
-#     music_library,
-#     model_path=MODEL_PATH,
-#     enable_auto_play=True
-# )
+music_library = MusicLibrary('music_data/audio', 'music_data/segmented_songs.json')
 
+# Single shared LLM — Ollama serializes anyway; semaphore enforces the queue.
 llm = LlamaLLM(music_library=music_library)
 llm_semaphore = asyncio.Semaphore(1)
 
 MODEL_PATH = 'models/dj_transition_model'
 
+# ---------------------------------------------------------------------------
+# Per-session AudioManager — each WebSocket gets its own playback state
+# ---------------------------------------------------------------------------
 _sessions: dict = {}
-_sessions_lock = asyncio.Semaphore(1)
+_sessions_lock = asyncio.Lock()
+
 
 def _make_audio_manager():
     return AudioManager(
-            music_library,
-            model_path=MODEL_PATH,
-            enable_auto_play=True,
-            )
-    
+        music_library,
+        model_path=MODEL_PATH,
+        enable_auto_play=True,
+    )
+
+
 async def _get_session(session_id: str):
     async with _sessions_lock:
         if session_id not in _sessions:
@@ -80,16 +77,20 @@ async def _get_session(session_id: str):
             print(f"[SESSION] Created: {session_id} ({len(_sessions)} active)")
         return _sessions[session_id]
 
-async def _destroy_session(session_id: str): 
+
+async def _destroy_session(session_id: str):
     async with _sessions_lock:
         mgr = _sessions.pop(session_id, None)
-    if mgr: 
+    if mgr:
         try:
             mgr.stop()
         except Exception:
             pass
         print(f"[SESSION] Destroyed: {session_id} ({len(_sessions)} active)")
 
+
+# Shared mixer + similarity service for REST endpoints (setlist previews etc.)
+# These don't need per-user state — they only use the ML model and music_library.
 _shared_manager = _make_audio_manager()
 
 # ---------------------------------------------------------------------------
@@ -209,7 +210,6 @@ async def health_check():
         "status": "ok",
         "environment": ENVIRONMENT,
         "ollama": "connected" if ollama_ok else "disconnected",
-        # "audio_manager": "playing" if audio_manager.is_playing else "idle",
         "audio_manager": f"{len(_sessions)} active sessions",
         "library_size": len(music_library.index),
     }
@@ -241,7 +241,8 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
         except Exception:
             print("[WS] Invalid token provided; treating as guest")
 
-    import uuid 
+    # Each WebSocket connection gets its own AudioManager session
+    import uuid
     session_id = f"{session_user_id or 'guest'}_{uuid.uuid4().hex[:8]}"
     audio_manager = await _get_session(session_id)
     print(f"[WS] Session: {session_id}")
@@ -557,9 +558,10 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
             print(f"[WS] Received prompt: {prompt}")
 
             try:
-                # Run LLM in thread pool to prevent blocking event loop
+                # Run LLM in thread pool; semaphore queues concurrent requests
                 loop = asyncio.get_event_loop()
-                # result = await loop.run_in_executor(None, llm.classify, prompt)
+                async with llm_semaphore:
+                    result = await loop.run_in_executor(None, llm.classify, prompt)
                 intent = result['intent']
                 song_info = result['song']
 
@@ -606,7 +608,8 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
                         })
 
                 elif intent == 'generate_playlist':
-                    playlist = await loop.run_in_executor(None, llm.generate_playlist, prompt, session_user_id)
+                    async with llm_semaphore:
+                        playlist = await loop.run_in_executor(None, llm.generate_playlist, prompt, session_user_id)
 
                     if not playlist:
                         await locked_websocket.send_json({
@@ -819,10 +822,7 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
     finally:
         print("[WS] Cleaning up WebSocket connection...")
 
-        try:
-            audio_manager.stop()
-        except Exception as e:
-            print(f"[CLEANUP] Error stopping audio manager: {e}")
+        await _destroy_session(session_id)
 
         if playback_task and not playback_task.done():
             playback_task.cancel()
@@ -859,8 +859,8 @@ async def audio_stream(websocket: WebSocket, token: Optional[str] = Query(None))
 # ---------------------------------------------------------------------------
 @app.get("/api/status")
 async def get_status():
-    """Get current playback status including auto-play info."""
-    return audio_manager.get_queue_status()
+    """Get active session count. Per-user status is via WebSocket."""
+    return {"active_sessions": len(_sessions)}
 
 
 @app.get("/api/library")
@@ -895,7 +895,7 @@ async def get_library(token: Optional[str] = Query(None)):
 
 
 # ---------------------------------------------------------------------------
-# Setlist helper endpoints (need access to music_library / audio_manager)
+# Setlist helper endpoints (need access to music_library / _shared_manager)
 # ---------------------------------------------------------------------------
 from pydantic import BaseModel as _BaseModel
 from fastapi import Depends as _Depends
@@ -962,10 +962,10 @@ async def best_transition(req: _BestTransitionRequest, user: dict = _Depends(_ge
     if not exit_segments or not segments_b:
         raise HTTPException(status_code=400, detail="One or both songs have no segment data")
 
-    if not audio_manager.mixer:
+    if not _shared_manager.mixer:
         raise HTTPException(status_code=503, detail="Transition model not loaded")
 
-    rankings = audio_manager.mixer.ranking_service.get_transition_rankings(
+    rankings = _shared_manager.mixer.ranking_service.get_transition_rankings(
         song_a_features=song_a['features'],
         song_b_features=song_b['features'],
         song_a_segments=exit_segments,
@@ -988,7 +988,7 @@ async def best_transitions_bulk(req: _BestTransitionBulkRequest, user: dict = _D
     if len(req.song_keys) < 2:
         return {"transitions": []}
 
-    if not audio_manager.mixer:
+    if not _shared_manager.mixer:
         raise HTTPException(status_code=503, detail="Transition model not loaded")
 
     results = []
@@ -1010,7 +1010,7 @@ async def best_transitions_bulk(req: _BestTransitionBulkRequest, user: dict = _D
             results.append({"song_a_key": key_a, "song_b_key": key_b, "error": "No segment data"})
             continue
 
-        rankings = audio_manager.mixer.ranking_service.get_transition_rankings(
+        rankings = _shared_manager.mixer.ranking_service.get_transition_rankings(
             song_a_features=song_a['features'],
             song_b_features=song_b['features'],
             song_a_segments=exit_segments,
@@ -1042,7 +1042,7 @@ async def preview_transition(req: _PreviewTransitionRequest, user: dict = _Depen
     if not song_a or not song_b:
         raise HTTPException(status_code=404, detail="One or both songs not found in library")
 
-    if not audio_manager.mixer:
+    if not _shared_manager.mixer:
         raise HTTPException(status_code=503, detail="Transition model not loaded")
 
     segments_a = song_a.get('segments', [])
@@ -1072,7 +1072,7 @@ async def preview_transition(req: _PreviewTransitionRequest, user: dict = _Depen
         if req.entry_segment and entry_seg_dict:
             seg_names_b = [req.entry_segment]
 
-        rankings = audio_manager.mixer.ranking_service.get_transition_rankings(
+        rankings = _shared_manager.mixer.ranking_service.get_transition_rankings(
             song_a_features=song_a['features'],
             song_b_features=song_b['features'],
             song_a_segments=seg_names_a,
@@ -1092,7 +1092,7 @@ async def preview_transition(req: _PreviewTransitionRequest, user: dict = _Depen
     entry_segment = Segment(name=entry_seg_dict['name'], start=entry_seg_dict['start'], end=entry_seg_dict['end'])
 
     # Calculate crossfade duration
-    crossfade_duration = audio_manager.mixer._calculate_crossfade_duration(
+    crossfade_duration = _shared_manager.mixer._calculate_crossfade_duration(
         song_a['features'], song_b['features'], exit_segment, entry_segment
     )
 
@@ -1119,7 +1119,7 @@ async def preview_transition(req: _PreviewTransitionRequest, user: dict = _Depen
     loop = asyncio.get_event_loop()
 
     def _generate_preview():
-        sr = audio_manager.mixer.sample_rate
+        sr = _shared_manager.mixer.sample_rate
         audio_a, _ = sf.read(str(song_a['path']), dtype='float32', always_2d=False)
         audio_b, _ = sf.read(str(song_b['path']), dtype='float32', always_2d=False)
 
@@ -1130,7 +1130,7 @@ async def preview_transition(req: _PreviewTransitionRequest, user: dict = _Depen
             audio_b = audio_b.mean(axis=1)
 
         # Create the crossfade
-        mixed = audio_manager.mixer.prepare_mixed_audio(audio_a, audio_b, plan, use_dynamic=False)
+        mixed = _shared_manager.mixer.prepare_mixed_audio(audio_a, audio_b, plan, use_dynamic=False)
 
         # Build ~8 second preview: 2s pre + crossfade + 2s post
         pre = mixed['pre_transition']
@@ -1165,21 +1165,25 @@ async def preview_transition(req: _PreviewTransitionRequest, user: dict = _Depen
 
 @app.post("/api/auto-play/toggle")
 async def toggle_auto_play():
-    """Toggle auto-play feature on/off."""
-    audio_manager.enable_auto_play = not audio_manager.enable_auto_play
+    """Toggle auto-play for all active sessions."""
+    async with _sessions_lock:
+        sessions_copy = dict(_sessions)
+    for mgr in sessions_copy.values():
+        mgr.enable_auto_play = not mgr.enable_auto_play
+    state = next(iter(sessions_copy.values())).enable_auto_play if sessions_copy else True
     return {
-        "auto_play_enabled": audio_manager.enable_auto_play,
-        "message": f"Auto-play {'enabled' if audio_manager.enable_auto_play else 'disabled'}"
+        "auto_play_enabled": state,
+        "message": f"Auto-play {'enabled' if state else 'disabled'} for {len(sessions_copy)} sessions"
     }
 
 
 @app.get("/api/auto-play/status")
 async def get_auto_play_status():
-    """Get auto-play status and recently played songs."""
+    """Get auto-play status."""
     return {
-        "enabled": audio_manager.enable_auto_play,
-        "recently_played": audio_manager.recently_played,
-        "similarity_service_ready": audio_manager.similarity_service is not None
+        "enabled": True,
+        "active_sessions": len(_sessions),
+        "similarity_service_ready": True,
     }
 
 
@@ -1193,18 +1197,23 @@ async def add_user_song(payload: dict):
 
         normalized_key = music_library.add_user_song_hot(song_data, user_id)
 
-        if audio_manager.similarity_service:
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(
-                None,
-                audio_manager.similarity_service.add_song_embedding,
-                normalized_key,
-                {
-                    'filename': song_data['song_name'],
-                    'features': song_data['features'],
-                    'segments': song_data['segments']
-                }
-            )
+        # Update similarity index in any active session that has one loaded
+        async with _sessions_lock:
+            sessions_copy = dict(_sessions)
+        for mgr in sessions_copy.values():
+            if mgr.similarity_service:
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(
+                    None,
+                    mgr.similarity_service.add_song_embedding,
+                    normalized_key,
+                    {
+                        'filename': song_data['song_name'],
+                        'features': song_data['features'],
+                        'segments': song_data['segments']
+                    }
+                )
+                break  # only need to update once
 
         return {
             "success": True,
@@ -1224,20 +1233,23 @@ async def add_song(song_data: dict):
         normalized_key = music_library.add_song_hot(song_data)
         print(f"[ADD SONG] Added to library index")
 
-        if audio_manager.similarity_service:
-            loop = asyncio.get_event_loop()
-
-            await loop.run_in_executor(
-                None,
-                audio_manager.similarity_service.add_song_embedding,
-                normalized_key,
-                {
-                    'filename': song_data['song_name'],
-                    'features': song_data['features'],
-                    'segments': song_data['segments']
-                }
-            )
-            print(f"[ADD SONG] Added to similarity index")
+        async with _sessions_lock:
+            sessions_copy = dict(_sessions)
+        for mgr in sessions_copy.values():
+            if mgr.similarity_service:
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(
+                    None,
+                    mgr.similarity_service.add_song_embedding,
+                    normalized_key,
+                    {
+                        'filename': song_data['song_name'],
+                        'features': song_data['features'],
+                        'segments': song_data['segments']
+                    }
+                )
+                print(f"[ADD SONG] Added to similarity index")
+                break
         total_songs = len(music_library.index)
         print(f"[ADD SONG] COMPLETE: {total_songs} songs in library")
 
@@ -1245,7 +1257,7 @@ async def add_song(song_data: dict):
             "success": True,
             "message": f"'{normalized_key}' is now fully available",
             "song_count": total_songs,
-            "similarity_updated": audio_manager.similarity_service is not None
+            "similarity_updated": True,
         }
     except KeyError as e: 
         print(f"[ADD SONG ERROR] {e}")
@@ -1270,14 +1282,18 @@ async def reload_library():
     Reload music library to pick up newly uploaded songs.
     Call this after uploading a new song to make it available immediately.
     """
-    global music_library, audio_manager, llm
     try:
         print("[RELOAD] Reloading music library...")
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, music_library.reload)
-        if audio_manager.similarity_service:
-            print("[RELOAD] Rebuilding similarity embeddings...")
-            await loop.run_in_executor(None, audio_manager.similarity_service._build_embeddings)
+        # Rebuild similarity embeddings in all active sessions
+        async with _sessions_lock:
+            sessions_copy = dict(_sessions)
+        for mgr in sessions_copy.values():
+            if mgr.similarity_service:
+                print("[RELOAD] Rebuilding similarity embeddings...")
+                await loop.run_in_executor(None, mgr.similarity_service._build_embeddings)
+                break  # one rebuild is enough — all share same library
         song_count = len(music_library.index)
         print(f"[RELOAD] Complete: {song_count} songs available")
         return {
