@@ -40,7 +40,7 @@ class AudioManager:
         """Stream audio data to websocket in chunks"""
         try:
             # Load audio file
-            audio, sr = sf.read(str(track_data['path']))
+            audio, sr = self._read_track_audio(track_data)
             
             # Convert to stereo if mono
             if len(audio.shape) == 1:
@@ -98,6 +98,22 @@ class AudioManager:
                 "type": "error",
                 "message": str(e)
             })
+
+    def _read_track_audio(self, track_data: dict):
+        """Read a track from disk with a clearer missing-file error."""
+        track_path = Path(track_data['path'])
+        if not track_path.exists():
+            raise FileNotFoundError(
+                f"Audio file does not exist: {track_path.resolve(strict=False)}"
+            )
+
+        try:
+            return sf.read(str(track_path))
+        except Exception as exc:
+            filename = track_data.get('filename', track_path.name)
+            raise RuntimeError(
+                f"Failed to read audio for '{filename}' at {track_path.resolve(strict=False)}"
+            ) from exc
     
     async def play_queue(self, websocket):
         """Play all songs in queue sequentially"""

@@ -9,6 +9,8 @@ import numpy as np
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 
+from feature_utils import sanitize_song_features
+
 
 # Key encoding for circle of fifths (same as transition model)
 KEY_ORDER = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F']
@@ -134,6 +136,8 @@ class SongSimilarityService:
         - Energy characteristics (loudness, danceability)
         - Spectral characteristics
         """
+        features = sanitize_song_features(features)
+
         # BPM: normalize to 0-1 range (assuming 80-160 BPM range)
         bpm = features.get('bpm', 120.0)
         bpm_norm = (bpm - 80) / 80  # 80 BPM -> 0, 160 BPM -> 1
@@ -180,7 +184,7 @@ class SongSimilarityService:
         print("[SIMILARITY] Building song embeddings...")
         
         for song_key, song_data in self.music_library.index.items():
-            features = song_data.get('features', {})
+            features = sanitize_song_features(song_data.get('features'))
             embedding = self._extract_embedding(features)
             
             # Parse title and artist from filename
@@ -200,7 +204,7 @@ class SongSimilarityService:
     def add_song_embedding(self, song_key: str, song_data: Dict):
         print(f"[SIMILARITY] Adding embedding for: {song_key}")
         
-        features = song_data.get('features', {})
+        features = sanitize_song_features(song_data.get('features'))
         embedding = self._extract_embedding(features)
 
         filename = song_data.get('filename', '')

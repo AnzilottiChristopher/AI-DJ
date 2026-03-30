@@ -29,8 +29,10 @@ from upload_handler import router as upload_router
 from database import init_db, get_connection
 from auth import router as auth_router, decode_token
 from setlists import router as setlists_router
+from feature_utils import sanitize_song_features
 from song_similarity import parse_title_artist_from_filename
 from typing import Optional
+from user_song_maintenance import repair_incomplete_user_song_features
 
 import uvicorn
 
@@ -148,6 +150,10 @@ def _load_user_songs_into_library():
 @app.on_event("startup")
 async def startup_event():
     global ollama_process
+
+    repaired_rows = repair_incomplete_user_song_features()
+    if repaired_rows:
+        print(f"[STARTUP] Repaired {repaired_rows} user song(s) with incomplete features")
 
     # Load user songs from DB into the in-memory library
     _load_user_songs_into_library()
@@ -1191,8 +1197,9 @@ async def get_auto_play_status():
 async def add_user_song(payload: dict):
     """Hot-add a user-owned song into the in-memory library."""
     try:
-        song_data = payload["song_data"]
+        song_data = dict(payload["song_data"])
         user_id = int(payload["user_id"])
+        song_data["features"] = sanitize_song_features(song_data.get("features"))
         print(f"[ADD USER SONG] Adding: {song_data['song_name']} for user {user_id}")
 
         normalized_key = music_library.add_user_song_hot(song_data, user_id)
@@ -1228,6 +1235,8 @@ async def add_user_song(payload: dict):
 @app.post("/api/library/add-song")
 async def add_song(song_data: dict):
     try:
+        song_data = dict(song_data)
+        song_data["features"] = sanitize_song_features(song_data.get("features"))
         print(f"[ADD SONG] Adding: {song_data['song_name']}")
 
         normalized_key = music_library.add_song_hot(song_data)

@@ -10,6 +10,7 @@ import sys
 
 from auth import get_current_user
 from database import get_connection
+from feature_utils import features_need_backfill, sanitize_song_features
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
@@ -198,7 +199,10 @@ async def process_upload_background(audio_path: Path, normalized_name: str, arti
         print(f"[BACKGROUND] Segmentation complete: {len(segments_result['segments'])} segments")
 
         converted_segments = convert_segment_names(segments_result['segments'])
-        extracted_features = segments_result.get('features', {})
+        raw_features = segments_result.get('features', {})
+        if features_need_backfill(raw_features):
+            print(f"[BACKGROUND] Feature extraction incomplete for {normalized_name}; using sanitized defaults")
+        extracted_features = sanitize_song_features(raw_features)
 
         new_song = {
             "song_name": normalized_name,

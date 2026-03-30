@@ -4,6 +4,12 @@ from scipy import signal
 import sys
 from pathlib import Path
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from feature_utils import DEFAULT_SONG_FEATURES, coerce_scalar_float, sanitize_song_features
+
 
 def extract_features(audio_path):
     try:
@@ -16,7 +22,7 @@ def extract_features(audio_path):
         
         # 1. BPM (Tempo)
         tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
-        features['bpm'] = float(tempo)
+        features['bpm'] = coerce_scalar_float(tempo) or DEFAULT_SONG_FEATURES['bpm']
         
         # 2. Key and Scale
         chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
@@ -67,23 +73,12 @@ def extract_features(audio_path):
         features['onset_rate'] = float(len(onset_frames) / duration)
         
         print("[FEATURES] Feature extraction complete")
-        return features
+        return sanitize_song_features(features)
         
     except Exception as e:
         print(f"[FEATURES] Error extracting features: {e}")
-        # Return empty features on error
-        return {
-            "bpm": None,
-            "key": None,
-            "scale": None,
-            "key_strength": None,
-            "loudness": None,
-            "danceability": None,
-            "spectral_centroid": None,
-            "spectral_rolloff": None,
-            "dissonance": None,
-            "onset_rate": None,
-        }
+        # Keep uploads usable even if one extractor step fails.
+        return sanitize_song_features({})
 
 
 def main():

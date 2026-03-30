@@ -131,7 +131,7 @@ class EnhancedAudioManager:
     
     def _load_audio(self, track_data: Dict, effects_config: Optional[Dict] = None) -> tuple[np.ndarray, float]:
         """Load audio file, apply effects, and return (audio_array, duration)."""
-        audio, sr = sf.read(str(track_data['path']))
+        audio, sr = self._read_track_audio(track_data)
         
         # Convert mono to stereo
         if len(audio.shape) == 1:
@@ -152,6 +152,22 @@ class EnhancedAudioManager:
             audio = self._apply_effects_to_audio(audio, effects)
         
         return audio, duration
+
+    def _read_track_audio(self, track_data: Dict) -> tuple[np.ndarray, int]:
+        """Read a track from disk with a clearer error if the file is unavailable."""
+        track_path = Path(track_data['path'])
+        if not track_path.exists():
+            raise FileNotFoundError(
+                f"Audio file does not exist: {track_path.resolve(strict=False)}"
+            )
+
+        try:
+            return sf.read(str(track_path))
+        except Exception as exc:
+            filename = track_data.get('filename', track_path.name)
+            raise RuntimeError(
+                f"Failed to read audio for '{filename}' at {track_path.resolve(strict=False)}"
+            ) from exc
     
     def _ensure_segments(self, track_data: Dict, duration: float) -> Dict:
         """Ensure track has segment data, generating placeholders if needed."""
@@ -1094,7 +1110,7 @@ class EnhancedAudioManager:
         Example:
             audio = manager.slow_down_track(track_data, 0.8)
         """
-        audio, sr = sf.read(str(track_data['path']))
+        audio, sr = self._read_track_audio(track_data)
         if len(audio.shape) == 1:
             audio = np.stack([audio, audio], axis=1)
         return self.processor.slow_down_tempo(audio, speed_factor)
@@ -1115,7 +1131,7 @@ class EnhancedAudioManager:
             # Slow from 120 BPM to 100 BPM
             audio = manager.adjust_track_bpm(track_data, 120, 100)
         """
-        audio, sr = sf.read(str(track_data['path']))
+        audio, sr = self._read_track_audio(track_data)
         if len(audio.shape) == 1:
             audio = np.stack([audio, audio], axis=1)
         return self.processor.adjust_bpm(audio, current_bpm, target_bpm)
@@ -1151,7 +1167,7 @@ class EnhancedAudioManager:
             # Remove 60Hz hum
             audio = manager.apply_filter_to_track(track, 'notch', freq=60)
         """
-        audio, sr = sf.read(str(track_data['path']))
+        audio, sr = self._read_track_audio(track_data)
         if len(audio.shape) == 1:
             audio = np.stack([audio, audio], axis=1)
         
@@ -1174,7 +1190,7 @@ class EnhancedAudioManager:
         Returns:
             Enhanced audio
         """
-        audio, sr = sf.read(str(track_data['path']))
+        audio, sr = self._read_track_audio(track_data)
         if len(audio.shape) == 1:
             audio = np.stack([audio, audio], axis=1)
         return self.processor.vocal_enhancement(audio)
@@ -1190,7 +1206,7 @@ class EnhancedAudioManager:
         Returns:
             Bass-boosted audio
         """
-        audio, sr = sf.read(str(track_data['path']))
+        audio, sr = self._read_track_audio(track_data)
         if len(audio.shape) == 1:
             audio = np.stack([audio, audio], axis=1)
         return self.processor.bass_boost(audio, boost_db)
@@ -1206,7 +1222,7 @@ class EnhancedAudioManager:
         Returns:
             Normalized audio
         """
-        audio, sr = sf.read(str(track_data['path']))
+        audio, sr = self._read_track_audio(track_data)
         if len(audio.shape) == 1:
             audio = np.stack([audio, audio], axis=1)
         return self.processor.normalize(audio, target_db)

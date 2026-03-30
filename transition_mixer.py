@@ -15,6 +15,7 @@ import json
 
 # Import our trained model service
 from dj_transition_service import TransitionRankingService, TransitionRecommendation
+from feature_utils import sanitize_song_features
 
 
 @dataclass
@@ -155,6 +156,9 @@ class TransitionMixer:
         """
         Calculate appropriate crossfade duration based on song characteristics.
         """
+        song_a_features = sanitize_song_features(song_a_features)
+        song_b_features = sanitize_song_features(song_b_features)
+
         # Base duration on BPM - faster songs = shorter crossfade
         avg_bpm = (song_a_features.get('bpm', 120) + song_b_features.get('bpm', 120)) / 2
         
@@ -264,8 +268,10 @@ class TransitionMixer:
         transition_start = max(transition_start, current_position + 2.0)
         
         # Start song B before the entry segment to smooth beat handoff.
-        song_a_bpm = song_a_data.get('features', {}).get('bpm', 120.0)
-        song_b_bpm = song_b_data.get('features', {}).get('bpm', 120.0)
+        song_a_features = sanitize_song_features(song_a_data.get('features'))
+        song_b_features = sanitize_song_features(song_b_data.get('features'))
+        song_a_bpm = song_a_features.get('bpm', 120.0)
+        song_b_bpm = song_b_features.get('bpm', 120.0)
         lead_in_seconds = self._beats_to_seconds(self.transition_pre_roll_beats, song_b_bpm)
         song_b_start_offset = max(0.0, entry_segment.start - lead_in_seconds)
         plan = TransitionPlan(
@@ -300,8 +306,10 @@ class TransitionMixer:
         transition_start = max(current_position + 10, song_a_duration - 30)
         
         # Extract BPMs from features if available
-        song_a_bpm = song_a_data.get('features', {}).get('bpm', 120.0)
-        song_b_bpm = song_b_data.get('features', {}).get('bpm', 120.0)
+        song_a_features = sanitize_song_features(song_a_data.get('features'))
+        song_b_features = sanitize_song_features(song_b_data.get('features'))
+        song_a_bpm = song_a_features.get('bpm', 120.0)
+        song_b_bpm = song_b_features.get('bpm', 120.0)
         return TransitionPlan(
             song_a_title=song_a_data.get('title', 'Unknown'),
             song_b_title=song_b_data.get('title', 'Unknown'),
