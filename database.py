@@ -29,9 +29,16 @@ def init_db():
             username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
+            is_admin INTEGER NOT NULL DEFAULT 0,
             created_at TEXT NOT NULL DEFAULT (datetime('now'))
         )
     """)
+
+    # Migration: add is_admin to existing databases that predate this column
+    existing_columns = [row[1] for row in cursor.execute("PRAGMA table_info(users)")]
+    if "is_admin" not in existing_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0")
+        print("[DB] Migrated: added is_admin column to users")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS activity (
@@ -92,3 +99,26 @@ def init_db():
     conn.commit()
     conn.close()
     print("[DB] Database initialized")
+
+
+def set_admin(email: str, is_admin: bool = True):
+    """Grant or revoke admin privileges for a user by email.
+    
+    Usage from a Python shell or script:
+        from database import set_admin
+        set_admin('your@email.com')          # grant
+        set_admin('your@email.com', False)   # revoke
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE users SET is_admin = ? WHERE email = ?",
+        (1 if is_admin else 0, email)
+    )
+    if cursor.rowcount == 0:
+        print(f"[DB] No user found with email: {email}")
+    else:
+        status = "granted" if is_admin else "revoked"
+        print(f"[DB] Admin {status} for {email}")
+    conn.commit()
+    conn.close()

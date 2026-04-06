@@ -45,6 +45,7 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: str
+    is_admin: bool
     created_at: str
 
 
@@ -129,6 +130,7 @@ async def register(req: RegisterRequest):
             "id": user_id,
             "username": req.username,
             "email": req.email,
+            "is_admin": False,  # new accounts are never admin
         },
     }
 
@@ -138,7 +140,7 @@ async def login(req: LoginRequest):
     """Authenticate and return a JWT token."""
     conn = get_connection()
     row = conn.execute(
-        "SELECT id, username, email, password_hash FROM users WHERE username = ?",
+        "SELECT id, username, email, password_hash, is_admin FROM users WHERE username = ?",
         (req.username,),
     ).fetchone()
     conn.close()
@@ -156,6 +158,7 @@ async def login(req: LoginRequest):
             "id": row["id"],
             "username": row["username"],
             "email": row["email"],
+            "is_admin": bool(row["is_admin"]),
         },
     }
 
@@ -165,18 +168,19 @@ async def get_me(user: dict = Depends(get_current_user)):
     """Return the current user's profile."""
     conn = get_connection()
     row = conn.execute(
-        "SELECT id, username, email, created_at FROM users WHERE id = ?",
+        "SELECT id, username, email, is_admin, created_at FROM users WHERE id = ?",
         (user["id"],),
     ).fetchone()
     conn.close()
 
     if row is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_status=404, detail="User not found")
 
     return {
         "id": row["id"],
         "username": row["username"],
         "email": row["email"],
+        "is_admin": bool(row["is_admin"]),
         "created_at": row["created_at"],
     }
 
