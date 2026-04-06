@@ -76,8 +76,7 @@ class EnhancedAudioManager:
         
         # Audio settings
         self.sample_rate = 44100
-        #self.chunk_size = 4096  # samples per chunk
-        self.chunk_size = 16384
+        self.chunk_size = 4096
         
         # Playback tracking
         self.current_position = 0.0  # seconds into current track
@@ -106,6 +105,11 @@ class EnhancedAudioManager:
 
         # Skip tracking: count how many times skip has been pressed for the current song
         self._skip_count = 0
+
+        # Track background transition preparation so quick-skip can be promoted
+        # to an immediate skip without stale tasks overwriting newer plans.
+        self._transition_prepare_task: Optional[asyncio.Task] = None
+        self._transition_prepare_generation = 0
 
         # Pause tracking
         self._paused = False
@@ -273,6 +277,63 @@ class EnhancedAudioManager:
     def get_transition_mode(self) -> str:
         """Get current transition mode ('dynamic' or 'classic')."""
         return "dynamic" if self.use_dynamic_transitions else "classic"
+
+    def _cancel_transition_prepare_task(self, reason: str = ""):
+        """Cancel any in-flight background transition preparation."""
+        task = self._transition_prepare_task
+        if task and not task.done():
+            detail = f" ({reason})" if reason else ""
+            print(f"[MIXER] Cancelling transition prep task{detail}")
+            task.cancel()
+        self._transition_prepare_task = None
+        self._transition_prepare_generation += 1
+
+    def _start_transition_prepare_task(self, next_track: TrackInfo, force_quick: bool = False):
+        """Start transition preparation in the background, replacing any older task."""
+        if not self.current_track or not self.mixer:
+            return
+
+        self._cancel_transition_prepare_task("starting new transition prep")
+        request_id = self._transition_prepare_generation + 1
+        self._transition_prepare_generation = request_id
+        task_label = "quick" if force_quick else "standard"
+
+        async def runner():
+            try:
+                await self._prepare_transition(
+                    next_track,
+                    force_quick=force_quick,
+                    request_id=request_id,
+                )
+            except asyncio.CancelledError:
+                print(f"[MIXER] {task_label.title()} transition prep task cancelled")
+                raise
+            finally:
+                if self._transition_prepare_task is asyncio.current_task():
+                    self._transition_prepare_task = None
+
+        self._transition_prepare_task = asyncio.create_task(runner())
+
+    def _start_immediate_skip_task(self):
+        """Promote any pending quick prep into an immediate skip."""
+        if not self.current_track or not self.queue or not self.mixer:
+            return
+
+        self._cancel_transition_prepare_task("promoting to immediate skip")
+        request_id = self._transition_prepare_generation + 1
+        self._transition_prepare_generation = request_id
+
+        async def runner():
+            try:
+                await self._prepare_immediate_skip(request_id=request_id)
+            except asyncio.CancelledError:
+                print("[FORCE SKIP] Immediate skip prep task cancelled")
+                raise
+            finally:
+                if self._transition_prepare_task is asyncio.current_task():
+                    self._transition_prepare_task = None
+
+        self._transition_prepare_task = asyncio.create_task(runner())
     
     def _get_song_key(self, track_data: Dict) -> str:
         """Get the song key from track data for similarity lookups."""
@@ -411,7 +472,7 @@ class EnhancedAudioManager:
 
         # Only prepare a transition if this song is actually next to play
         if is_next and self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
-            asyncio.create_task(self._prepare_transition(self.queue[0]))
+            self._start_transition_prepare_task(self.queue[0])
 
         return True
 
@@ -431,12 +492,13 @@ class EnhancedAudioManager:
 
         # If the next-up song changed, invalidate transition and re-plan
         if old_first is not new_first:
+            self._cancel_transition_prepare_task("queue reordered")
             self._pending_transition_for = None
             self.pending_transition = None
             self.transition_audio = None
             print(f"[QUEUE] Next song changed: {old_first.title} -> {new_first.title}, re-planning transition")
             if self.state == PlaybackState.PLAYING and self.mixer and self.current_track:
-                asyncio.create_task(self._prepare_transition(new_first))
+                self._start_transition_prepare_task(new_first)
 
         self._push_queue_update("reordered")
         return True
@@ -450,27 +512,31 @@ class EnhancedAudioManager:
         self.queue.pop(index)
 
         if removing_first:
+            self._cancel_transition_prepare_task("next track removed")
             self._pending_transition_for = None
             self.pending_transition = None
             self.transition_audio = None
             if self.state == PlaybackState.PLAYING and self.mixer and self.current_track and self.queue:
-                asyncio.create_task(self._prepare_transition(self.queue[0]))
+                self._start_transition_prepare_task(self.queue[0])
 
         self._push_queue_update("removed")
         return True
 
-    async def _prepare_transition(self, next_track: TrackInfo, force_quick: bool = False):
+    async def _prepare_transition(self, next_track: TrackInfo, force_quick: bool = False, request_id: Optional[int] = None):
         """
         Prepare transition to the next track asynchronously.
         """
-        if not self.current_track or not self.mixer:
+        current_track = self.current_track
+        if not current_track or not self.mixer:
             return
-        
-        transition_type = "QUICK" if force_quick else "NORMAL"
-        print(f"[MIXER] Preparing transition: {self.current_track.title} -> {next_track.title}")
+
+        print(f"[MIXER] Preparing transition: {current_track.title} -> {next_track.title}")
         
         try:
             def compute():
+                if current_track.audio is None:
+                    raise RuntimeError(f"Current track audio is not loaded for {current_track.title}")
+
                 # Load next track audio with its effects config
                 next_audio, next_duration = self._load_audio(next_track.track_data, next_track.effects_config)
                 next_track.audio = next_audio
@@ -478,10 +544,10 @@ class EnhancedAudioManager:
                 
                 # Ensure both tracks have segment data
                 current_data = self._ensure_segments(
-                    self.current_track.track_data.copy(),
-                    self.current_track.duration
+                    current_track.track_data.copy(),
+                    current_track.duration
                 )
-                current_data['title'] = self.current_track.title
+                current_data['title'] = current_track.title
                 
                 next_data = self._ensure_segments(
                     next_track.track_data.copy(),
@@ -500,7 +566,7 @@ class EnhancedAudioManager:
                 
                 if plan: 
                     transition_audio = self.mixer.prepare_mixed_audio(
-                            self.current_track.audio,
+                            current_track.audio,
                             next_audio,
                             plan,
                             use_dynamic=self.use_dynamic_transitions
@@ -509,6 +575,16 @@ class EnhancedAudioManager:
                 return None, None
             
             plan, transition_audio = await asyncio.to_thread(compute)
+
+            if request_id is not None and request_id != self._transition_prepare_generation:
+                print(f"[MIXER] Discarding stale transition prep for {next_track.title}")
+                return
+            if self.current_track is not current_track:
+                print(f"[MIXER] Current track changed during transition prep; discarding {next_track.title}")
+                return
+            if request_id is not None and (not self.queue or self.queue[0] is not next_track):
+                print(f"[MIXER] Next track changed during transition prep; discarding {next_track.title}")
+                return
 
             self._pending_transition_for = next_track
 
@@ -546,7 +622,10 @@ class EnhancedAudioManager:
             else:
                 print("[MIXER] Could not compute transition, will use simple cut")
                 self.pending_transition = None
-                
+
+        except asyncio.CancelledError:
+            print(f"[MIXER] Transition preparation cancelled for {next_track.title}")
+            raise
         except Exception as e:
             print(f"[MIXER] Error preparing transition: {e}")
             import traceback
@@ -557,7 +636,7 @@ class EnhancedAudioManager:
                 self.queue.remove(next_track)
                 print(f"[MIXER] Removed unplayable track from queue: {next_track.title}")
                 if self.queue and self.mixer:
-                    asyncio.create_task(self._prepare_transition(self.queue[0]))
+                    self._start_transition_prepare_task(self.queue[0])
 
     def force_quick_transition(self) -> str:
         """
@@ -590,29 +669,30 @@ class EnhancedAudioManager:
         if self._skip_count >= 2:
             # Double-skip: immediate crossfade from current position
             print(f"[FORCE SKIP] Immediate crossfade from {self.current_track.title}")
-            asyncio.create_task(self._prepare_immediate_skip())
+            self._start_immediate_skip_task()
             return "immediate"
         else:
             # First skip: find nearby segment
             print(f"[QUICK TRANSITION] Forcing quick transition from {self.current_track.title}")
-            asyncio.create_task(self._prepare_transition(
-                self.queue[0],
-                force_quick=True
-            ))
+            self._start_transition_prepare_task(self.queue[0], force_quick=True)
             return "quick"
 
-    async def _prepare_immediate_skip(self):
+    async def _prepare_immediate_skip(self, request_id: Optional[int] = None):
         """
         Prepare an immediate crossfade from the current playback position.
         Uses a simple 5-second equal-power crossfade, bypassing segment analysis.
         """
-        if not self.current_track or not self.queue or not self.mixer:
+        current_track = self.current_track
+        if not current_track or not self.queue or not self.mixer:
             return
 
         next_track = self.queue[0]
 
         try:
             def compute():
+                if current_track.audio is None:
+                    raise RuntimeError(f"Current track audio is not loaded for {current_track.title}")
+
                 # Load next track audio if needed
                 if next_track.audio is None:
                     next_audio, next_duration = self._load_audio(
@@ -636,7 +716,7 @@ class EnhancedAudioManager:
 
                 # Use the mixer's immediate crossfade (always classic, 5s)
                 return self.mixer.create_immediate_crossfade(
-                    audio_a=self.current_track.audio,
+                    audio_a=current_track.audio,
                     audio_b=next_track.audio,
                     current_sample=current_sample,
                     song_b_start_sample=song_b_start_sample,
@@ -645,21 +725,34 @@ class EnhancedAudioManager:
 
             transition_audio = await asyncio.to_thread(compute)
 
+            if request_id is not None and request_id != self._transition_prepare_generation:
+                print(f"[FORCE SKIP] Discarding stale immediate skip for {next_track.title}")
+                return
+            if self.current_track is not current_track:
+                print(f"[FORCE SKIP] Current track changed; discarding immediate skip for {next_track.title}")
+                return
+            if not self.queue or self.queue[0] is not next_track:
+                print(f"[FORCE SKIP] Next track changed; discarding immediate skip for {next_track.title}")
+                return
+
             # Build a minimal TransitionPlan for the streaming machinery
-            current_sample = int(self.current_position * self.sample_rate)
             song_b_offset = transition_audio['timing']['song_b_continue_sample'] / self.sample_rate
             crossfade_dur = transition_audio['timing']['crossfade_duration']
+            transition_start_time = (
+                transition_audio['timing']['transition_start_sample']
+                / self.sample_rate
+            )
 
             plan = TransitionPlan(
-                song_a_title=self.current_track.title,
+                song_a_title=current_track.title,
                 song_b_title=next_track.title,
                 exit_segment=None,
                 entry_segment=None,
                 predicted_score=0.0,
                 crossfade_duration=crossfade_dur,
-                transition_start_time=self.current_position,  # NOW
+                transition_start_time=transition_start_time,
                 song_b_start_offset=song_b_offset - crossfade_dur,
-                song_a_bpm=self.current_track.track_data['features'].get('bpm', 120),
+                song_a_bpm=current_track.track_data['features'].get('bpm', 120),
                 song_b_bpm=next_track.track_data['features'].get('bpm', 120),
             )
 
@@ -677,6 +770,9 @@ class EnhancedAudioManager:
                     "transition": plan.to_dict(),
                 })
 
+        except asyncio.CancelledError:
+            print(f"[FORCE SKIP] Immediate skip preparation cancelled for {next_track.title}")
+            raise
         except Exception as e:
             print(f"[FORCE SKIP ERROR] {e}")
             import traceback
@@ -760,7 +856,10 @@ class EnhancedAudioManager:
 
             # Prepare transition to the next song in queue (whether user-queued or auto-queued)
             if self.queue and self.mixer:
-                await self._prepare_transition(self.queue[0])
+                self.pending_transition = None
+                self.transition_audio = None
+                self._pending_transition_for = None
+                self._start_transition_prepare_task(self.queue[0])
 
             # Reset position tracking and skip count for new song
             self.samples_sent = 0
@@ -819,11 +918,15 @@ class EnhancedAudioManager:
         """Check if we should start the transition now."""
         if not self.pending_transition or not self.transition_audio:
             return False
-        
-        # Start transition when we reach the planned time
-        # Add a small buffer for processing
-        buffer = 0.5  # seconds
-        return self.current_position >= (self.pending_transition.transition_start_time - buffer)
+
+        # Start the crossfade when the next outgoing chunk would carry us past the
+        # planned transition point. This keeps the handoff tight without skipping
+        # a fixed half-second of the outgoing song.
+        chunk_lookahead = self.chunk_size / self.sample_rate
+        return (
+            self.current_position + chunk_lookahead
+            >= self.pending_transition.transition_start_time
+        )
     
     async def _stream_transition(self, websocket):
         """
@@ -929,8 +1032,11 @@ class EnhancedAudioManager:
 
                 # Now prepare the next transition - its transition_planned message
                 # will arrive after track_start, so the frontend won't clear it.
+                self.pending_transition = None
+                self.transition_audio = None
+                self._pending_transition_for = None
                 if self.queue and self.mixer:
-                    await self._prepare_transition(self.queue[0])
+                    self._start_transition_prepare_task(self.queue[0])
 
                 # Debug: Log post-transition streaming info
                 post_duration = len(post_int16) / self.sample_rate
@@ -978,7 +1084,7 @@ class EnhancedAudioManager:
 
                 # Prepare transition for the next auto-queued song
                 if self.queue and self.mixer:
-                    await self._prepare_transition(self.queue[0])
+                    self._start_transition_prepare_task(self.queue[0])
             
             # Clear transition state
             self.pending_transition = None
@@ -1022,6 +1128,7 @@ class EnhancedAudioManager:
     def stop(self):
         """Stop playback."""
         self._paused = False
+        self._cancel_transition_prepare_task("stopping playback")
         self.state = PlaybackState.STOPPED
         self.pending_transition = None
         self.transition_audio = None

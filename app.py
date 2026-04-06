@@ -373,6 +373,30 @@ async def _load_setlist_into_room(room: DJRoom, setlist_id, session_user_id: Opt
     })
 
 
+def _quick_transition_messages(room: DJRoom):
+    try:
+        result = room.audio_manager.force_quick_transition()
+        if result == 'quick':
+            return [{
+                "type": "quick_transition_scheduled",
+                "message": "Transitioning at next segment boundary...",
+            }]
+        if result == 'immediate':
+            return [{
+                "type": "quick_transition_scheduled",
+                "message": "Skipping immediately...",
+            }]
+        return [{
+            "type": "error",
+            "message": "No song queued to transition to",
+        }]
+    except Exception as exc:
+        return [{
+            "type": "error",
+            "message": f"Could not schedule quick transition: {str(exc)}",
+        }]
+
+
 async def _process_prompt_command(room: DJRoom, prompt: str, session_user_id: Optional[int]):
     loop = asyncio.get_event_loop()
     async with llm_semaphore:
@@ -502,27 +526,7 @@ async def _process_prompt_command(room: DJRoom, prompt: str, session_user_id: Op
         })]
 
     if intent == 'quick_transition':
-        try:
-            result = room.audio_manager.force_quick_transition()
-            if result == 'quick':
-                return [{
-                    "type": "quick_transition_scheduled",
-                    "message": "Transitioning at next segment boundary...",
-                }]
-            if result == 'immediate':
-                return [{
-                    "type": "quick_transition_scheduled",
-                    "message": "Skipping immediately...",
-                }]
-            return [{
-                "type": "error",
-                "message": "No song queued to transition to",
-            }]
-        except Exception as exc:
-            return [{
-                "type": "error",
-                "message": f"Could not schedule quick transition: {str(exc)}",
-            }]
+        return _quick_transition_messages(room)
 
     if intent == 'set_transition_mode':
         prompt_lower = (prompt or '').lower()
@@ -634,6 +638,9 @@ async def _process_room_command(room: DJRoom, data: dict, session_user_id: Optio
                     "transition": room.audio_manager.pending_transition.to_dict(),
                 })
             return messages
+
+        if msg_type == 'quick_transition':
+            return _quick_transition_messages(room)
 
         if msg_type == 'pause':
             room.audio_manager.pause()
