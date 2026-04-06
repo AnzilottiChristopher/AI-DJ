@@ -15,6 +15,7 @@ import json
 
 # Import our trained model service
 from dj_transition_service import TransitionRankingService, TransitionRecommendation
+from feature_utils import sanitize_song_features
 
 
 @dataclass
@@ -88,6 +89,36 @@ class TransitionMixer:
         self.default_crossfade_duration = 8.0  # seconds
         self.min_crossfade_duration = 4.0
         self.max_crossfade_duration = 16.0
+
+        # Start song B a few beats before its selected entry segment so the groove
+        # is already established during the crossfade.
+        self.transition_pre_roll_beats = 8.0
+
+        # Echo tail tuning for outgoing track during transitions.
+        self.echo_enabled = True
+        self.echo_delay_ms = 250.0
+        self.echo_feedback = 0.35
+        self.echo_wet = 0.22
+        self.echo_taps = 3
+        self.echo_tail_portion = 0.55
+        self.echo_tone_cutoff_hz = 4500.0
+
+        # Incoming-track blend tuning (dynamic transitions only).
+        self.incoming_filter_low_start_hz = 180.0
+        self.incoming_filter_low_end_hz = 17000.0
+        self.incoming_filter_high_start_hz = 40.0
+        self.incoming_filter_high_end_hz = 180.0
+        self.incoming_echo_delay_ms = 190.0
+        self.incoming_echo_feedback = 0.25
+        self.incoming_echo_wet = 0.10
+        self.incoming_echo_taps = 2
+        self.incoming_echo_tone_cutoff_hz = 6000.0
+
+    def _beats_to_seconds(self, beats: float, bpm: float) -> float:
+        """Convert beat count to seconds for the given BPM."""
+        if bpm <= 0:
+            bpm = 120.0
+        return (60.0 / bpm) * max(0.0, beats)
         
     def _parse_segments(self, segments_data: List[Dict]) -> List[Segment]:
         """Parse segment data from metadata into Segment objects."""
@@ -125,11 +156,14 @@ class TransitionMixer:
         """
         Calculate appropriate crossfade duration based on song characteristics.
         """
+        song_a_features = sanitize_song_features(song_a_features)
+        song_b_features = sanitize_song_features(song_b_features)
+
         # Base duration on BPM - faster songs = shorter crossfade
         avg_bpm = (song_a_features.get('bpm', 120) + song_b_features.get('bpm', 120)) / 2
         
         # At 120 BPM, use 8 seconds. Scale inversely with BPM
-        base_duration = 8.0 * (120 / avg_bpm)
+        base_duration = 10.0 * (120 / avg_bpm)
         
         # Adjust based on segment types
         # Build-up to drop = shorter, more impactful
@@ -233,12 +267,13 @@ class TransitionMixer:
         # Ensure we don't start before current position
         transition_start = max(transition_start, current_position + 2.0)
         
-        # Song B starts at the beginning of entry segment
-        song_b_start_offset = entry_segment.start
-        
-        # Extract BPMs from features if available
-        song_a_bpm = song_a_data.get('features', {}).get('bpm', 120.0)
-        song_b_bpm = song_b_data.get('features', {}).get('bpm', 120.0)
+        # Start song B before the entry segment to smooth beat handoff.
+        song_a_features = sanitize_song_features(song_a_data.get('features'))
+        song_b_features = sanitize_song_features(song_b_data.get('features'))
+        song_a_bpm = song_a_features.get('bpm', 120.0)
+        song_b_bpm = song_b_features.get('bpm', 120.0)
+        lead_in_seconds = self._beats_to_seconds(self.transition_pre_roll_beats, song_b_bpm)
+        song_b_start_offset = max(0.0, entry_segment.start - lead_in_seconds)
         plan = TransitionPlan(
             song_a_title=song_a_data.get('title', 'Unknown'),
             song_b_title=song_b_data.get('title', 'Unknown'),
@@ -253,7 +288,8 @@ class TransitionMixer:
         )
         
         print(f"[MIXER] Computed transition: {exit_segment.name} -> {entry_segment.name} "
-              f"(score: {best.score:.1f}, starts at {transition_start:.1f}s)")
+              f"(score: {best.score:.1f}, starts at {transition_start:.1f}s, "
+              f"song B offset {song_b_start_offset:.1f}s)")
         
         return plan
     
@@ -270,8 +306,10 @@ class TransitionMixer:
         transition_start = max(current_position + 10, song_a_duration - 30)
         
         # Extract BPMs from features if available
-        song_a_bpm = song_a_data.get('features', {}).get('bpm', 120.0)
-        song_b_bpm = song_b_data.get('features', {}).get('bpm', 120.0)
+        song_a_features = sanitize_song_features(song_a_data.get('features'))
+        song_b_features = sanitize_song_features(song_b_data.get('features'))
+        song_a_bpm = song_a_features.get('bpm', 120.0)
+        song_b_bpm = song_b_features.get('bpm', 120.0)
         return TransitionPlan(
             song_a_title=song_a_data.get('title', 'Unknown'),
             song_b_title=song_b_data.get('title', 'Unknown'),
@@ -315,8 +353,99 @@ class TransitionMixer:
             result[mask] = sign * compressed
         
         return result
+
+    def _apply_echo(self,
+                    audio: np.ndarray,
+                    delay_ms: float,
+                    feedback: float,
+                    wet: float,
+                    taps: int) -> np.ndarray:
+        """Apply a lightweight multi-tap echo to mono or stereo audio."""
+        if len(audio) == 0:
+            return audio
+
+        delay_samples = int((delay_ms / 1000.0) * self.sample_rate)
+        if delay_samples <= 0:
+            return audio
+
+        feedback = float(np.clip(feedback, 0.0, 0.95))
+        wet = float(np.clip(wet, 0.0, 1.0))
+        taps = max(1, int(taps))
+
+        arr = np.asarray(audio, dtype=np.float64)
+        is_mono = arr.ndim == 1
+        arr_2d = arr[:, np.newaxis] if is_mono else arr
+
+        echo = np.zeros_like(arr_2d)
+        for tap in range(1, taps + 1):
+            offset = delay_samples * tap
+            if offset >= len(arr_2d):
+                break
+            gain = feedback ** tap
+            echo[offset:] += arr_2d[:-offset] * gain
+
+        out = arr_2d + (wet * echo)
+        if is_mono:
+            return out[:, 0]
+        return out
+
+    def _one_pole_lowpass(self, audio: np.ndarray, cutoff_hz: float) -> np.ndarray:
+        """Simple low-pass used for coloring effects like echo tails."""
+        if len(audio) == 0:
+            return audio
+
+        cutoff_hz = float(np.clip(cutoff_hz, 20.0, (self.sample_rate * 0.49)))
+        alpha = np.exp(-2.0 * np.pi * cutoff_hz / float(self.sample_rate))
+
+        arr = np.asarray(audio, dtype=np.float64)
+        if arr.ndim == 1:
+            out = np.empty_like(arr)
+            out[0] = arr[0]
+            for i in range(1, len(arr)):
+                out[i] = (1.0 - alpha) * arr[i] + alpha * out[i - 1]
+            return out
+
+        out = np.empty_like(arr)
+        out[0, :] = arr[0, :]
+        for i in range(1, arr.shape[0]):
+            out[i, :] = (1.0 - alpha) * arr[i, :] + alpha * out[i - 1, :]
+        return out
+
+    def _apply_transition_echo_tail(self, audio: np.ndarray) -> np.ndarray:
+        """Blend in echo progressively over the tail of the outgoing segment."""
+        if not self.echo_enabled or len(audio) == 0:
+            return audio
+
+        echoed = self._apply_echo(
+            audio,
+            delay_ms=self.echo_delay_ms,
+            feedback=self.echo_feedback,
+            wet=self.echo_wet,
+            taps=self.echo_taps,
+        )
+        echoed = self._one_pole_lowpass(echoed, self.echo_tone_cutoff_hz)
+
+        n = len(audio)
+        if n < 4:
+            return echoed
+
+        tail_portion = float(np.clip(self.echo_tail_portion, 0.1, 1.0))
+        t = np.linspace(0.0, 1.0, n, dtype=np.float64)
+        tail_env = np.clip((t - (1.0 - tail_portion)) / tail_portion, 0.0, 1.0)
+        tail_env = tail_env ** 1.5
+
+        base = np.asarray(audio, dtype=np.float64)
+        echo_arr = np.asarray(echoed, dtype=np.float64)
+        if base.ndim == 2:
+            tail_env = tail_env[:, np.newaxis]
+
+        return (base * (1.0 - tail_env)) + (echo_arr * tail_env)
     
-    def _apply_micro_fade(self, audio: np.ndarray, fade_samples: int = 64) -> np.ndarray:
+    def _apply_micro_fade(self,
+                          audio: np.ndarray,
+                          fade_samples: int = 64,
+                          apply_start: bool = True,
+                          apply_end: bool = True) -> np.ndarray:
         """
         Apply tiny fade in/out at the boundaries to prevent clicks.
         
@@ -341,9 +470,11 @@ class TransitionMixer:
             fade_in = fade_in[:, np.newaxis]
             fade_out = fade_out[:, np.newaxis]
         
-        # Apply fades
-        result[:fade_samples] *= fade_in
-        result[-fade_samples:] *= fade_out
+        # Apply fades only where requested
+        if apply_start:
+            result[:fade_samples] *= fade_in
+        if apply_end:
+            result[-fade_samples:] *= fade_out
         
         return result
 
@@ -370,7 +501,8 @@ class TransitionMixer:
         # Convert times to samples
         crossfade_samples = int(plan.crossfade_duration * sr)
         transition_start_sample = int(plan.transition_start_time * sr)
-        song_b_start_sample = int(plan.song_b_start_offset * sr)
+        # Classic crossfade path is intentionally dry: no dynamic pre-roll.
+        song_b_start_sample = int(plan.entry_segment.start * sr)
         
         # Ensure we don't exceed array bounds
         transition_start_sample = min(transition_start_sample, len(audio_a) - crossfade_samples)
@@ -387,7 +519,6 @@ class TransitionMixer:
         min_len = min(len(segment_a), len(segment_b))
         segment_a = segment_a[:min_len]
         segment_b = segment_b[:min_len]
-        
 
         # Create crossfade curves (equal-power crossfade)
         t = np.linspace(0, 1, min_len)
@@ -410,8 +541,14 @@ class TransitionMixer:
         # This is the main fix for the static/crackling sound
         crossfade_audio = self._soft_clip(crossfade_audio, threshold=0.95)
         
-        # Apply micro-fades at boundaries to prevent clicks
-        crossfade_audio = self._apply_micro_fade(crossfade_audio, fade_samples=128)
+        # Keep transition start continuous with pre-transition audio.
+        # Apply only end-side micro fade to reduce post-boundary click risk.
+        crossfade_audio = self._apply_micro_fade(
+            crossfade_audio,
+            fade_samples=64,
+            apply_start=False,
+            apply_end=True,
+        )
         
         # Final safety clamp to ensure we're in valid range
         crossfade_audio = np.clip(crossfade_audio, -1.0, 1.0)
@@ -455,6 +592,7 @@ class TransitionMixer:
         min_len = min(len(segment_a), len(segment_b))
         segment_a = segment_a[:min_len]
         segment_b = segment_b[:min_len]
+        pre_stretch_b_len = len(segment_b)
 
         if min_len <= 0:
             return np.array([], dtype=np.float32), transition_start_sample, song_b_start_sample
@@ -520,12 +658,13 @@ class TransitionMixer:
 
         bpm_a = float(plan.song_a_bpm or 0.0)
         bpm_b = float(plan.song_b_bpm or 0.0)
+        speed_b_applied = 1.0
         if bpm_a > 0.0 and bpm_b > 0.0:
-            target_bpm = (bpm_a + bpm_b) / 2.0
-
-            # Clamp stretch speeds to prevent extreme artifacts in realtime transitions.
-            speed_a = float(np.clip(target_bpm / bpm_a, 0.85, 1.15))
-            speed_b = float(np.clip(target_bpm / bpm_b, 0.85, 1.15))
+            # Keep song B at native tempo so post-transition stays natural,
+            # and pull song A toward song B during the blend.
+            speed_a = float(np.clip(bpm_b / bpm_a, 0.80, 1.20))
+            speed_b = 1.0
+            speed_b_applied = speed_b
 
             segment_a = _time_stretch_phase_vocoder(segment_a, speed_a)
             segment_b = _time_stretch_phase_vocoder(segment_b, speed_b)
@@ -535,6 +674,9 @@ class TransitionMixer:
             segment_b = segment_b[:min_len]
             if min_len <= 0:
                 return np.array([], dtype=np.float32), transition_start_sample, song_b_start_sample
+
+        # Add a short echo tail to outgoing audio before dynamic blending.
+        segment_a = self._apply_transition_echo_tail(segment_a)
 
         is_mono_output = (segment_a.ndim == 1 and segment_b.ndim == 1)
 
@@ -599,15 +741,32 @@ class TransitionMixer:
 
         segment_a_2d, segment_b_2d = _match_channels(segment_a, segment_b)
 
-        hp_start, hp_end = 20.0, 950.0
-        lp_start, lp_end = 950.0, 18000.0
+        # Outgoing song A: progressively band-limit to emulate DJ EQ/filtering out.
+        segment_a_hp = _apply_time_varying_filter(segment_a_2d, "high", 20.0, 700.0, order=4)
+        segment_a_f = _apply_time_varying_filter(segment_a_hp, "low", 16000.0, 900.0, order=4)
 
-        segment_a_f = _apply_time_varying_filter(segment_a_2d, "high", hp_start, hp_end, order=4)
-        segment_b_f = _apply_time_varying_filter(segment_b_2d, "low", lp_start, lp_end, order=4)
+        # Incoming song B: stronger early filtering, then open up for reveal.
+        segment_b_f = _apply_time_varying_filter(
+            segment_b_2d,
+            "low",
+            self.incoming_filter_low_start_hz,
+            self.incoming_filter_low_end_hz,
+            order=4,
+        )
+        segment_b_f = _apply_time_varying_filter(
+            segment_b_f,
+            "high",
+            self.incoming_filter_high_start_hz,
+            self.incoming_filter_high_end_hz,
+            order=2,
+        )
+
+        # Early backing bed from song B so groove appears before full switch.
+        segment_b_backing = _apply_time_varying_filter(segment_b_2d, "low", 260.0, 1200.0, order=3)
 
         t = np.linspace(0.0, 1.0, min_len, dtype=np.float32)
         smooth = t * t * (3.0 - 2.0 * t)
-        fade_in = np.power(smooth, 1.8).astype(np.float32)
+        fade_in = np.power(smooth, 1.2).astype(np.float32)
         fade_out = 1.0 - fade_in
 
         fi = np.sqrt(np.clip(fade_in, 0.0, 1.0)).astype(np.float32)
@@ -617,16 +776,46 @@ class TransitionMixer:
         boost_gain = float(10.0 ** (drop_boost_db / 20.0))
         boost = 1.0 + (boost_gain - 1.0) * fade_in
 
-        crossfade_audio = (segment_a_f * fo[:, np.newaxis]) + (segment_b_f * fi[:, np.newaxis] * boost[:, np.newaxis])
+        # Gentle ducking of outgoing track as incoming backing grows.
+        duck = 1.0 - (0.22 * np.power(fade_in, 1.1))
+
+        # Keep low-mid backing of song B audible through the first half.
+        bed_gain = (0.32 * (1.0 - np.power(fade_in, 0.7))).astype(np.float32)
+
+        # Subtle incoming echo adds glue to the overlap without washing out transients.
+        segment_b_echo = self._apply_echo(
+            segment_b_f,
+            delay_ms=self.incoming_echo_delay_ms,
+            feedback=self.incoming_echo_feedback,
+            wet=self.incoming_echo_wet,
+            taps=self.incoming_echo_taps,
+        )
+        segment_b_echo = self._one_pole_lowpass(segment_b_echo, self.incoming_echo_tone_cutoff_hz)
+        echo_gain = (0.16 * np.power(fade_in, 1.3)).astype(np.float32)
+
+        crossfade_audio = (
+            (segment_a_f * fo[:, np.newaxis] * duck[:, np.newaxis])
+            + (segment_b_f * fi[:, np.newaxis] * boost[:, np.newaxis])
+            + (segment_b_backing * bed_gain[:, np.newaxis])
+            + (segment_b_echo * echo_gain[:, np.newaxis])
+        )
 
         crossfade_audio = self._soft_clip(crossfade_audio, threshold=0.95)
-        crossfade_audio = self._apply_micro_fade(crossfade_audio, fade_samples=128)
+        crossfade_audio = self._apply_micro_fade(
+            crossfade_audio,
+            fade_samples=64,
+            apply_start=False,
+            apply_end=True,
+        )
         crossfade_audio = np.clip(crossfade_audio, -1.0, 1.0)
 
         if is_mono_output and crossfade_audio.ndim == 2:
             crossfade_audio = crossfade_audio[:, 0]
 
-        song_b_continue_sample = song_b_start_sample + min_len
+        # Map mixed-output length back to how much original song B audio was consumed.
+        consumed_b_samples = int(round(min_len * speed_b_applied))
+        consumed_b_samples = max(0, min(pre_stretch_b_len, consumed_b_samples))
+        song_b_continue_sample = min(len(audio_b), song_b_start_sample + consumed_b_samples)
         return crossfade_audio, transition_start_sample, song_b_continue_sample
 
     def create_immediate_crossfade(self,
@@ -745,23 +934,8 @@ class TransitionMixer:
         # Post-transition: everything in song B after the crossfade
         post_transition = audio_b[continue_sample:]
         
-        # Apply micro-fade to the boundaries for seamless connection
-        # Fade out the end of pre_transition
-        fade_samples = 128
-        if len(pre_transition) > fade_samples:
-            pre_transition = pre_transition.astype(np.float64)
-            fade_out = np.linspace(1, 0, fade_samples) ** 2
-            if len(pre_transition.shape) == 2:
-                fade_out = fade_out[:, np.newaxis]
-            pre_transition[-fade_samples:] *= fade_out
-        
-        # Fade in the beginning of post_transition  
-        if len(post_transition) > fade_samples:
-            post_transition = post_transition.astype(np.float64)
-            fade_in = np.linspace(0, 1, fade_samples) ** 2
-            if len(post_transition.shape) == 2:
-                fade_in = fade_in[:, np.newaxis]
-            post_transition[:fade_samples] *= fade_in
+        # Keep boundaries at full continuity here; the crossfade segment handles
+        # the actual overlap and envelope, which avoids a perceived dip/cut at start.
         
         return {
             'pre_transition': pre_transition,

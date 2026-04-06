@@ -30,6 +30,8 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
+from feature_utils import sanitize_song_features
+
 
 # Musical key compatibility matrix based on music theory
 # Keys are arranged in circle of fifths order
@@ -87,6 +89,7 @@ class SongFeatures:
     @classmethod
     def from_dict(cls, data: Dict) -> 'SongFeatures':
         """Create SongFeatures from a dictionary."""
+        data = sanitize_song_features(data)
         return cls(
             bpm=data.get('bpm', 120.0),
             key=data.get('key', 'C'),
